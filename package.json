@@ -4,13 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
+    "install": "npm run install-backend && npm run install-frontend",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build-frontend && npm run build-frontend",
+
+
+
     "frontend": "cd frontend && npm run dev",
     "backend": "cd backend && php artisan serve",
     "install-backend": "cd backend && composer install",
     "install-frontend": "cd frontend && npm install",
-    "install": "npm run install-backend && npm run install-frontend",
     "build-frontend": "cd frontend && npm run build",
     "vendor": "cd backend && php artisan vendor:publish"
   },
