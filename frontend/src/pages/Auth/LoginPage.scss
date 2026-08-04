@@ -1,0 +1,69 @@
+// ==========================================================================
+// Claymorphism theme — Login screen
+// ==========================================================================
+@import '../../css/themes.scss';
+
+// ---- Page --------------------------------------------------------------
+.clay-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $clay-bg;
+  padding: 24px;
+  font-family: 'Nunito', 'Quicksand', sans-serif;
+}
+
+// ---- Card ----------------------------------------------------------------
+.clay-card {
+  @include clay-raised(32px, 1.1);
+  width: 100%;
+  max-width: 380px;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+// ---- Title / badge --------------------------------------------------------
+.clay-title {
+  @include clay-pressed(20px);
+  padding: 14px 32px;
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: $clay-text;
+  letter-spacing: 0.5px;
+}
+
+// ---- Buttons ---------------------------------------------------------------
+.clay-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.clay-btn {
+  width: 100%;
+  height: 52px;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  text-transform: none;
+
+  // Quasar renders its own inner wrapper; target it so the clay
+  // shadow sits on the real button surface, not a transparent shell.
+  :deep(.q-btn__content) {
+    color: inherit;
+  }
+}
+
+.clay-btn--login {
+  @include clay-button($accent-login);
+}
+
+.clay-btn--signup {
+  @include clay-button($accent-signup);
+}

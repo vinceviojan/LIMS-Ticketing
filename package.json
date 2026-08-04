@@ -8,9 +8,6 @@
     "install": "npm run install-backend && npm run install-frontend",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run build-frontend && npm run build-frontend",
-
-
-
     "frontend": "cd frontend && npm run dev",
     "backend": "cd backend && php artisan serve",
     "install-backend": "cd backend && composer install",
