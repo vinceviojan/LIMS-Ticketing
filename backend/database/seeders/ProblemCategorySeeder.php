@@ -13,29 +13,65 @@ class ProblemCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            [
-                'type' => 'Hardware',
-                'categories' => 'Printer issue, Monitor fault, Scanner error, PC performance',
+            'Hardware' => [
+                'Workstation/Laptop Troubleshooting',
+                'Printer/Scanner Issues',
+                'Lab Instrument Connectivity',
+                'Peripheral Replacement',
             ],
-            [
-                'type' => 'Software',
-                'categories' => 'LIMS Portal access, Intralab upload issue, OS error, Office suite',
+
+            'Software' => [
+                'Laboratory Information Management System (LIMS)',
+                'Internal Document Tracking System (IDTS)',
+                'Operating System Errors',
+                'Microsoft Office Suite',
             ],
-            [
-                'type' => 'Network',
-                'categories' => 'LAN connectivity, Internet slow, VPN access, Server timeout',
+
+            'Network' => [
+                'IntraLab Network',
+                'Network Connectivity',
+                'Router/Switch Issues',
             ],
-            [
-                'type' => 'Account / Access',
-                'categories' => 'Password reset, Account locked, Permission request',
+
+            'Support' => [
+                'Provision of Assistance for Technical Concerns',
+                'Provision of Technical Support During Events',
+                'Biometric Credentials Registration',
+                'Provision of Photo/Video Documentation',
+            ],
+
+            'Account & Access Management' => [
+                'Password Reset / Account Unlocking',
+                'System Access Requests',
+                'Shared Folder Permissions',
+                'Email Account Creation',
+            ],
+
+            'Data Management' => [
+                'Data Backup / Restoration',
+                'File Transfer',
+            ],
+
+            'Communication & Collaboration Tools' => [
+                'Email/Webmail Troubleshooting',
+                'Video Conferencing Support',
+            ],
+
+            'Others' => [
+                'ISO/IEC 17025:2017 Forms and Manuals',
+                'LSD Conference Room',
+                'Non-Technical Concern',
+                'Other',
             ],
         ];
 
-        foreach ($categories as $cat) {
-            ProblemCategory::firstOrCreate(
-                ['type' => $cat['type']],
-                $cat
-            );
+        foreach ($categories as $type => $items) {
+            foreach ($items as $category) {
+                ProblemCategory::firstOrCreate([
+                    'type' => $type,
+                    'categories' => $category,
+                ]);
+            }
         }
     }
 }
