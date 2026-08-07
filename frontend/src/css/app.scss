@@ -1,85 +1,23 @@
 // ==========================================================================
-// Claymorphism theme — shared tokens & mixins
-// Soft, puffy, dual-shadow "clay" UI on a cool steel-blue base
+// Claymorphism theme — DA + TES Branding
 // ==========================================================================
 
 // ---- Palette --------------------------------------------------------------
-$clay-bg:        #dbe4ee; // page background (steel-blue putty)
-$clay-surface:   #e6edf4; // card / raised surface
-$clay-light:     #ffffff; // highlight shadow (top-left)
-$clay-dark:      #a9bccd; // depth shadow (bottom-right)
-$clay-text:      #3a4a5a; // ink
-$clay-text-soft: #6d7f91; // secondary ink
+$clay-bg:         #e8f0e8; // soft green page background
+$clay-surface:    #f3f7f1; // raised surface
 
-$accent-login:   #5b6fe0; // periwinkle indigo
-$accent-signup:  #3e8989; // muted teal
+$clay-light:      #ffffff;
+$clay-dark:       #b5c7b5;
 
-// ---- Shadow mixins ----------------------------------------------------------
-@mixin clay-raised($radius: 24px, $intensity: 1) {
-  border-radius: $radius;
-  background: $clay-surface;
-  box-shadow:
-    #{8px * $intensity} #{8px * $intensity} #{16px * $intensity} $clay-dark,
-    -#{6px * $intensity} -#{6px * $intensity} #{14px * $intensity} $clay-light;
-}
+$clay-text:       #1d3b28; // dark forest green
+$clay-text-soft:  #55735f;
 
-@mixin clay-pressed($radius: 24px) {
-  border-radius: $radius;
-  box-shadow:
-    inset 5px 5px 10px $clay-dark,
-    inset -5px -5px 10px $clay-light;
-}
+// Brand accents
+$accent-login:    #006836; // Department of Agriculture Green
+$accent-signup:   #F6931E; // Harvest Orange
 
-@mixin clay-button($color) {
-  border-radius: 18px;
-  background: linear-gradient(145deg, lighten($color, 6%), $color);
-  box-shadow:
-    6px 6px 14px $clay-dark,
-    -6px -6px 14px $clay-light;
-  color: #fff;
-  border: none;
-  transition: box-shadow 0.18s ease, transform 0.18s ease;
-
-  &:hover {
-    box-shadow:
-      4px 4px 10px $clay-dark,
-      -4px -4px 10px $clay-light;
-    transform: translateY(1px);
-  }
-
-  &:active {
-    box-shadow:
-      inset 4px 4px 8px rgba(0, 0, 0, 0.25),
-      inset -4px -4px 8px rgba(255, 255, 255, 0.15);
-    transform: translateY(2px);
-  }
-}
-
-// Small circular clay "pill" used for icon buttons (socials, back-to-top, etc.)
-@mixin clay-orb($size: 44px) {
-  width: $size;
-  height: $size;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: $clay-surface;
-  box-shadow:
-    5px 5px 10px $clay-dark,
-    -5px -5px 10px $clay-light;
-  color: $clay-text-soft;
-  transition: box-shadow 0.18s ease, transform 0.18s ease, color 0.18s ease;
-  cursor: pointer;
-
-  &:hover {
-    color: $clay-text;
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    box-shadow:
-      inset 3px 3px 6px $clay-dark,
-      inset -3px -3px 6px $clay-light;
-    transform: translateY(0);
-  }
-}
+// Optional extra brand colors
+$brand-secondary: #009747;
+$brand-warning:   #F0C708;
+$brand-info:      #2266B7;
+$brand-danger:    #8B1E12;

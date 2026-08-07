@@ -22,10 +22,10 @@ export default defineRouter(() => {
   const createHistory = import.meta.env.QUASAR_SERVER
     ? createMemoryHistory
     : (
-        import.meta.env.QUASAR_VUE_ROUTER_MODE === 'history'
-          ? createWebHistory
-          : createWebHashHistory
-      )
+      import.meta.env.QUASAR_VUE_ROUTER_MODE === 'history'
+        ? createWebHistory
+        : createWebHashHistory
+    )
 
   const Router = createRouter({
     history: createHistory(import.meta.env.QUASAR_VUE_ROUTER_BASE),
@@ -34,43 +34,39 @@ export default defineRouter(() => {
   })
 
   // =====================================================
-  // TEMPORARY AUTH & ROLE GUARD
+  // AUTH & ROLE NAVIGATION GUARD
   // =====================================================
 
   Router.beforeEach((to, from, next) => {
-    // ---------------------------------------------------
-    // Authentication (Uncomment when backend is ready)
-    // ---------------------------------------------------
+    const token = localStorage.getItem('token')
+    const storedUser = localStorage.getItem('user')
+    const user = storedUser ? JSON.parse(storedUser) : null
+    const role = user?.role?.toLowerCase() || null
 
-    // const token = localStorage.getItem('token')
-    // const role = localStorage.getItem('role')
-
-    // if (!token && to.meta.requiresAuth) {
-    //   return next('/login')
-    // }
-
-    // ---------------------------------------------------
-    // Temporary role for testing
-    // ---------------------------------------------------
-
-    const role = 'admin'
-    // const role = 'staff'
-    // const role = 'user'
-
-    // Redirect "/" or "/dashboard" based on role
-    if (to.path === '/' || to.path === '/dashboard') {
+    // ---- Redirect authenticated users away from public pages ----
+    if (token && (to.path === '/login' || to.path === '/signup' || to.path === '/')) {
       switch (role) {
         case 'admin':
           return next('/admin/dashboard')
-
         case 'staff':
           return next('/staff/dashboard')
-
         case 'user':
           return next('/user/dashboard')
-
         default:
-          return next('/login')
+          return next()
+      }
+    }
+
+    // ---- Require authentication for private routes ----
+    if (to.meta.requiresAuth && !token) {
+      return next('/login')
+    }
+
+    // ---- Role-based access check ----
+    if (to.meta.requiredRoles && token) {
+      const allowedRoles = to.meta.requiredRoles.map((r) => r.toLowerCase())
+      if (!allowedRoles.includes(role)) {
+        return next('/forbidden')
       }
     }
 
@@ -79,3 +75,4 @@ export default defineRouter(() => {
 
   return Router
 })
+

@@ -16,5 +16,10 @@ export const PublicRoutes = [
                 component: () => import('../pages/Auth/SignupPage.vue'),
             }
         ]
+    },
+    {
+        path: '/forbidden',
+        name: 'forbidden',
+        component: () => import('../pages/ForbiddenPage.vue')
     }
 ];
