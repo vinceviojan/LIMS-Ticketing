@@ -1,0 +1,146 @@
+// ==========================================================================
+// Quasar Theme Variables
+// ==========================================================================
+
+// Brand Colors
+$primary: #006836;
+$secondary: #009747;
+$accent: #F6931E;
+
+$dark: #1D1D1D;
+$dark-page: #121212;
+
+$positive: #009747;
+$negative: #8B1E12;
+$info: #2266B7;
+$warning: #F0C708;
+
+// ==========================================================================
+// Claymorphism Theme
+// ==========================================================================
+
+$clay-bg: #e8f0e8;
+$clay-surface: #f3f7f1;
+
+$clay-light: #ffffff;
+$clay-dark: #b5c7b5;
+
+$clay-text: #1d3b28;
+$clay-text-soft: #55735f;
+
+// Accent colors used by buttons
+$accent-login: $primary;
+$accent-signup: $accent;
+
+// ==========================================================================
+// Typography
+// ==========================================================================
+
+$font-heading: "Merriweather", serif;
+$font-body: "Poppins", sans-serif;
+
+// Font Sizes
+$font-xs: .75rem;
+$font-sm: .875rem;
+$font-md: 1rem;
+$font-lg: 1.125rem;
+$font-xl: 1.25rem;
+$font-2xl: 1.5rem;
+$font-3xl: 2rem;
+$font-4xl: 2.75rem;
+
+// Font Weights
+$weight-light: 300;
+$weight-normal: 400;
+$weight-medium: 500;
+$weight-semibold: 600;
+$weight-bold: 700;
+$weight-black: 900;
+
+// ==========================================================================
+// Clay Mixins
+// ==========================================================================
+
+@mixin clay-raised($radius: 24px, $intensity: 1) {
+  border-radius: $radius;
+  background: $clay-surface;
+
+  box-shadow:
+    #{8px * $intensity} #{8px * $intensity} #{16px * $intensity} $clay-dark,
+    -#{6px * $intensity} -#{6px * $intensity} #{14px * $intensity} $clay-light;
+}
+
+@mixin clay-pressed($radius: 24px) {
+  border-radius: $radius;
+
+  box-shadow:
+    inset 5px 5px 10px $clay-dark,
+    inset -5px -5px 10px $clay-light;
+}
+
+@mixin clay-button($color) {
+  border-radius: 18px;
+
+  background: linear-gradient(
+    145deg,
+    lighten($color, 6%),
+    $color
+  );
+
+  color: white;
+  border: none;
+
+  box-shadow:
+    6px 6px 14px $clay-dark,
+    -6px -6px 14px $clay-light;
+
+  transition: .18s ease;
+
+  &:hover {
+    box-shadow:
+      4px 4px 10px $clay-dark,
+      -4px -4px 10px $clay-light;
+
+    transform: translateY(1px);
+  }
+
+  &:active {
+    box-shadow:
+      inset 4px 4px 8px rgba(0,0,0,.25),
+      inset -4px -4px 8px rgba(255,255,255,.15);
+
+    transform: translateY(2px);
+  }
+}
+
+@mixin clay-orb($size: 44px) {
+  width: $size;
+  height: $size;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: $clay-surface;
+
+  color: $clay-text-soft;
+  cursor: pointer;
+
+  box-shadow:
+    5px 5px 10px $clay-dark,
+    -5px -5px 10px $clay-light;
+
+  transition: .18s ease;
+
+  &:hover {
+    color: $clay-text;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    box-shadow:
+      inset 3px 3px 6px $clay-dark,
+      inset -3px -3px 6px $clay-light;
+  }
+}

@@ -2,6 +2,9 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
 
 import { defineConfig } from '#q-app'
+import dotenv from 'dotenv'
+
+const envParsed = dotenv.config().parsed || {}
 
 export default defineConfig((/* ctx */) => {
   return {
@@ -12,6 +15,8 @@ export default defineConfig((/* ctx */) => {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
+      'axios',
+      'fontawesome'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
@@ -41,12 +46,13 @@ export default defineConfig((/* ctx */) => {
       },
 
       // https://v2.quasar.dev/quasar-cli-vite/page-routing-with-vue-router#filename-based-routing
-      filenameBasedRouting: true,
+      filenameBasedRouting: false,
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,
 
       // publicPath: '/',
+      env: envParsed,
       // define: {},
       // defineEnv: {}
       // ignorePublicFolder: true,
@@ -88,7 +94,7 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: ['Notify', 'Dialog']
     },
 
     // animations: 'all', // --- includes all animations
@@ -192,7 +198,7 @@ export default defineConfig((/* ctx */) => {
       // extendElectronPackageJson (pkgJson) {},
 
       // Electron preload scripts (if any) from /src-electron, WITHOUT file extension
-      preloadScripts: [ 'electron-preload' ],
+      preloadScripts: ['electron-preload'],
 
       // specify the debugging port to use for the Electron app when running in development mode
       inspectPort: 5858,

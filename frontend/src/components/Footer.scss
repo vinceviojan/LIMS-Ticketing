@@ -1,0 +1,231 @@
+// ==========================================================================
+// Claymorphism theme — Footer (Quasar q-btn / q-input aware)
+// ==========================================================================
+@import '../css/themes.scss';
+
+.clay-footer {
+  @include clay-raised(28px, 1);
+  margin: 24px;
+  padding: 40px 48px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  font-family: 'Nunito', 'Quicksand', sans-serif;
+  color: $clay-text;
+}
+
+// ---- Top row: brand + link columns + newsletter -----------------------------
+.clay-footer__top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: space-between;
+}
+
+.clay-footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 280px;
+}
+
+.clay-footer__logo {
+  @include clay-pressed(16px);
+  align-self: flex-start;
+  padding: 8px 20px;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.clay-footer__tagline {
+  margin: 0;
+  font-size: 0.9rem;
+  color: $clay-text-soft;
+  line-height: 1.5;
+}
+
+// ---- Link columns --------------------------------------------------------
+.clay-footer__columns {
+  display: flex;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.clay-footer__column {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 130px;
+}
+
+.clay-footer__heading {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: $clay-text-soft;
+}
+
+// q-btn (flat) used as a text link: strip Quasar's default button chrome
+// and restyle the label itself.
+.clay-footer__link {
+  min-height: 0;
+  padding: 6px 0;
+  justify-content: flex-start;
+
+  :deep(.q-btn__content) {
+    justify-content: flex-start;
+  }
+
+  :deep(.q-focus-helper) {
+    display: none;
+  }
+
+  :deep(.q-btn__wrapper) {
+    padding: 0;
+    min-height: 0;
+  }
+
+  :deep(.block) {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: $clay-text;
+    position: relative;
+    transition: color 0.15s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -3px;
+      width: 0;
+      height: 2px;
+      border-radius: 2px;
+      background: $accent-login;
+      transition: width 0.18s ease;
+    }
+  }
+
+  &:hover :deep(.block) {
+    color: $accent-login;
+
+    &::after {
+      width: 100%;
+    }
+  }
+}
+
+// ---- Newsletter -----------------------------------------------------------
+.clay-footer__newsletter {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 260px;
+}
+
+.clay-footer__form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// q-input (borderless, dense): recreate the pressed clay field on the
+// actual field control so the focus ring lands in the right place.
+.clay-footer__input {
+  flex: 1;
+  min-width: 0;
+
+  :deep(.q-field__control) {
+    @include clay-pressed(14px);
+    height: 44px;
+    padding: 0 16px;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  :deep(.q-field__native),
+  :deep(input) {
+    color: $clay-text;
+    font-family: inherit;
+    font-size: 0.85rem;
+
+    &::placeholder {
+      color: $clay-text-soft;
+    }
+  }
+
+  :deep(.q-field__marginal) {
+    height: 44px;
+  }
+}
+
+// q-btn (round, unelevated) social / submit / back-to-top pills all
+// share the same "clay orb" treatment.
+.clay-footer__submit,
+.clay-footer__social,
+.clay-footer__totop {
+  @include clay-orb(44px);
+  padding: 0;
+
+  :deep(.q-btn__content) {
+    color: inherit;
+  }
+
+  :deep(.q-focus-helper) {
+    display: none;
+  }
+}
+
+.clay-footer__totop {
+  @include clay-orb(40px);
+}
+
+// ---- Socials ---------------------------------------------------------------
+.clay-footer__socials {
+  display: flex;
+  gap: 14px;
+}
+
+// ---- Divider ----------------------------------------------------------------
+.clay-footer__divider {
+  height: 3px;
+  border-radius: 3px;
+  background: $clay-dark;
+  opacity: 0.35;
+}
+
+// ---- Bottom row: copyright + back to top ------------------------------------
+.clay-footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.clay-footer__copyright {
+  margin: 0;
+  font-size: 0.8rem;
+  color: $clay-text-soft;
+}
+
+// ---- Responsive --------------------------------------------------------------
+@media (max-width: 640px) {
+  .clay-footer {
+    padding: 32px 24px 24px;
+  }
+
+  .clay-footer__top {
+    flex-direction: column;
+  }
+
+  .clay-footer__columns {
+    gap: 28px;
+  }
+}

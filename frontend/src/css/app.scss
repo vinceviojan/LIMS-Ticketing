@@ -1,1 +1,23 @@
-// app global css
+// ==========================================================================
+// Claymorphism theme — DA + TES Branding
+// ==========================================================================
+
+// ---- Palette --------------------------------------------------------------
+$clay-bg:         #e8f0e8; // soft green page background
+$clay-surface:    #f3f7f1; // raised surface
+
+$clay-light:      #ffffff;
+$clay-dark:       #b5c7b5;
+
+$clay-text:       #1d3b28; // dark forest green
+$clay-text-soft:  #55735f;
+
+// Brand accents
+$accent-login:    #006836; // Department of Agriculture Green
+$accent-signup:   #F6931E; // Harvest Orange
+
+// Optional extra brand colors
+$brand-secondary: #009747;
+$brand-warning:   #F0C708;
+$brand-info:      #2266B7;
+$brand-danger:    #8B1E12;
