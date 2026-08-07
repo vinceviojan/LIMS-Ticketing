@@ -9,6 +9,6 @@ Route::get('/', function () {
 
 Route::get('/ping', function () {
     return response()->json([
-        'message' => 'pong'
+        'message' => 'this is web'
         ]);
 });
