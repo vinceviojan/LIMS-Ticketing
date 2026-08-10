@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ProblemCategoryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,8 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('users', UserController::class);
 
-    // Tickets (uncomment when ready)
-    // Route::apiResource('/tickets', TicketController::class);
+    // Tickets
+    Route::apiResource('/tickets', TicketController::class);
+    Route::get('/logs', [LogController::class, 'index']);
 
     Route::prefix('problem-categories')->group(function () {
         Route::get('/', [ProblemCategoryController::class, 'getAll']);

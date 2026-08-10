@@ -52,12 +52,13 @@ import AppHeader from '../components/AppHeader.vue'
 const drawerOpen = ref(true)
 
 const navItems = [
-  { label: 'Dashboard',        icon: 'dashboard',            to: '/admin/dashboard' },
-  { label: 'User Management',  icon: 'manage_accounts',      to: '/admin/users' },
-  { label: 'Tickets',          icon: 'confirmation_number',  to: '/admin/ticket-management' },
-  { label: 'Reports',          icon: 'bar_chart',            to: '/admin/reports' },
-  { label: 'Logs',             icon: 'history',              to: '/admin/logs' },
-  { label: 'Settings',         icon: 'settings',             to: '/admin/settings' },
+  { label: 'Dashboard',           icon: 'dashboard',            to: '/admin/dashboard'           },
+  { label: 'User Management',     icon: 'manage_accounts',      to: '/admin/users'               },
+  { label: 'Tickets',             icon: 'confirmation_number',  to: '/admin/ticket-management'   },
+  { label: 'Problem Categories',  icon: 'category',             to: '/admin/problem-categories'  },
+  { label: 'Reports',             icon: 'bar_chart',            to: '/admin/reports'             },
+  { label: 'Logs',                icon: 'history',              to: '/admin/logs'                },
+  { label: 'Settings',            icon: 'settings',             to: '/admin/settings'            },
 ]
 </script>
 
@@ -65,9 +66,8 @@ const navItems = [
 @import '../css/themes.scss';
 
 .admin-sidebar {
-  background: $clay-surface !important;
-  box-shadow: 4px 0 16px rgba($clay-dark, 0.35) !important;
-  border-right: none !important;
+  background: $min-surface !important;
+  border-right: 1px solid $min-border !important;
 
   &__logo {
     display: flex;
@@ -77,7 +77,7 @@ const navItems = [
     font-family: 'Nunito', 'Quicksand', sans-serif;
     font-weight: 800;
     font-size: 0.95rem;
-    color: $clay-text;
+    color: $min-text;
   }
 
   &__logo-icon {
@@ -89,22 +89,24 @@ const navItems = [
   }
 
   &__item {
-    border-radius: 14px;
-    margin-bottom: 4px;
-    color: $clay-text-soft;
+    border-radius: 8px;
+    margin-bottom: 2px;
+    color: $min-text-soft;
     font-size: 0.88rem;
-    font-weight: 600;
+    font-weight: 500;
     transition: background 0.15s ease, color 0.15s ease;
 
     &:hover {
-      background: rgba($clay-dark, 0.12);
-      color: $clay-text;
+      background: $min-bg;
+      color: $min-text;
     }
 
     &--active {
-      background: $clay-bg !important;
+      background: #f0fdf4 !important;
       color: $accent-login !important;
-      box-shadow: inset 3px 3px 7px $clay-dark, inset -3px -3px 7px $clay-light;
+      font-weight: 600;
+      border-left: 3px solid $accent-login;
+      border-radius: 0 8px 8px 0;
 
       :deep(.q-icon) {
         color: $accent-login !important;

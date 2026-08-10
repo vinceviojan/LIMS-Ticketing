@@ -14,6 +14,7 @@ class Ticket extends Model
 
     protected $fillable = [
         'user_id',
+        'assigned_staff_id',
         'ticket_no',
         'issue',
         'problem_category_id',
@@ -38,6 +39,12 @@ class Ticket extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** Get the staff member assigned to work on this ticket. */
+    public function assignedStaff(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_staff_id');
     }
 
     /**

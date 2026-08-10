@@ -17,7 +17,6 @@
 
       <!-- ── User Info + Dropdown ──────────────────────── -->
       <q-btn flat no-caps class="app-header__user-btn" id="header-user-menu">
-        <q-icon name="account_circle" size="22px" class="q-mr-xs" />
         <span class="app-header__user-name">{{ authStore.userName }}</span>
         <q-icon name="arrow_drop_down" />
 
@@ -28,28 +27,19 @@
           transition-show="jump-down"
           transition-hide="jump-up"
         >
-          <!-- User info row inside menu -->
-          <div class="app-header__menu-info">
-            <div class="app-header__menu-avatar">
-              {{ initials }}
+          <q-list>
+            <!-- User info row inside menu -->
+            <div class="app-header__menu-info">
+              <div class="app-header__menu-avatar">
+                {{ initials }}
+              </div>
+              <div>
+                <p class="app-header__menu-name">{{ authStore.userName }}</p>
+                <p class="app-header__menu-email">{{ authStore.user?.email }}</p>
+              </div>
             </div>
-            <div>
-              <p class="app-header__menu-name">{{ authStore.userName }}</p>
-              <p class="app-header__menu-email">{{ authStore.user?.email }}</p>
-            </div>
-          </div>
 
-          <q-separator class="q-my-sm" />
-
-          <q-list dense>
-            <q-item clickable v-close-popup class="app-header__menu-item" id="header-menu-profile">
-              <q-item-section avatar>
-                <q-icon name="person_outline" size="18px" />
-              </q-item-section>
-              <q-item-section>Profile</q-item-section>
-            </q-item>
-
-            <q-separator class="q-my-xs" />
+            <q-separator class="q-my-sm" />
 
             <q-item
               clickable

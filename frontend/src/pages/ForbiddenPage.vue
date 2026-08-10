@@ -58,33 +58,32 @@ const goHome = () => {
 
 .forbidden-icon {
   font-size: 64px;
-  color: #e74c3c;
-  filter: drop-shadow(2px 2px 4px rgba(#e74c3c, 0.4));
+  color: #ef4444;
 }
 
 .clay-title {
   margin: 0;
   padding: 10px 32px;
-  color: #e74c3c;
+  color: #ef4444;
 }
 
 .forbidden-subtitle {
   font-family: 'Nunito', 'Quicksand', sans-serif;
   font-weight: 800;
   font-size: 1.4rem;
-  color: $clay-text;
+  color: $min-text;
   margin: 0;
 }
 
 .forbidden-text {
   text-align: center;
-  color: $clay-text-soft;
+  color: $min-text-soft;
   font-size: 0.95rem;
   line-height: 1.5;
   margin: 0 0 10px 0;
 }
 
 .clay-btn--home {
-  @include clay-button($clay-text-soft);
+  @include min-button($min-text-soft);
 }
 </style>
