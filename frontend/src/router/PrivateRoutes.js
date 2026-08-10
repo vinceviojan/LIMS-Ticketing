@@ -53,6 +53,11 @@ export const PrivateRoutes = [
         path: 'dashboard',
         name: 'staff-dashboard',
         component: () => import('../pages/Staff/DashboardPage.vue')
+      },
+      {
+        path: 'ticket-management',
+        name: 'staff-tickets',
+        component: () => import('../pages/Staff/TicketManagementPage.vue')
       }
     ]
   },
