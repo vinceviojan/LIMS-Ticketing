@@ -6,6 +6,8 @@ use App\Http\Requests\LoginRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Log;
+use App\Models\Ticket;
 
 class AuthController extends Controller
 {
@@ -37,6 +39,7 @@ class AuthController extends Controller
         $user->tokens()->delete();
         $token = $user->createToken('auth-token')->plainTextToken;
 
+        $this->writeLog($request, $user, null, 'LOGIN', "{$user->name} has logged in.");
         return response()->json([
             'message' => 'Login successful.',
             'token' => $token,
@@ -60,7 +63,10 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
+        $name = $request->user()->name;
         $request->user()->currentAccessToken()->delete();
+
+        $this->writeLog($request, $request->user(), null, 'LOGOUT', "{$name} has logged out.");
 
         return response()->json([
             'message' => 'Logged out successfully.',
@@ -89,4 +95,16 @@ class AuthController extends Controller
             ],
         ], 200);
     }
+
+    private function writeLog(Request $request, $user, $ticket, string $action, string $message): void
+    {
+        Log::create([
+            'user_id' => $user->id,
+            'ticket_id' => $ticket != null ? $ticket->id : null,
+            'action' => $action,
+            'message' => $message,
+            'address' => $request->ip(),
+        ]);
+    }
+
 }
