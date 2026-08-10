@@ -40,16 +40,6 @@
 
           </div>
 
-          <!-- Full Name -->
-          <q-input
-            v-model="form.name"
-            label="Full Name"
-            outlined
-            class="signup-input"
-            :error="!!errors.name"
-            :error-message="errors.name"
-          />
-
           <!-- Email -->
           <q-input
             v-model="form.email"
@@ -141,41 +131,14 @@
 
           </div>
 
-          <!-- Role / Position -->
-          <div class="signup-row">
-
-            <!-- Role -->
-            <q-select
-              v-model="form.role"
-              :options="roleOptions"
-              label="Role"
-              outlined
-              class="signup-input"
-              :error="!!errors.role"
-              :error-message="errors.role"
-            />
-
-            <!-- Position -->
-            <q-input
-              v-model="form.position"
-              label="Position"
-              outlined
-              class="signup-input"
-              :error="!!errors.position"
-              :error-message="errors.position"
-            />
-
-          </div>
-
-          <!-- Status -->
-          <q-select
-            v-model="form.status"
-            :options="statusOptions"
-            label="Status"
+          <!-- Position -->
+          <q-input
+            v-model="form.position"
+            label="Position"
             outlined
             class="signup-input"
-            :error="!!errors.status"
-            :error-message="errors.status"
+            :error="!!errors.position"
+            :error-message="errors.position"
           />
 
           <!-- Signup Button -->
@@ -224,14 +187,11 @@ const router = useRouter()
 const form = reactive({
   first_name: '',
   last_name: '',
-  name: '',
   email: '',
   password: '',
   password_confirmation: '',
   division: '',
   sections: '',
-  status: 'active',
-  role: '',
   position: ''
 })
 
@@ -252,14 +212,11 @@ const showConfirmPassword = ref(false)
 const errors = reactive({
   first_name: '',
   last_name: '',
-  name: '',
   email: '',
   password: '',
   password_confirmation: '',
   division: '',
   sections: '',
-  status: '',
-  role: '',
   position: ''
 })
 
@@ -292,24 +249,6 @@ const sectionOptions = [
 ]
 
 // =========================================
-// Role Options
-// =========================================
-
-const roleOptions = [
-  'Administrator',
-  'User'
-]
-
-// =========================================
-// Status Options
-// =========================================
-
-const statusOptions = [
-  'active',
-  'inactive'
-]
-
-// =========================================
 // Signup
 // =========================================
 
@@ -322,7 +261,6 @@ const signup = async () => {
   })
 
   try {
-    // Temporary test
     console.log('Signup Form:', {
       ...form
     })
@@ -337,19 +275,6 @@ const signup = async () => {
 
   } catch (error) {
     console.error('Signup error:', error)
-
-    /*
-     * Laravel validation errors can be handled here.
-     *
-     * Example:
-     *
-     * if (error.response?.data?.errors) {
-     *   Object.keys(error.response.data.errors).forEach((key) => {
-     *     errors[key] =
-     *       error.response.data.errors[key][0]
-     *   })
-     * }
-     */
   } finally {
     loading.value = false
   }
@@ -367,4 +292,3 @@ const goToLogin = () => {
 <style lang="scss" scoped>
 @import './SignupPage.scss';
 </style>
-

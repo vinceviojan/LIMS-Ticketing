@@ -113,10 +113,18 @@
     font-size: 15px;
 
     font-weight: 600;
+
+    transition:
+        background 0.2s ease,
+        transform 0.1s ease;
 }
 
 .signup-button:hover {
     background: #1565c0;
+}
+
+.signup-button:active {
+    transform: translateY(1px);
 }
 
 /* =========================================
@@ -142,6 +150,8 @@
     color: #1976d2;
 
     font-weight: 600;
+
+    padding: 0 6px;
 }
 
 .login-button:hover {
@@ -187,5 +197,27 @@
 
     .login-section {
         margin-top: 20px;
+    }
+}
+
+/* =========================================
+   Small Mobile Devices
+========================================= */
+
+@media (max-width: 400px) {
+    .signup-page {
+        padding: 12px;
+    }
+
+    .signup-card {
+        padding: 20px;
+    }
+
+    .signup-header h1 {
+        font-size: 22px;
+    }
+
+    .signup-header p {
+        font-size: 13px;
     }
 }
