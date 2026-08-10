@@ -14,7 +14,7 @@ A modernized, monorepo-based web application integrating a robust Laravel backen
 
 ## 🚀 Installation & Setup
 
-Ensure you have **Node.js (>= 22)** and **PHP (Composer)** installed on your system. 
+Ensure you have **Node.js (>= 23)** and **PHP (Composer)** installed on your system. 
 
 1. **Clone the Repository**
    ```bash
@@ -68,7 +68,4 @@ Handy commands built to keep the repository healthy and scalable:
 | **Frontend Framework** | Quasar (Vue 3) | Vite Bundler, Vue Router auto-mounting, Pinia State Management |
 | **API Layer** | Axios | Custom global boot-file interception attached directly to Vue context. |
 | **Backend Framework** | Laravel 11.x | State-of-the-art API token rendering schemas (Sanctum/Bearer). |
-| **Theming** | Pure SCSS | Tokenized dark/light mappings implementing Claymorphism/Glassmorphism |
-
 ---
-*Maintained by: John Vincent Viojan (jviojan08@gmail.com)*

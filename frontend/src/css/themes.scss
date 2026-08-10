@@ -1,5 +1,5 @@
 // ==========================================================================
-// Quasar Theme Variables
+// Minimal UI Theme Variables
 // ==========================================================================
 
 // Brand Colors
@@ -7,8 +7,8 @@ $primary: #006836;
 $secondary: #009747;
 $accent: #F6931E;
 
-$dark: #1D1D1D;
-$dark-page: #121212;
+$dark: #111827;
+$dark-page: #1f2937;
 
 $positive: #009747;
 $negative: #8B1E12;
@@ -16,17 +16,17 @@ $info: #2266B7;
 $warning: #F0C708;
 
 // ==========================================================================
-// Claymorphism Theme
+// Minimal / Flat Theme Tokens
 // ==========================================================================
 
-$clay-bg: #e8f0e8;
-$clay-surface: #f3f7f1;
+$min-bg: #f8f9fa;
+$min-surface: #ffffff;
 
-$clay-light: #ffffff;
-$clay-dark: #b5c7b5;
+$min-border: #e5e7eb;
+$min-border-strong: #d1d5db;
 
-$clay-text: #1d3b28;
-$clay-text-soft: #55735f;
+$min-text: #111827;
+$min-text-soft: #6b7280;
 
 // Accent colors used by buttons
 $accent-login: $primary;
@@ -58,89 +58,41 @@ $weight-bold: 700;
 $weight-black: 900;
 
 // ==========================================================================
-// Clay Mixins
+// Minimal Mixins (Replacing Clay)
 // ==========================================================================
 
-@mixin clay-raised($radius: 24px, $intensity: 1) {
+@mixin min-card($radius: 12px) {
   border-radius: $radius;
-  background: $clay-surface;
-
-  box-shadow:
-    #{8px * $intensity} #{8px * $intensity} #{16px * $intensity} $clay-dark,
-    -#{6px * $intensity} -#{6px * $intensity} #{14px * $intensity} $clay-light;
+  background: $min-surface;
+  border: 1px solid $min-border;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
-@mixin clay-pressed($radius: 24px) {
+@mixin min-pressed($radius: 12px) {
   border-radius: $radius;
-
-  box-shadow:
-    inset 5px 5px 10px $clay-dark,
-    inset -5px -5px 10px $clay-light;
+  background: $min-bg;
+  border: 1px solid $min-border;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-@mixin clay-button($color) {
-  border-radius: 18px;
-
-  background: linear-gradient(
-    145deg,
-    lighten($color, 6%),
-    $color
-  );
-
+@mixin min-button($color) {
+  border-radius: 8px;
+  background: $color;
   color: white;
   border: none;
-
-  box-shadow:
-    6px 6px 14px $clay-dark,
-    -6px -6px 14px $clay-light;
-
-  transition: .18s ease;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
 
   &:hover {
-    box-shadow:
-      4px 4px 10px $clay-dark,
-      -4px -4px 10px $clay-light;
+    background: darken($color, 6%);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
 
+  &:active {
+    background: darken($color, 10%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
     transform: translateY(1px);
-  }
-
-  &:active {
-    box-shadow:
-      inset 4px 4px 8px rgba(0,0,0,.25),
-      inset -4px -4px 8px rgba(255,255,255,.15);
-
-    transform: translateY(2px);
-  }
-}
-
-@mixin clay-orb($size: 44px) {
-  width: $size;
-  height: $size;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  background: $clay-surface;
-
-  color: $clay-text-soft;
-  cursor: pointer;
-
-  box-shadow:
-    5px 5px 10px $clay-dark,
-    -5px -5px 10px $clay-light;
-
-  transition: .18s ease;
-
-  &:hover {
-    color: $clay-text;
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    box-shadow:
-      inset 3px 3px 6px $clay-dark,
-      inset -3px -3px 6px $clay-light;
   }
 }

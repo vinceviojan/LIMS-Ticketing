@@ -1,77 +1,77 @@
 // ==========================================================================
-// Claymorphism theme — Footer (Quasar q-btn / q-input aware)
+// Minimal theme — Footer
 // ==========================================================================
 @import '../css/themes.scss';
 
-.clay-footer {
-  @include clay-raised(28px, 1);
+.site-footer {
+  @include min-card();
   margin: 24px;
   padding: 40px 48px 28px;
   display: flex;
   flex-direction: column;
   gap: 32px;
   font-family: 'Nunito', 'Quicksand', sans-serif;
-  color: $clay-text;
+  color: $min-text;
 }
 
 // ---- Top row: brand + link columns + newsletter -----------------------------
-.clay-footer__top {
+.site-footer__top {
   display: flex;
   flex-wrap: wrap;
   gap: 32px;
   justify-content: space-between;
 }
 
-.clay-footer__brand {
+.site-footer__brand {
   display: flex;
   flex-direction: column;
   gap: 10px;
   max-width: 280px;
 }
 
-.clay-footer__logo {
-  @include clay-pressed(16px);
+.site-footer__logo {
   align-self: flex-start;
-  padding: 8px 20px;
+  padding: 8px 12px;
   margin: 0;
   font-size: 1.15rem;
   font-weight: 800;
   letter-spacing: 0.4px;
+  background: $min-surface;
+  border: 1px solid $min-border;
+  border-radius: 8px;
 }
 
-.clay-footer__tagline {
+.site-footer__tagline {
   margin: 0;
   font-size: 0.9rem;
-  color: $clay-text-soft;
+  color: $min-text-soft;
   line-height: 1.5;
 }
 
 // ---- Link columns --------------------------------------------------------
-.clay-footer__columns {
+.site-footer__columns {
   display: flex;
   gap: 48px;
   flex-wrap: wrap;
 }
 
-.clay-footer__column {
+.site-footer__column {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 130px;
 }
 
-.clay-footer__heading {
+.site-footer__heading {
   margin: 0 0 6px;
   font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: $clay-text-soft;
+  color: $min-text-soft;
 }
 
-// q-btn (flat) used as a text link: strip Quasar's default button chrome
-// and restyle the label itself.
-.clay-footer__link {
+.site-footer__link {
   min-height: 0;
   padding: 6px 0;
   justify-content: flex-start;
@@ -92,7 +92,7 @@
   :deep(.block) {
     font-size: 0.9rem;
     font-weight: 600;
-    color: $clay-text;
+    color: $min-text;
     position: relative;
     transition: color 0.15s ease;
 
@@ -119,29 +119,27 @@
 }
 
 // ---- Newsletter -----------------------------------------------------------
-.clay-footer__newsletter {
+.site-footer__newsletter {
   display: flex;
   flex-direction: column;
   gap: 12px;
   max-width: 260px;
 }
 
-.clay-footer__form {
+.site-footer__form {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-// q-input (borderless, dense): recreate the pressed clay field on the
-// actual field control so the focus ring lands in the right place.
-.clay-footer__input {
+.site-footer__input {
   flex: 1;
   min-width: 0;
 
   :deep(.q-field__control) {
-    @include clay-pressed(14px);
     height: 44px;
-    padding: 0 16px;
+    border-radius: 8px;
+    background: $min-surface;
 
     &::before,
     &::after {
@@ -151,12 +149,12 @@
 
   :deep(.q-field__native),
   :deep(input) {
-    color: $clay-text;
+    color: $min-text;
     font-family: inherit;
     font-size: 0.85rem;
 
     &::placeholder {
-      color: $clay-text-soft;
+      color: $min-text-soft;
     }
   }
 
@@ -165,12 +163,9 @@
   }
 }
 
-// q-btn (round, unelevated) social / submit / back-to-top pills all
-// share the same "clay orb" treatment.
-.clay-footer__submit,
-.clay-footer__social,
-.clay-footer__totop {
-  @include clay-orb(44px);
+.site-footer__submit,
+.site-footer__social,
+.site-footer__totop {
   padding: 0;
 
   :deep(.q-btn__content) {
@@ -182,26 +177,21 @@
   }
 }
 
-.clay-footer__totop {
-  @include clay-orb(40px);
-}
-
 // ---- Socials ---------------------------------------------------------------
-.clay-footer__socials {
+.site-footer__socials {
   display: flex;
-  gap: 14px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 // ---- Divider ----------------------------------------------------------------
-.clay-footer__divider {
-  height: 3px;
-  border-radius: 3px;
-  background: $clay-dark;
-  opacity: 0.35;
+.site-footer__divider {
+  height: 1px;
+  background: $min-border;
 }
 
 // ---- Bottom row: copyright + back to top ------------------------------------
-.clay-footer__bottom {
+.site-footer__bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -209,23 +199,23 @@
   gap: 16px;
 }
 
-.clay-footer__copyright {
+.site-footer__copyright {
   margin: 0;
   font-size: 0.8rem;
-  color: $clay-text-soft;
+  color: $min-text-soft;
 }
 
 // ---- Responsive --------------------------------------------------------------
 @media (max-width: 640px) {
-  .clay-footer {
+  .site-footer {
     padding: 32px 24px 24px;
   }
 
-  .clay-footer__top {
+  .site-footer__top {
     flex-direction: column;
   }
 
-  .clay-footer__columns {
+  .site-footer__columns {
     gap: 28px;
   }
 }

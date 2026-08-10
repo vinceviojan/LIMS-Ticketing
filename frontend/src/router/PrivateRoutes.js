@@ -14,6 +14,31 @@ export const PrivateRoutes = [
         path: 'users',
         name: 'admin-users',
         component: () => import('../pages/Admin/UserPage.vue')
+      },
+      {
+        path: 'ticket-management',
+        name: 'admin-tickets',
+        component: () => import('../pages/Admin/TicketManagementPage.vue')
+      },
+      {
+        path: 'problem-categories',
+        name: 'admin-problem-categories',
+        component: () => import('../pages/Admin/ProblemCategoriesPage.vue')
+      },
+      {
+        path: 'reports',
+        name: 'admin-reports',
+        component: () => import('../pages/Admin/ReportPage.vue')
+      },
+      {
+        path: 'logs',
+        name: 'admin-logs',
+        component: () => import('../pages/Admin/LogsPage.vue')
+      },
+      {
+        path: 'settings',
+        name: 'admin-settings',
+        component: () => import('../pages/Admin/SettingsPage.vue')
       }
     ]
   },

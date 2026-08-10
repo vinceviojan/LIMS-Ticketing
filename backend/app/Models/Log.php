@@ -14,6 +14,7 @@ class Log extends Model
         'user_id',
         'ticket_id',
         'action',
+        'message',
         'address',
     ];
 

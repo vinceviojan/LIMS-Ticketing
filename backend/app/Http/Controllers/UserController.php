@@ -1,0 +1,143 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
+class UserController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     * Supports optional ?search= for name/email filtering.
+     */
+    public function index(Request $request)
+    {
+        $query = User::query();
+
+        if ($search = $request->query('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $users = $query->orderBy('last_name')->get();
+
+        return response()->json($users);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        // Normalise status & role to UPPERCASE before validation
+        $input = $request->all();
+        if (isset($input['status']))
+            $input['status'] = strtoupper($input['status']);
+        if (isset($input['role']))
+            $input['role'] = strtoupper($input['role']);
+
+        $validator = Validator::make($input, [
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+            'division' => ['nullable', 'string', 'max:255'],
+            'sections' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'string', 'in:ACTIVE,INACTIVE,SUSPENDED,ARCHIVED'],
+            'role' => ['nullable', 'string', 'in:USER,STAFF,ADMIN'],
+            'position' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $validator->validated();
+        $data['name'] = trim($data['first_name'] . ' ' . $data['last_name']);
+        $data['password'] = Hash::make($data['password']);
+
+        $user = User::create($data);
+
+        return response()->json($user, 201);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(User $user)
+    {
+        return response()->json($user);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, User $user)
+    {
+        // Normalise status & role to UPPERCASE before validation
+        $input = $request->all();
+        if (isset($input['status']))
+            $input['status'] = strtoupper($input['status']);
+        if (isset($input['role']))
+            $input['role'] = strtoupper($input['role']);
+
+        $validator = Validator::make($input, [
+            'first_name' => ['sometimes', 'required', 'string', 'max:255'],
+            'last_name' => ['sometimes', 'required', 'string', 'max:255'],
+            'email' => [
+                'sometimes',
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($user->id),
+            ],
+            'password' => ['sometimes', 'nullable', 'string', 'min:8'],
+            'division' => ['nullable', 'string', 'max:255'],
+            'sections' => ['nullable', 'string', 'max:255'],
+            'status' => ['nullable', 'string', 'in:ACTIVE,INACTIVE,SUSPENDED,ARCHIVED'],
+            'role' => ['nullable', 'string', 'in:USER,STAFF,ADMIN'],
+            'position' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $validator->validated();
+
+        if (!empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        if (isset($data['first_name']) || isset($data['last_name'])) {
+            $data['name'] = trim(
+                ($data['first_name'] ?? $user->first_name) . ' ' . ($data['last_name'] ?? $user->last_name)
+            );
+        }
+
+        $user->update($data);
+
+        return response()->json($user);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(User $user)
+    {
+        $user->delete();
+
+        return response()->json(null, 204);
+    }
+}

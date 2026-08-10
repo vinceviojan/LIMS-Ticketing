@@ -19,7 +19,13 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:9000', 'http://192.0.0.1:9000', '*'],
+    // Explicit origins required — '*' is invalid when supports_credentials is true
+    'allowed_origins' => [
+        'http://localhost:9000',
+        'http://127.0.0.1:9000',
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+    ],
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +35,7 @@ return [
 
     'max_age' => 0,
 
+    // False for Bearer token auth; only needed for cookie/session-based SPA auth
     'supports_credentials' => false,
 
 ];

@@ -1,13 +1,11 @@
 // ==========================================================================
-// DashboardPage.scss
-// Adjust the import path below to wherever you saved the shared
-// claymorphism tokens & mixins file (the one with $clay-bg, clay-raised(), etc.)
+// DashboardPage.scss - Minimal Theme
 // ==========================================================================
 @import '@/css/themes.scss';
 
 .dashboard-page {
   padding: 32px;
-  background: $clay-bg;
+  background: $min-bg;
   min-height: 100vh;
   align-items: stretch;
   justify-content: flex-start;
@@ -17,7 +15,7 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 24px;
-    color: $clay-text;
+    color: $min-text;
   }
 
   &__toolbar {
@@ -28,81 +26,80 @@
     max-width: 320px;
 
     :deep(.q-field__control) {
-      border-radius: 14px;
-      background: $clay-surface;
-      box-shadow:
-        inset 3px 3px 6px $clay-dark,
-        inset -3px -3px 6px $clay-light;
+      border-radius: 8px;
+      background: #fff;
     }
   }
 }
 
 // ---- Table -----------------------------------------------------------
 .clay-table {
-  @include clay-raised(20px);
+  @include min-card();
   padding: 8px;
-  color: $clay-text;
+  color: $min-text;
 
   :deep(thead tr) {
     background: transparent;
   }
 
   :deep(th) {
-    color: $clay-text-soft;
+    color: $min-text-soft;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 12px;
     letter-spacing: 0.03em;
-    border: none;
+    border-bottom: 1px solid $min-border;
   }
 
   :deep(td) {
-    color: $clay-text;
-    border: none;
+    color: $min-text;
+    border-bottom: 1px solid $min-border-strong;
   }
 
   :deep(tbody tr) {
-    transition: box-shadow 0.18s ease, border-radius 0.18s ease;
+    transition: background 0.15s ease;
 
     &:hover {
-      box-shadow:
-        inset 2px 2px 6px $clay-dark,
-        inset -2px -2px 6px $clay-light;
-      border-radius: 12px;
+      background: $min-bg;
+    }
+
+    // Remove border from last row to avoid double border with table bottom
+    &:last-child td {
+      border-bottom: none;
     }
   }
 
   :deep(.q-table__bottom) {
-    color: $clay-text-soft;
-    border-top: none;
+    color: $min-text-soft;
+    border-top: 1px solid $min-border;
   }
 }
 
 // ---- Buttons -----------------------------------------------------------
 .clay-btn {
   &--login {
-    @include clay-button($accent-login);
+    @include min-button($accent-login);
   }
 
   &--signup {
-    @include clay-button($accent-signup);
+    @include min-button($accent-signup);
   }
 }
 
 // ---- Status badges -------------------------------------------------------
 .status-badge {
-  border-radius: 10px;
+  border-radius: 6px;
   padding: 4px 10px;
   font-weight: 600;
   text-transform: capitalize;
   color: #fff;
 
   &--active {
-    background: $accent-signup;
+    background: $positive;
   }
 
   &--inactive {
-    background: $clay-text-soft;
+    background: $min-text-soft;
   }
 
   &--pending {

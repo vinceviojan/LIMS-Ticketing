@@ -1,23 +1,23 @@
 // ==========================================================================
-// Claymorphism theme — DA + TES Branding
+// Minimal Flat theme — DA + TES Branding
 // ==========================================================================
 
 // ---- Palette --------------------------------------------------------------
-$clay-bg:         #e8f0e8; // soft green page background
-$clay-surface:    #f3f7f1; // raised surface
+$min-bg: #f8f9fa; // nearly white bg
+$min-surface: #ffffff; // flat white surface
 
-$clay-light:      #ffffff;
-$clay-dark:       #b5c7b5;
+$min-border: #e5e7eb;
+$min-border-bold: #d1d5db;
 
-$clay-text:       #1d3b28; // dark forest green
-$clay-text-soft:  #55735f;
+$min-text: #111827; // near black
+$min-text-soft: #6b7280; // neutral gray
 
 // Brand accents
-$accent-login:    #006836; // Department of Agriculture Green
-$accent-signup:   #F6931E; // Harvest Orange
+$accent-login: #006836; // Department of Agriculture Green
+$accent-signup: #F6931E; // Harvest Orange
 
 // Optional extra brand colors
 $brand-secondary: #009747;
-$brand-warning:   #F0C708;
-$brand-info:      #2266B7;
-$brand-danger:    #8B1E12;
+$brand-warning: #F0C708;
+$brand-info: #2266B7;
+$brand-danger: #8B1E12;
