@@ -51,7 +51,7 @@ const drawerOpen = ref(true)
 
 const navItems = [
   { label: 'Dashboard', icon: 'dashboard',             to: '/staff/dashboard' },
-  { label: 'My Tickets', icon: 'confirmation_number',  to: '/staff/tickets'   },
+  { label: 'My Tickets', icon: 'confirmation_number',  to: '/staff/ticket-management'   },
   { label: 'Categories', icon: 'category',             to: '/staff/categories'},
 ]
 </script>
