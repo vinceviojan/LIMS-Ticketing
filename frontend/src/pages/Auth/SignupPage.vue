@@ -1,203 +1,612 @@
 <template>
   <div class="signup-page">
-    <div class="signup-container">
-      <div class="signup-card">
 
-        <!-- Header -->
-        <div class="signup-header">
-          <h1>Sign Up</h1>
-          <p>Create your account to continue</p>
+    <!-- Main Signup Card -->
+    <div class="signup-card">
+
+      <!-- ==========================================================
+           Left Column: Branding / Features
+           ========================================================== -->
+      <div class="login-left-card">
+
+        <!-- Watermark Logo -->
+        <img
+          src="../../assets/bswm-logo-sidebar.png"
+          alt=""
+          class="card-watermark"
+        />
+
+        <!-- Brand Header -->
+        <div class="left-header">
+
+          <div class="brand-mark">
+
+            <img
+              src="../../assets/bswm-logo-sidebar.png"
+              alt="BSWM Logo"
+              class="brand-mark-logo"
+            />
+
+            <span class="brand-mark-title">
+              LIMS Ticketing
+            </span>
+
+          </div>
+
         </div>
 
-        <!-- Signup Form -->
-        <q-form
-          class="signup-form"
-          @submit.prevent="signup"
-        >
+        <!-- Left Body -->
+        <div class="left-body">
 
-          <!-- First Name / Last Name -->
-          <div class="signup-row">
+          <!-- Agency Information -->
+          <div class="brand-title-group">
 
-            <!-- First Name -->
-            <q-input
-              v-model="form.first_name"
-              label="First Name"
-              outlined
-              class="signup-input"
-              :error="!!errors.first_name"
-              :error-message="errors.first_name"
-            />
+            <h1 class="agency-title">
+              Bureau of Soils and Water Management
+            </h1>
 
-            <!-- Last Name -->
-            <q-input
-              v-model="form.last_name"
-              label="Last Name"
-              outlined
-              class="signup-input"
-              :error="!!errors.last_name"
-              :error-message="errors.last_name"
-            />
+            <div class="division-badge">
+
+              <q-icon
+                name="science"
+                size="16px"
+                class="q-mr-xs"
+              />
+
+              <span>
+                Laboratory Services Division
+              </span>
+
+            </div>
 
           </div>
 
-          <!-- Email -->
-          <q-input
-            v-model="form.email"
-            type="email"
-            label="Email Address"
-            outlined
-            class="signup-input"
-            :error="!!errors.email"
-            :error-message="errors.email"
-          />
+          <!-- Features -->
+          <div class="feature-grid">
 
-          <!-- Password -->
-          <q-input
-            v-model="form.password"
-            :type="showPassword ? 'text' : 'password'"
-            label="Password"
-            outlined
-            class="signup-input"
-            :error="!!errors.password"
-            :error-message="errors.password"
-          >
-            <template #append>
-              <q-icon
-                :name="
-                  showPassword
-                    ? 'visibility'
-                    : 'visibility_off'
-                "
-                class="cursor-pointer"
-                @click="showPassword = !showPassword"
-              />
-            </template>
-          </q-input>
+            <!-- Feature 1 -->
+            <div class="feature-card">
 
-          <!-- Confirm Password -->
-          <q-input
-            v-model="form.password_confirmation"
-            :type="
-              showConfirmPassword
-                ? 'text'
-                : 'password'
-            "
-            label="Confirm Password"
-            outlined
-            class="signup-input"
-            :error="!!errors.password_confirmation"
-            :error-message="errors.password_confirmation"
-          >
-            <template #append>
-              <q-icon
-                :name="
-                  showConfirmPassword
-                    ? 'visibility'
-                    : 'visibility_off'
-                "
-                class="cursor-pointer"
-                @click="
-                  showConfirmPassword =
-                    !showConfirmPassword
-                "
-              />
-            </template>
-          </q-input>
+              <div class="feature-icon-wrapper">
+                <q-icon
+                  name="confirmation_number"
+                  size="20px"
+                />
+              </div>
 
-          <!-- Division / Section -->
-          <div class="signup-row">
+              <div class="feature-info">
 
-            <!-- Division -->
-            <q-select
-              v-model="form.division"
-              :options="divisionOptions"
-              label="Division"
-              outlined
-              class="signup-input"
-              :error="!!errors.division"
-              :error-message="errors.division"
-            />
+                <span class="feature-heading">
+                  Seamless Ticket Tracking
+                </span>
 
-            <!-- Section -->
-            <q-select
-              v-model="form.sections"
-              :options="sectionOptions"
-              label="Section"
-              outlined
-              class="signup-input"
-              :error="!!errors.sections"
-              :error-message="errors.sections"
-            />
+                <span class="feature-subtext">
+                  Monitor lab requests end-to-end
+                </span>
+
+              </div>
+
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="feature-card">
+
+              <div class="feature-icon-wrapper">
+                <q-icon
+                  name="verified_user"
+                  size="20px"
+                />
+              </div>
+
+              <div class="feature-info">
+
+                <span class="feature-heading">
+                  User Access Security (UAS)
+                </span>
+
+                <span class="feature-subtext">
+                  Strict compliance & authority standards
+                </span>
+
+              </div>
+
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="feature-card">
+
+              <div class="feature-icon-wrapper">
+                <q-icon
+                  name="bolt"
+                  size="20px"
+                />
+              </div>
+
+              <div class="feature-info">
+
+                <span class="feature-heading">
+                  Real-Time Laboratory Requests
+                </span>
+
+                <span class="feature-subtext">
+                  Instant updates & queue management
+                </span>
+
+              </div>
+
+            </div>
 
           </div>
 
-          <!-- Position -->
-          <q-input
-            v-model="form.position"
-            label="Position"
-            outlined
-            class="signup-input"
-            :error="!!errors.position"
-            :error-message="errors.position"
-          />
-
-          <!-- Signup Button -->
-          <q-btn
-            type="submit"
-            label="Create Account"
-            class="signup-button"
-            unelevated
-            :loading="loading"
-            :disable="loading"
-          />
-
-        </q-form>
-
-        <!-- Login -->
-        <div class="login-section">
-          <span>Already have an account?</span>
-
-          <q-btn
-            flat
-            label="Login"
-            class="login-button"
-            @click="goToLogin"
-          />
         </div>
 
       </div>
+
+      <!-- ==========================================================
+           Right Column: Signup Form
+           ========================================================== -->
+      <div class="login-right-content">
+
+        <div class="form-wrapper">
+
+          <!-- Mobile Branding -->
+          <div class="mobile-brand-header">
+
+            <img
+              src="../../assets/bswm-logo-sidebar.png"
+              alt="BSWM Logo"
+              class="mobile-logo"
+            />
+
+            <span class="mobile-brand-title">
+              LIMS Ticketing
+            </span>
+
+          </div>
+
+          <!-- Signup Header -->
+          <div class="form-header">
+
+            <h1 class="welcome-title">
+              Create an Account
+            </h1>
+
+            <p class="welcome-subtitle">
+              Please enter your details to create your account.
+            </p>
+
+          </div>
+
+          <!-- ======================================================
+               Signup Form
+               ====================================================== -->
+          <q-form
+            @submit.prevent="signup"
+            class="form-body"
+          >
+
+            <!-- First Name / Last Name -->
+            <div class="signup-row">
+
+              <!-- First Name -->
+              <div class="input-group">
+
+                <label class="input-label">
+                  First Name
+                </label>
+
+                <q-input
+                  v-model="form.first_name"
+                  placeholder="First name"
+                  outlined
+                  dense
+                  class="custom-field"
+                  :error="!!errors.first_name"
+                  :error-message="errors.first_name"
+                  :rules="[
+                    (val) =>
+                      !!val ||
+                      'First name is required'
+                  ]"
+                  lazy-rules
+                >
+
+                  <template #prepend>
+                    <q-icon
+                      name="person_outline"
+                      size="xs"
+                      class="field-icon"
+                    />
+                  </template>
+
+                </q-input>
+
+              </div>
+
+              <!-- Last Name -->
+              <div class="input-group">
+
+                <label class="input-label">
+                  Last Name
+                </label>
+
+                <q-input
+                  v-model="form.last_name"
+                  placeholder="Last name"
+                  outlined
+                  dense
+                  class="custom-field"
+                  :error="!!errors.last_name"
+                  :error-message="errors.last_name"
+                  :rules="[
+                    (val) =>
+                      !!val ||
+                      'Last name is required'
+                  ]"
+                  lazy-rules
+                >
+
+                  <template #prepend>
+                    <q-icon
+                      name="person_outline"
+                      size="xs"
+                      class="field-icon"
+                    />
+                  </template>
+
+                </q-input>
+
+              </div>
+
+            </div>
+
+            <!-- Email -->
+            <div class="input-group">
+
+              <label class="input-label">
+                Email Address
+              </label>
+
+              <q-input
+                v-model="form.email"
+                type="email"
+                placeholder="name@bswm.da.gov.ph"
+                outlined
+                dense
+                class="custom-field"
+                :error="!!errors.email"
+                :error-message="errors.email"
+                :rules="[
+                  (val) =>
+                    !!val ||
+                    'Email is required',
+
+                  (val) =>
+                    /.+@.+\..+/.test(val) ||
+                    'Enter a valid email address'
+                ]"
+                lazy-rules
+              >
+
+                <template #prepend>
+                  <q-icon
+                    name="mail_outline"
+                    size="xs"
+                    class="field-icon"
+                  />
+                </template>
+
+              </q-input>
+
+            </div>
+
+            <!-- Password -->
+            <div class="input-group">
+
+              <label class="input-label">
+                Password
+              </label>
+
+              <q-input
+                v-model="form.password"
+                placeholder="••••••••"
+                :type="
+                  showPassword
+                    ? 'text'
+                    : 'password'
+                "
+                outlined
+                dense
+                class="custom-field"
+                :error="!!errors.password"
+                :error-message="errors.password"
+                :rules="[
+                  (val) =>
+                    !!val ||
+                    'Password is required',
+
+                  (val) =>
+                    val.length >= 8 ||
+                    'Password must be at least 8 characters'
+                ]"
+                lazy-rules
+              >
+
+                <template #prepend>
+                  <q-icon
+                    name="lock_outline"
+                    size="xs"
+                    class="field-icon"
+                  />
+                </template>
+
+                <template #append>
+                  <q-icon
+                    :name="
+                      showPassword
+                        ? 'visibility_off'
+                        : 'visibility'
+                    "
+                    class="cursor-pointer field-icon-toggle"
+                    size="xs"
+                    @click="
+                      showPassword =
+                        !showPassword
+                    "
+                  />
+                </template>
+
+              </q-input>
+
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="input-group">
+
+              <label class="input-label">
+                Confirm Password
+              </label>
+
+              <q-input
+                v-model="form.password_confirmation"
+                placeholder="••••••••"
+                :type="
+                  showConfirmPassword
+                    ? 'text'
+                    : 'password'
+                "
+                outlined
+                dense
+                class="custom-field"
+                :error="
+                  !!errors.password_confirmation
+                "
+                :error-message="
+                  errors.password_confirmation
+                "
+                :rules="[
+                  (val) =>
+                    !!val ||
+                    'Please confirm your password',
+
+                  (val) =>
+                    val === form.password ||
+                    'Passwords do not match'
+                ]"
+                lazy-rules
+              >
+
+                <template #prepend>
+                  <q-icon
+                    name="lock_outline"
+                    size="xs"
+                    class="field-icon"
+                  />
+                </template>
+
+                <template #append>
+                  <q-icon
+                    :name="
+                      showConfirmPassword
+                        ? 'visibility_off'
+                        : 'visibility'
+                    "
+                    class="cursor-pointer field-icon-toggle"
+                    size="xs"
+                    @click="
+                      showConfirmPassword =
+                        !showConfirmPassword
+                    "
+                  />
+                </template>
+
+              </q-input>
+
+            </div>
+
+            <!-- Division / Section -->
+            <div class="signup-row">
+
+              <!-- Division -->
+              <div class="input-group">
+
+                <label class="input-label">
+                  Division
+                </label>
+
+                <q-select
+                  v-model="form.division"
+                  :options="divisionOptions"
+                  outlined
+                  dense
+                  class="custom-field"
+                  :error="!!errors.division"
+                  :error-message="errors.division"
+                  :rules="[
+                    (val) =>
+                      !!val ||
+                      'Division is required'
+                  ]"
+                  lazy-rules
+                >
+
+                  <template #prepend>
+                    <q-icon
+                      name="business"
+                      size="xs"
+                      class="field-icon"
+                    />
+                  </template>
+
+                </q-select>
+
+              </div>
+
+              <!-- Section -->
+              <div class="input-group">
+
+                <label class="input-label">
+                  Section
+                </label>
+
+                <q-select
+                  v-model="form.sections"
+                  :options="sectionOptions"
+                  outlined
+                  dense
+                  class="custom-field"
+                  :error="!!errors.sections"
+                  :error-message="errors.sections"
+                  :rules="[
+                    (val) =>
+                      !!val ||
+                      'Section is required'
+                  ]"
+                  lazy-rules
+                >
+
+                  <template #prepend>
+                    <q-icon
+                      name="groups"
+                      size="xs"
+                      class="field-icon"
+                    />
+                  </template>
+
+                </q-select>
+
+              </div>
+
+            </div>
+
+            <!-- Position -->
+            <div class="input-group">
+
+              <label class="input-label">
+                Position
+              </label>
+
+              <q-input
+                v-model="form.position"
+                placeholder="Enter your position"
+                outlined
+                dense
+                class="custom-field"
+                :error="!!errors.position"
+                :error-message="errors.position"
+                :rules="[
+                  (val) =>
+                    !!val ||
+                    'Position is required'
+                ]"
+                lazy-rules
+              >
+
+                <template #prepend>
+                  <q-icon
+                    name="work_outline"
+                    size="xs"
+                    class="field-icon"
+                  />
+                </template>
+
+              </q-input>
+
+            </div>
+
+            <!-- Signup Button -->
+            <div class="action-group">
+
+              <q-btn
+                class="full-width gradient-submit-btn"
+                unelevated
+                type="submit"
+                :loading="loading"
+                :disable="loading"
+              >
+
+                <div
+                  class="row items-center no-wrap justify-center full-width"
+                >
+
+                  <span
+                    class="q-mr-xs text-weight-bold"
+                  >
+                    Create Account
+                  </span>
+
+                  <q-icon
+                    name="arrow_forward"
+                    size="18px"
+                  />
+
+                </div>
+
+              </q-btn>
+
+              <!-- Login Link -->
+              <div
+                class="signup-footer-text text-center q-mt-lg"
+              >
+
+                <span class="text-grey-7">
+                  Already have an account?
+                </span>
+
+                <router-link
+                  to="/login"
+                  class="text-weight-bold link-signup"
+                >
+                  Login
+                </router-link>
+
+              </div>
+
+            </div>
+
+          </q-form>
+
+        </div>
+
+      </div>
+
     </div>
+
   </div>
 </template>
 
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from '../../boot/axios'
 
-// =========================================
-// Router
-// =========================================
+import './SignupPage.scss'
 
 const router = useRouter()
 
-// =========================================
-// Form
-// =========================================
-
-const form = reactive({
-  first_name: '',
-  last_name: '',
-  email: '',
-  password: '',
-  password_confirmation: '',
-  division: '',
-  sections: '',
-  position: ''
-})
-
-// =========================================
+// ==========================================================================
 // State
-// =========================================
+// ==========================================================================
 
 const loading = ref(false)
 
@@ -205,9 +614,24 @@ const showPassword = ref(false)
 
 const showConfirmPassword = ref(false)
 
-// =========================================
+// ==========================================================================
+// Form
+// ==========================================================================
+
+const form = reactive({
+  first_name: '',
+  last_name: '',
+  email: '',
+  password: '',
+  password_confirmation: '',
+  division: null,
+  sections: null,
+  position: ''
+})
+
+// ==========================================================================
 // Validation Errors
-// =========================================
+// ==========================================================================
 
 const errors = reactive({
   first_name: '',
@@ -220,75 +644,130 @@ const errors = reactive({
   position: ''
 })
 
-// =========================================
-// Division Options
-// =========================================
+// ==========================================================================
+// Options
+// ==========================================================================
 
+// Replace these with your actual Division and Section values.
 const divisionOptions = [
-  'Office of the Director',
-  'Office of the Assistant Director',
-  'Office of the Chief'
+  'Laboratory Services Division'
 ]
-
-// =========================================
-// Section Options
-// =========================================
 
 const sectionOptions = [
-  'Soil Chemistry Section',
-  'Soil Microbiology Section',
-  'Soil Physics Section',
-  'Water Chemistry Section',
-  'Rapid Soil Test Section',
-  'Technical Equipment Instrumentation and Maintenance',
-  'Regional Soil Laboratory',
-  'Private Laboratories',
-  'Customer Center',
-  'Document Control',
-  'Others'
+  'Soil Chemistry',
+  'Soil Physics',
+  'Water Chemistry',
+  'Rapid Soil Test',
+  'TEIM',
+  'Customer Center'
 ]
 
-// =========================================
+// ==========================================================================
+// Clear Validation Errors
+// ==========================================================================
+
+const clearErrors = () => {
+  errors.first_name = ''
+  errors.last_name = ''
+  errors.email = ''
+  errors.password = ''
+  errors.password_confirmation = ''
+  errors.division = ''
+  errors.sections = ''
+  errors.position = ''
+}
+
+// ==========================================================================
 // Signup
-// =========================================
+// ==========================================================================
 
 const signup = async () => {
+
+  clearErrors()
+
   loading.value = true
 
-  // Clear previous validation errors
-  Object.keys(errors).forEach((key) => {
-    errors[key] = ''
-  })
-
   try {
-    console.log('Signup Form:', {
-      ...form
+
+    const response = await api.post(
+      '/register',
+      {
+        first_name: form.first_name,
+        last_name: form.last_name,
+        email: form.email,
+        password: form.password,
+        password_confirmation:
+          form.password_confirmation,
+        division: form.division,
+        sections: form.sections,
+        position: form.position
+      }
+    )
+
+    console.log(
+      'Registration successful:',
+      response.data
+    )
+
+    // Redirect to Login
+    router.push({
+      path: '/login',
+      query: {
+        registered: 'true'
+      }
     })
 
-    /*
-     * Your Laravel API request will go here.
-     *
-     * Example:
-     *
-     * await axios.post('/api/register', form)
-     */
-
   } catch (error) {
-    console.error('Signup error:', error)
+
+    console.error(
+      'Registration error:',
+      error
+    )
+
+    // Laravel Validation Error
+    if (
+      error.response?.status === 422
+    ) {
+
+      const validationErrors =
+        error.response.data.errors || {}
+
+      errors.first_name =
+        validationErrors.first_name?.[0] || ''
+
+      errors.last_name =
+        validationErrors.last_name?.[0] || ''
+
+      errors.email =
+        validationErrors.email?.[0] || ''
+
+      errors.password =
+        validationErrors.password?.[0] || ''
+
+      errors.password_confirmation =
+        validationErrors.password_confirmation?.[0] || ''
+
+      errors.division =
+        validationErrors.division?.[0] || ''
+
+      errors.sections =
+        validationErrors.sections?.[0] || ''
+
+      errors.position =
+        validationErrors.position?.[0] || ''
+
+    } else {
+
+      alert(
+        error.response?.data?.message ||
+        'Registration failed. Please try again.'
+      )
+    }
+
   } finally {
+
     loading.value = false
+
   }
 }
-
-// =========================================
-// Go To Login
-// =========================================
-
-const goToLogin = () => {
-  router.push('/login')
-}
 </script>
-
-<style lang="scss" scoped>
-@import './SignupPage.scss';
-</style>
