@@ -12,7 +12,7 @@
         label="Submit a Ticket"
         icon="add_circle_outline"
         unelevated no-caps
-        @click="showDialog = true"
+        @click="openBlankDialog"
       />
     </div>
 
@@ -53,7 +53,7 @@
     <div v-else class="user-dash__empty">
       <q-icon name="confirmation_number" size="52px" color="grey-5" />
       <p>You haven't submitted any tickets yet.</p>
-      <q-btn class="clay-btn clay-btn--primary" label="Submit First Ticket" icon="add" unelevated no-caps @click="showDialog = true" />
+      <q-btn class="clay-btn clay-btn--primary" label="Submit First Ticket" icon="add" unelevated no-caps @click="openBlankDialog" />
     </div>
 
     <!-- ── Help Topics ──────────────────────────────────────────── -->
@@ -70,47 +70,13 @@
     </div>
 
     <!-- ── Submit Ticket Dialog ─────────────────────────────────── -->
-    <q-dialog v-model="showDialog" persistent>
-      <q-card class="user-dash__dialog">
-        <q-card-section class="user-dash__dialog-head">
-          <q-icon name="confirmation_number" size="26px" color="primary" />
-          <span class="user-dash__dialog-title">Submit a Support Ticket</span>
-          <q-space />
-          <q-btn flat round dense icon="close" v-close-popup />
-        </q-card-section>
-
-        <q-separator />
-
-        <q-card-section class="user-dash__dialog-body">
-          <q-input v-model="form.title" label="Subject / Title *" outlined dense class="q-mb-sm"
-            :rules="[val => !!val || 'Required']"
-          />
-          <q-select
-            v-model="form.category"
-            :options="categoryOptions"
-            label="Problem Category *"
-            outlined dense emit-value map-options
-            class="q-mb-sm"
-            :rules="[val => !!val || 'Required']"
-          />
-          <q-input
-            v-model="form.description"
-            label="Describe your issue *"
-            outlined dense
-            type="textarea"
-            rows="4"
-            :rules="[val => !!val || 'Required']"
-          />
-        </q-card-section>
-
-        <q-separator />
-
-        <q-card-actions align="right" class="user-dash__dialog-actions">
-          <q-btn flat no-caps label="Cancel" color="grey-7" v-close-popup />
-          <q-btn unelevated no-caps label="Submit Ticket" class="clay-btn clay-btn--primary" :loading="saving" @click="submitTicket" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <AddTicketModal
+      v-model="showDialog"
+      :category-options="categoryOptions"
+      :priority-options="priorityOptions"
+      :prefill="dialogPrefill"
+      @refresh="fetchTickets"
+    />
 
   </q-page>
 </template>
@@ -120,12 +86,13 @@ import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from '../../stores/auth'
 import { api } from '../../boot/axios'
+import AddTicketModal from '../../components/AddTicketModal.vue'
 
 const $q = useQuasar()
 const authStore = useAuthStore()
 
 const showDialog = ref(false)
-const saving = ref(false)
+const dialogPrefill = ref({})
 
 const firstName = computed(() => {
   const name = authStore.userName ?? ''
@@ -139,7 +106,11 @@ const timeOfDay = computed(() => {
   return 'evening'
 })
 
-const form = ref({ title: '', category: null, priority: 'NORMAL', description: '' })
+const priorityOptions = [
+  { label: 'Low',    value: 'LOW'    },
+  { label: 'Normal', value: 'NORMAL' },
+  { label: 'High',   value: 'HIGH'   },
+]
 
 const categoryOptions = ref([])
 
@@ -179,30 +150,15 @@ const helpTopics = [
   { title: 'Account Access',      icon: 'manage_accounts', desc: 'Password reset, account locked or permission issues.', category: 'Account' },
 ]
 
-function prefillTicket(topic) {
-  const category = categoryOptions.value.find(option => option.label.toLowerCase().includes(topic.category.toLowerCase()))
-  form.value = { title: topic.title, category: category?.value || null, priority: 'NORMAL', description: '' }
+function openBlankDialog() {
+  dialogPrefill.value = {}
   showDialog.value = true
 }
 
-async function submitTicket() {
-  saving.value = true
-  try {
-    await api.post('/tickets', {
-      issue: form.value.title,
-      problem_category_id: form.value.category,
-      description: form.value.description,
-    })
-    await fetchTickets()
-    $q.notify({ type: 'positive', message: 'Your ticket has been submitted!', position: 'top-right', timeout: 2500 })
-    showDialog.value = false
-    form.value = { title: '', category: null, priority: 'NORMAL', description: '' }
-  } catch (error) {
-    console.error('Failed to submit ticket', error)
-    $q.notify({ type: 'negative', message: 'Failed to submit your ticket.' })
-  } finally {
-    saving.value = false
-  }
+function prefillTicket(topic) {
+  const category = categoryOptions.value.find(option => option.label.toLowerCase().includes(topic.category.toLowerCase()))
+  dialogPrefill.value = { title: topic.title, category: category?.value || null }
+  showDialog.value = true
 }
 </script>
 
@@ -266,44 +222,6 @@ async function submitTicket() {
     gap: 12px;
     color: $min-text-soft;
     margin-bottom: 32px;
-  }
-
-  &__dialog {
-    @include min-card();
-    width: 500px;
-    max-width: 95vw;
-    padding: 0;
-  }
-
-  &__dialog-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 20px 20px 12px;
-    border-bottom: 1px solid $min-border;
-  }
-
-  &__dialog-title {
-    font-size: 1rem;
-    font-weight: 800;
-    color: $min-text;
-    font-family: 'Nunito', sans-serif;
-  }
-
-  &__dialog-body {
-    padding: 20px;
-    
-    :deep(.q-field__control) {
-      border-radius: 8px;
-    }
-  }
-
-  &__dialog-actions {
-    padding: 12px 16px 16px;
-    gap: 10px;
-    background: $min-bg;
-    border-top: 1px solid $min-border;
-    border-radius: 0 0 12px 12px;
   }
 }
 

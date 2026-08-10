@@ -59,9 +59,6 @@ const props = defineProps({
   categoryOptions: { type: Array, default: () => [] },
   staffOptions: { type: Array, default: () => [] },
   priorityOptions: { type: Array, default: () => [] },
-  // Optional values to seed the form with when the dialog opens,
-  // e.g. { title: 'Laptop / Hardware', category: 3 }
-  prefill: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['update:modelValue', 'refresh'])
@@ -82,7 +79,6 @@ function emptyForm() {
     assigned_staff_id: null,
     upload_intralab: null,
     upload_limsportal: null,
-    ...props.prefill,
   }
 }
 
@@ -127,7 +123,3 @@ async function submitTicket() {
   }
 }
 </script>
-
-<style scoped>
-/* Scoped styles if any. Uses global classes from TicketManagementPage.scss for now */
-</style>

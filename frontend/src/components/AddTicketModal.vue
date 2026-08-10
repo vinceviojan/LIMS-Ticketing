@@ -11,7 +11,14 @@
       <q-separator />
 
       <q-card-section class="ticket-page__dialog-body">
-        <q-input v-model="form.title" label="Subject / Title *" outlined dense class="q-mb-sm"
+        <!-- ── Requester (auto-filled, read-only) ────────────── -->
+        <div class="ticket-page__form-row">
+          <q-input :model-value="requesterName" label="Requester" outlined dense readonly />
+          <q-input :model-value="requesterEmail" label="Email" outlined dense readonly />
+        </div>
+        <q-input :model-value="requesterOffice" label="Division / Office" outlined dense readonly class="q-mt-sm" />
+
+        <q-input v-model="form.title" label="Subject / Title *" outlined dense class="q-mt-sm q-mb-sm"
           :rules="[val => !!val || 'Required']" />
         <q-input v-model="form.description" label="Description *" outlined dense type="textarea" rows="3" class="q-mb-sm"
           :rules="[val => !!val || 'Required']" />
@@ -59,9 +66,6 @@ const props = defineProps({
   categoryOptions: { type: Array, default: () => [] },
   staffOptions: { type: Array, default: () => [] },
   priorityOptions: { type: Array, default: () => [] },
-  // Optional values to seed the form with when the dialog opens,
-  // e.g. { title: 'Laptop / Hardware', category: 3 }
-  prefill: { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['update:modelValue', 'refresh'])
@@ -70,6 +74,16 @@ const $q = useQuasar()
 const authStore = useAuthStore()
 
 const isAdmin = computed(() => authStore.userRole === 'admin')
+
+// ── Auto-filled requester info from the logged-in user ─────────
+// Adjust the property names below (authStore.user.*) to match your
+// actual auth store / user object shape if they differ.
+const requesterName = computed(() => {
+  const u = authStore.user || {}
+  return u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—'
+})
+const requesterEmail = computed(() => authStore.user?.email || '—')
+const requesterOffice = computed(() => authStore.user?.office || authStore.user?.division || '—')
 
 const saving = ref(false)
 
@@ -82,7 +96,6 @@ function emptyForm() {
     assigned_staff_id: null,
     upload_intralab: null,
     upload_limsportal: null,
-    ...props.prefill,
   }
 }
 
@@ -127,7 +140,3 @@ async function submitTicket() {
   }
 }
 </script>
-
-<style scoped>
-/* Scoped styles if any. Uses global classes from TicketManagementPage.scss for now */
-</style>
