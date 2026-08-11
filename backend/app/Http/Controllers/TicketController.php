@@ -12,23 +12,122 @@ use Illuminate\Validation\Rule;
 
 class TicketController extends Controller
 {
+    /** Columns actually needed by the list views (card/table). */
+    private const LIST_COLUMNS = [
+        'id',
+        'ticket_no',
+        'issue',
+        'description',
+        'urgency',
+        'status',
+        'user_id',
+        'assigned_staff_id',
+        'problem_category_id',
+        'upload_intralab',
+        'upload_limsportal',
+        'date_submitted',
+        'created_at',
+    ];
+
     /**
-     * Display a listing of the tickets.
+     * Display a listing of the tickets (admin/staff-wide view, scoped for USER role).
      */
     public function index(Request $request)
     {
-        $query = Ticket::with(['user', 'assignedStaff', 'problemCategory']);
+        $baseQuery = Ticket::query();
 
         if ($request->user()->role === 'USER') {
-            $query->where('user_id', $request->user()->id);
+            $baseQuery->where('user_id', $request->user()->id);
         }
 
-        if ($request->has('status')) {
+        return $this->paginateTickets($request, $baseQuery);
+    }
+
+    /**
+     * Display tickets assigned to the authenticated staff member.
+     */
+    public function getTickets(Request $request)
+    {
+        $baseQuery = Ticket::where('assigned_staff_id', $request->user()->id);
+
+        return $this->paginateTickets($request, $baseQuery);
+    }
+
+    /**
+     * Shared list/filter/paginate logic for index() and getTickets().
+     *
+     * Perf notes vs. the old implementation:
+     * - 1 grouped query for status tab counts instead of 5x clone()->count()
+     * - only the columns the list UI needs are selected, on the ticket
+     *   and on each eager-loaded relation
+     * - real server-side pagination (capped per_page) instead of an
+     *   unbounded `all=true` ->get() escape hatch
+     * - ordered by created_at + id, which matches the composite index
+     *   added in the accompanying migration
+     */
+    private function paginateTickets(Request $request, $baseQuery)
+    {
+        $counts = (clone $baseQuery)
+            ->selectRaw('status, count(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        $statusCounts = [
+            'ALL' => $counts->sum(),
+            'OPEN' => $counts->get('OPEN', 0),
+            'ESCALATED' => $counts->get('ESCALATED', 0),
+            'CLOSE' => $counts->get('CLOSE', 0),
+            'CANCEL' => $counts->get('CANCEL', 0),
+        ];
+
+        $query = (clone $baseQuery)
+            ->select(self::LIST_COLUMNS)
+            ->with([
+                'user:id,first_name,last_name,name',
+                'assignedStaff:id,first_name,last_name,name',
+                'problemCategory:id,categories',
+            ]);
+
+        if ($request->filled('status') && strtoupper($request->status) !== 'ALL') {
             $query->where('status', strtoupper($request->status));
         }
 
-        $tickets = $query->orderBy('created_at', 'desc')->get();
-        return response()->json($tickets);
+        if ($request->filled('urgency')) {
+            $query->where('urgency', strtoupper($request->urgency));
+        } elseif ($request->filled('priority')) {
+            $query->where('urgency', strtoupper($request->priority));
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('ticket_no', 'like', "{$search}%") // prefix match, index-friendly
+                    ->orWhere('issue', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($uq) use ($search) {
+                        $uq->where('first_name', 'like', "%{$search}%")
+                            ->orWhere('last_name', 'like', "%{$search}%")
+                            ->orWhere('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('problemCategory', function ($cq) use ($search) {
+                        $cq->where('categories', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $query->orderByDesc('created_at')->orderByDesc('id');
+
+        $perPage = min((int) $request->get('per_page', 10), 10);
+        $paginated = $query->paginate($perPage);
+
+        return response()->json([
+            'data' => $paginated->items(),
+            'current_page' => $paginated->currentPage(),
+            'last_page' => $paginated->lastPage(),
+            'per_page' => $paginated->perPage(),
+            'total' => $paginated->total(),
+            'status_counts' => $statusCounts,
+        ]);
     }
 
     /**
@@ -67,7 +166,7 @@ class TicketController extends Controller
         // Generate Ticket Number: STP-<YEAR>-0001
         $data['ticket_no'] = DB::transaction(function () {
             $year = date('Y');
-            $prefix = "STP-{$year}-";
+            $prefix = "STN-{$year}-";
 
             // Find the highest ticket number for this year
             $latest = Ticket::where('ticket_no', 'like', "{$prefix}%")
@@ -111,6 +210,20 @@ class TicketController extends Controller
             ->where('assigned_staff_id', $user->id)
             ->latest()
             ->get();
+        return response()->json($tickets);
+    }
+
+    public function getOpenTickets(Request $request)
+    {
+        $tickets = Ticket::with([
+            'user',
+            'assignedStaff',
+            'problemCategory',
+        ])
+            ->where('status', 'OPEN')
+            ->latest()
+            ->get();
+
         return response()->json($tickets);
     }
 

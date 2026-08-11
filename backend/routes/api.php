@@ -15,6 +15,7 @@ use App\Http\Controllers\AdminController;
 | Auth Routes (Public)
 |--------------------------------------------------------------------------
 */
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [SignupController::class, 'store']);
 Route::middleware('auth:sanctum')->group(function () {
@@ -22,12 +23,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
+    Route::post('/update-password', [UserController::class, 'updatePassword']);
+
     Route::apiResource('users', UserController::class);
 
     // Tickets
     Route::apiResource('/tickets', TicketController::class);
     Route::get('/tickets/{ticket}/attachment/{type}', [TicketController::class, 'attachment']);
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
+    Route::get('/getOpenTickets', [TicketController::class, 'getOpenTickets']);
     Route::get('/logs', [LogController::class, 'index']);
 
     Route::middleware('role:ADMIN')->prefix('admin')->group(function () {

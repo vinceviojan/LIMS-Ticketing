@@ -4,8 +4,8 @@
 
       <!-- ── Brand / Logo ─────────────────────────────── -->
       <div class="app-header__brand">
-        <q-icon name="science" class="app-header__logo-icon" />
-        <span class="app-header__title">LIMS Ticketing</span>
+        <img src="../assets/bswm-logo-sidebar.png" alt="BSWM Logo" class="brand-mark-logo" />
+        <span class="app-header__title">LIMS Helpdesk</span>
       </div>
 
       <q-space />

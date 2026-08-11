@@ -24,6 +24,7 @@ class AuthController extends Controller
             ], 401);
         }
 
+        /** @var User $user */
         $user = Auth::user();
 
         // Check if the user account is active
@@ -104,5 +105,4 @@ class AuthController extends Controller
             'address' => $request->ip(),
         ]);
     }
-
 }
