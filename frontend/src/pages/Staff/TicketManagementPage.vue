@@ -172,7 +172,7 @@ import './TicketManagementPage.scss'
 const $q = useQuasar()
 
 // ── State ────────────────────────────────────────────────────
-const loading = ref(false)
+const loading = ref(true)
 const search  = ref('')
 const filterPriority = ref(null)
 const activeTab = ref('ALL')
