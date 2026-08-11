@@ -1,6 +1,5 @@
 <template>
   <q-page class="staff-dash">
-
     <!-- ── Welcome ─────────────────────────────────────────────── -->
     <div class="staff-dash__welcome">
       <div>
@@ -12,7 +11,12 @@
 
     <!-- ── Stats ───────────────────────────────────────────────── -->
     <div class="staff-dash__stats">
-      <div v-for="stat in stats" :key="stat.label" class="staff-stat" :class="`staff-stat--${stat.color}`">
+      <div
+        v-for="stat in stats"
+        :key="stat.label"
+        class="staff-stat"
+        :class="`staff-stat--${stat.color}`"
+      >
         <div class="staff-stat__icon-wrap">
           <q-icon :name="stat.icon" size="24px" />
         </div>
@@ -23,45 +27,75 @@
       </div>
     </div>
 
-    <!-- ── Ticket Queue ─────────────────────────────────────────── -->
-    <div class="staff-dash__section-title">My Assigned Tickets</div>
+    <!-- ── Open Ticket Queue ────────────────────────────────────── -->
+    <div class="staff-dash__section-title">Unassigned Tickets</div>
+    <q-table
+      :rows="tickets"
+      :columns="ticketColumns"
+      row-key="id"
+      flat
+      bordered
+      class="staff-queue q-mt-md"
+    >
+      <template #body="props">
+        <q-tr :props="props" class="cursor-pointer" @click="openTicketModal(props.row)">
+          <!-- Ticket ID -->
+          <q-td key="id" :props="props">
+            {{ props.row.id }}
+          </q-td>
 
-    <div class="staff-queue">
-      <div
-        v-for="ticket in assignedTickets"
-        :key="ticket.id"
-        class="staff-queue__item"
-        :class="`staff-queue__item--${ticket.priority.toLowerCase()}`"
-      >
-        <div class="staff-queue__priority-dot" :class="`staff-queue__priority-dot--${ticket.priority.toLowerCase()}`" />
-        <div class="staff-queue__body">
-          <div class="staff-queue__title">{{ ticket.title }}</div>
-          <div class="staff-queue__meta">
-            <q-icon name="person" size="13px" />
-            {{ ticket.requester }} &nbsp;·&nbsp;
-            <q-icon name="category" size="13px" />
-            {{ ticket.category }} &nbsp;·&nbsp;
-            {{ ticket.created }}
+          <!-- Title -->
+          <q-td key="title" :props="props">
+            {{ props.row.issue }}
+          </q-td>
+
+          <!-- Requester -->
+          <q-td key="requester" :props="props">
+            {{ props.row.user?.name ?? '—' }}
+          </q-td>
+
+          <!-- Category -->
+          <q-td key="category" :props="props">
+            {{ props.row.problem_category?.categories ?? '—' }}
+          </q-td>
+
+          <!-- Priority -->
+          <q-td key="priority" :props="props">
+            <q-badge
+              :color="getPriorityColor(props.row.urgency)"
+              :label="props.row.urgency ?? '—'"
+            />
+          </q-td>
+
+          <!-- Status -->
+          <q-td key="status" :props="props">
+            <q-badge color="primary" :label="props.row.status" />
+          </q-td>
+
+          <!-- Created -->
+          <q-td key="created" :props="props">
+            {{ props.row.created }}
+          </q-td>
+        </q-tr>
+      </template>
+
+      <!-- Empty State -->
+      <template #no-data>
+        <div class="full-width row flex-center q-pa-lg text-grey">
+          <div class="text-center">
+            <q-icon name="task_alt" size="48px" color="positive" />
+            <div class="q-mt-sm">All tickets resolved — great work!</div>
           </div>
         </div>
-        <div class="staff-queue__actions">
-          <span :class="['staff-queue__status', `staff-queue__status--${ticket.status.toLowerCase()}`]">
-            {{ ticket.status }}
-          </span>
-          <q-btn flat dense icon="task_alt" size="sm" color="positive" @click="resolve(ticket)">
-            <q-tooltip>Mark Resolved</q-tooltip>
-          </q-btn>
-          <q-btn flat dense icon="arrow_forward_ios" size="sm" color="primary">
-            <q-tooltip>View Details</q-tooltip>
-          </q-btn>
-        </div>
-      </div>
+      </template>
+    </q-table>
 
-      <div v-if="assignedTickets.length === 0" class="staff-dash__empty">
-        <q-icon name="task_alt" size="48px" color="positive" />
-        <p>All tickets resolved — great work!</p>
-      </div>
-    </div>
+    <!-- ── Ticket Details Modal ─────────────────────────────────── -->
+    <GetTicketModal
+      v-model="showTicketModal"
+      :ticket="selectedTicket"
+      :priority-options="priority"
+    />
 
     <!-- ── Category Browse ──────────────────────────────────────── -->
     <div class="staff-dash__section-title">Browse Problem Categories</div>
@@ -73,16 +107,28 @@
         </div>
       </div>
     </div>
-
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed, inject } from 'vue'
+import { ref, computed, inject, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
+import { api } from '../../boot/axios'
+import GetTicketModal from '@/components/GetTicketModal.vue'
 
 const $q = useQuasar()
 const authStore = inject('authStore')
+
+const showTicketModal = ref(false)
+const selectedTicket = ref(null)
+const loading = ref(false)
+
+async function openTicketModal(ticket) {
+  selectedTicket.value = ticket
+  showTicketModal.value = true
+
+  console.log('Viewing ticket:', selectedTicket.value)
+}
 
 const firstName = computed(() => {
   const name = authStore.userName ?? ''
@@ -97,36 +143,153 @@ const timeOfDay = computed(() => {
 })
 
 const currentDate = computed(() =>
-  new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+  new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }),
 )
 
-const assignedTickets = ref([
-  { id: 1001, title: 'Laptop not turning on',          requester: 'Juan dela Cruz', category: 'Hardware', priority: 'HIGH',    status: 'OPEN',    created: 'Aug 9' },
-  { id: 1002, title: 'Cannot access LIMS portal',      requester: 'Maria Santos',   category: 'Software', priority: 'CRITICAL', status: 'OPEN',    created: 'Aug 9' },
-  { id: 1003, title: 'Slow internet in Lab 3',         requester: 'Pedro Reyes',    category: 'Network',  priority: 'MEDIUM',  status: 'PENDING', created: 'Aug 8' },
-  { id: 1006, title: 'Software installation request',  requester: 'Rosa Lim',       category: 'Software', priority: 'LOW',     status: 'OPEN',    created: 'Aug 10' },
-])
+const assignedTickets = ref([])
+const tickets = ref([])
 
 const stats = computed(() => [
-  { label: 'Assigned',  icon: 'inbox',          value: assignedTickets.value.length,                                                    color: 'blue'   },
-  { label: 'Open',      icon: 'radio_button_unchecked', value: assignedTickets.value.filter(t => t.status === 'OPEN').length,     color: 'orange' },
-  { label: 'Pending',   icon: 'pending_actions', value: assignedTickets.value.filter(t => t.status === 'PENDING').length,               color: 'yellow' },
-  { label: 'Resolved',  icon: 'task_alt',        value: 8,                                                                              color: 'green'  },
+  { label: 'Assigned', icon: 'inbox', value: assignedTickets.value.length, color: 'blue' },
+  {
+    label: 'Open',
+    icon: 'radio_button_unchecked',
+    value: assignedTickets.value.filter((t) => t.status === 'OPEN').length,
+    color: 'orange',
+  },
+  {
+    label: 'Pending',
+    icon: 'pending_actions',
+    value: assignedTickets.value.filter((t) => t.status === 'PENDING').length,
+    color: 'yellow',
+  },
+  {
+    label: 'Resolved',
+    icon: 'task_alt',
+    value: assignedTickets.value.filter((t) => t.status === 'RESOLVED').length,
+    color: 'green',
+  },
+  {
+    label: 'Unassigned',
+    icon: 'person_off',
+    value: tickets.value.filter((t) => t.status === 'OPEN' && t.assigned_staff_id === null).length,
+    color: 'orange',
+  },
 ])
 
 const categories = ref([
-  { type: 'Hardware', items: ['Laptop Issue', 'Printer Problem', 'Monitor Fault', 'Peripheral Device'] },
-  { type: 'Software', items: ['OS Crash', 'Application Error', 'Installation Request', 'Update Issue'] },
-  { type: 'Network',  items: ['Slow Connection', 'No Internet', 'VPN Problem', 'Wi-Fi Issue'] },
-  { type: 'Account',  items: ['Password Reset', 'Access Request', 'Account Lock'] },
+  {
+    type: 'Hardware',
+    items: ['Laptop Issue', 'Printer Problem', 'Monitor Fault', 'Peripheral Device'],
+  },
+  {
+    type: 'Software',
+    items: ['OS Crash', 'Application Error', 'Installation Request', 'Update Issue'],
+  },
+  { type: 'Network', items: ['Slow Connection', 'No Internet', 'VPN Problem', 'Wi-Fi Issue'] },
+  { type: 'Account', items: ['Password Reset', 'Access Request', 'Account Lock'] },
 ])
 
-function resolve(ticket) {
-  ticket.status = 'RESOLVED'
-  const idx = assignedTickets.value.indexOf(ticket)
-  setTimeout(() => assignedTickets.value.splice(idx, 1), 800)
-  $q.notify({ type: 'positive', message: `Ticket #${ticket.id} marked as resolved.`, position: 'top-right', timeout: 2000 })
+const priority = ref(['LOW', 'NORMAL', 'HIGH'])
+
+const ticketColumns = [
+  { name: 'id', label: 'Ticket ID', field: 'id', align: 'left', sortable: true },
+  { name: 'title', label: 'Title', field: 'issue', align: 'left', sortable: true },
+  {
+    name: 'requester',
+    label: 'Requester',
+    field: (row) => row.user?.name ?? '—',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'category',
+    label: 'Category',
+    field: (row) => row.problem_category?.categories ?? '—',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'priority',
+    label: 'Priority',
+    field: (row) => row.urgency ?? '—',
+    align: 'center',
+    sortable: true,
+  },
+  { name: 'status', label: 'Status', field: 'status', align: 'center', sortable: true },
+]
+
+function getPriorityColor(priority) {
+  switch (priority) {
+    case 'HIGH':
+      return 'orange'
+    case 'NORMAL':
+      return 'warning'
+    case 'LOW':
+      return 'positive'
+    default:
+      return 'grey'
+  }
 }
+
+// ── Lifecycle ────────────────────────────────────────────────
+onMounted(async () => {
+  await fetchAssignedTickets()
+  await fetchTickets()
+})
+
+async function fetchAssignedTickets() {
+  loading.value = true
+  try {
+    const userId = authStore.user?.id
+
+    const res = await api.get('/getTickets', {
+      params: {
+        user_id: userId,
+      },
+    })
+    const data = res.data?.data || res.data || []
+
+    assignedTickets.value = data
+  } catch (err) {
+    console.error('Failed to load tickets', err)
+    $q.notify({ type: 'negative', message: 'Failed to load tickets.' })
+  } finally {
+    loading.value = false
+  }
+}
+
+async function fetchTickets() {
+  loading.value = true
+  try {
+    const res = await api.get('/getOpenTickets')
+    const data = res.data?.data || res.data || []
+
+    tickets.value = data
+  } catch (err) {
+    console.error('Failed to load tickets', err)
+    $q.notify({ type: 'negative', message: 'Failed to load tickets.' })
+  } finally {
+    loading.value = false
+  }
+}
+
+// function resolve(ticket) {
+//   ticket.status = 'RESOLVED'
+//   const idx = assignedTickets.value.indexOf(ticket)
+//   setTimeout(() => assignedTickets.value.splice(idx, 1), 800)
+//   $q.notify({
+//     type: 'positive',
+//     message: `Ticket #${ticket.id} marked as resolved.`,
+//     position: 'top-right',
+//     timeout: 2000,
+//   })
+// }
 </script>
 
 <style lang="scss" scoped>
@@ -200,7 +363,10 @@ function resolve(ticket) {
   align-items: center;
   gap: 14px;
   transition: transform 0.18s ease;
-  &:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
 
   &__icon-wrap {
     width: 46px;
@@ -229,10 +395,26 @@ function resolve(ticket) {
     margin-top: 3px;
   }
 
-  &--blue   .staff-stat__icon-wrap { background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; }
-  &--orange .staff-stat__icon-wrap { background: #fff7ed; color: #f97316; border: 1px solid #fed7aa; }
-  &--yellow .staff-stat__icon-wrap { background: #fefce8; color: #eab308; border: 1px solid #fef08a; }
-  &--green  .staff-stat__icon-wrap { background: #f0fdf4; color: $positive; border: 1px solid #bbf7d0; }
+  &--blue .staff-stat__icon-wrap {
+    background: #eff6ff;
+    color: #3b82f6;
+    border: 1px solid #bfdbfe;
+  }
+  &--orange .staff-stat__icon-wrap {
+    background: #fff7ed;
+    color: #f97316;
+    border: 1px solid #fed7aa;
+  }
+  &--yellow .staff-stat__icon-wrap {
+    background: #fefce8;
+    color: #eab308;
+    border: 1px solid #fef08a;
+  }
+  &--green .staff-stat__icon-wrap {
+    background: #f0fdf4;
+    color: $positive;
+    border: 1px solid #bbf7d0;
+  }
 }
 
 // ── Ticket Queue ──────────────────────────────────────────────
@@ -250,13 +432,25 @@ function resolve(ticket) {
     transition: background 0.15s ease;
     border-left: 4px solid transparent;
 
-    &:last-child { border-bottom: none; }
-    &:hover { background: $min-bg; }
+    &:last-child {
+      border-bottom: none;
+    }
+    &:hover {
+      background: $min-bg;
+    }
 
-    &--low      { border-left-color: $min-text-soft; }
-    &--medium   { border-left-color: #f59e0b; }
-    &--high     { border-left-color: $accent-login; }
-    &--critical { border-left-color: #ef4444; }
+    &--low {
+      border-left-color: $min-text-soft;
+    }
+    &--medium {
+      border-left-color: #f59e0b;
+    }
+    &--high {
+      border-left-color: $accent-login;
+    }
+    &--critical {
+      border-left-color: #ef4444;
+    }
   }
 
   &__priority-dot {
@@ -265,13 +459,23 @@ function resolve(ticket) {
     border-radius: 50%;
     flex-shrink: 0;
 
-    &--low      { background: $min-text-soft; }
-    &--medium   { background: #f59e0b; }
-    &--high     { background: $accent-login; }
-    &--critical { background: #ef4444; }
+    &--low {
+      background: $min-text-soft;
+    }
+    &--medium {
+      background: #f59e0b;
+    }
+    &--high {
+      background: $accent-login;
+    }
+    &--critical {
+      background: #ef4444;
+    }
   }
 
-  &__body { flex: 1; }
+  &__body {
+    flex: 1;
+  }
 
   &__title {
     font-size: 0.9rem;
@@ -302,10 +506,18 @@ function resolve(ticket) {
     text-transform: uppercase;
     color: #fff;
 
-    &--open    { background: $accent-login; }
-    &--pending { background: #f59e0b; }
-    &--resolved { background: $positive; }
-    &--closed  { background: $min-text-soft; }
+    &--open {
+      background: $accent-login;
+    }
+    &--pending {
+      background: #f59e0b;
+    }
+    &--resolved {
+      background: $positive;
+    }
+    &--closed {
+      background: $min-text-soft;
+    }
   }
 }
 
@@ -344,6 +556,6 @@ function resolve(ticket) {
   color: $min-text-soft;
   background: $min-surface;
   border: 1px solid $min-border;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 </style>
