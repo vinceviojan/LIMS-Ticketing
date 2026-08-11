@@ -10,6 +10,7 @@
 
       <q-separator />
 
+      <q-form @submit="submitTicket">
       <q-card-section class="ticket-page__dialog-body">
         <!-- ── Requester (auto-filled, read-only) ────────────── -->
         <div class="ticket-page__form-row">
@@ -39,9 +40,15 @@
           label="Assign Staff"
           outlined dense clearable emit-value map-options class="q-mt-sm"
         />
-        <div class="ticket-page__form-row q-mt-sm">
-          <q-file v-model="form.upload_intralab" label="Intralab Attachment" outlined dense clearable />
-          <q-file v-model="form.upload_limsportal" label="LIMS Portal Attachment" outlined dense clearable />
+        <div class="q-mt-md">
+          <div class="row q-col-gutter-sm">
+            <div class="col-12 col-md-6">
+              <q-file v-model="form.upload_intralab" label="Upload Intralab Attachment" outlined dense clearable accept=".pdf, image/*" />
+            </div>
+            <div class="col-12 col-md-6">
+              <q-file v-model="form.upload_limsportal" label="Upload LIMS Portal Attachment" outlined dense clearable accept=".pdf, image/*" />
+            </div>
+          </div>
         </div>
       </q-card-section>
 
@@ -49,8 +56,9 @@
 
       <q-card-actions align="right" class="ticket-page__dialog-actions">
         <q-btn flat no-caps label="Cancel" color="grey-7" @click="closeModal" />
-        <q-btn unelevated no-caps label="Submit Ticket" class="clay-btn clay-btn--primary" :loading="saving" @click="submitTicket" />
+        <q-btn unelevated no-caps type="submit" label="Submit Ticket" class="clay-btn clay-btn--primary" :loading="saving" />
       </q-card-actions>
+      </q-form>
     </q-card>
   </q-dialog>
 </template>
@@ -133,8 +141,13 @@ async function submitTicket() {
     closeModal()
     emit('refresh')
   } catch (err) {
-    console.error('Failed to save ticket', err)
-    $q.notify({ type: 'negative', message: 'Failed to save ticket. Please check fields.' })
+    console.error('Failed to save ticket', err.response?.data || err)
+    const msg = err.response?.data?.message || 'Failed to save ticket. Please check fields.'
+    let errs = ''
+    if (err.response?.data?.errors) {
+      errs = Object.values(err.response.data.errors).flat().join(' ')
+    }
+    $q.notify({ type: 'negative', message: msg + ' ' + errs })
   } finally {
     saving.value = false
   }

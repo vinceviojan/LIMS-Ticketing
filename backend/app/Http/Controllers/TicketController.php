@@ -98,7 +98,7 @@ class TicketController extends Controller
         return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory', 'logs']));
     }
 
-    public function getTickets(Request $request) 
+    public function getTickets(Request $request)
     {
         $user = $request->user();
 
@@ -107,9 +107,9 @@ class TicketController extends Controller
             'assignedStaff',
             'problemCategory',
         ])
-        ->where('assigned_staff_id', $user->id)
-        ->latest()
-        ->get();
+            ->where('assigned_staff_id', $user->id)
+            ->latest()
+            ->get();
         return response()->json($tickets);
     }
 
@@ -212,5 +212,28 @@ class TicketController extends Controller
         }
 
         return $request->file($field)->store('ticket-attachments', 'public');
+    }
+
+    /**
+     * Download or view an attachment for the given ticket.
+     */
+    public function attachment(Request $request, Ticket $ticket, $type)
+    {
+        $this->ensureTicketAccess($request, $ticket);
+
+        $field = 'upload_' . $type;
+
+        if (!in_array($field, ['upload_intralab', 'upload_limsportal'])) {
+            abort(404, 'Invalid attachment type.');
+        }
+
+        $path = $ticket->$field;
+
+        if (!$path || !Storage::disk('public')->exists($path)) {
+            abort(404, 'Attachment not found.');
+        }
+
+        $fullPath = storage_path('app/public/' . $path);
+        return response()->file($fullPath);
     }
 }
