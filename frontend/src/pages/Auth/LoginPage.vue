@@ -11,7 +11,7 @@
         <div class="left-header">
           <div class="brand-mark">
             <img src="../../assets/bswm-logo-sidebar.png" alt="BSWM Logo" class="brand-mark-logo" />
-            <span class="brand-mark-title">LIMS Ticketing</span>
+            <span class="brand-mark-title">LIMS Helpdesk</span>
           </div>
         </div>
 

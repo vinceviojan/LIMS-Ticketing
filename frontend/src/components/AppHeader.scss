@@ -23,9 +23,12 @@
     gap: 10px;
 }
 
-.app-header__logo-icon {
-    font-size: 26px;
-    color: $accent-login;
+// BSWM Logo
+.brand-mark-logo {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    display: block;
 }
 
 .app-header__title {
@@ -93,7 +96,9 @@
     border-radius: 8px;
     background: $min-surface;
     border: 1px solid $min-border;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
     overflow: hidden;
     min-width: 240px;
 }
@@ -185,7 +190,7 @@
 }
 
 .app-header__dialog-actions {
-    padding: 8px 16px 8px;
+    padding: 8px 16px;
     gap: 10px;
 }
 
