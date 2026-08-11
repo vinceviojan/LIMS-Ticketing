@@ -16,7 +16,10 @@ export const useAuthStore = defineStore('auth', () => {
     // ---------------------------------------------------------------------------
     const isAuthenticated = computed(() => !!token.value)
     const userRole = computed(() => user.value?.role?.toLowerCase() || null)
-    const userName = computed(() => user.value?.name || '')
+    const userName = computed(() => {
+        if (!user.value) return ''
+        return `${user.value.first_name || ''} ${user.value.last_name || ''}`.trim()
+    })
 
     // ---------------------------------------------------------------------------
     // Actions
