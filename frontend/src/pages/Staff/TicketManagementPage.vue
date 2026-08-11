@@ -164,9 +164,7 @@ import { useQuasar } from 'quasar'
 import { api } from '../../boot/axios'
 import TicketModal from '../../components/TicketModal.vue'
 import './TicketManagementPage.scss'
-// import { useAuthStore } from '../../stores/auth'
 const $q = useQuasar()
-// const authStore = useAuthStore()
 
 // ── State ────────────────────────────────────────────────────
 const loading = ref(false)

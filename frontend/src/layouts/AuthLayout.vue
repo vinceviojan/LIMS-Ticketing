@@ -7,6 +7,11 @@
 </template>
 
 <script setup>
+import { provide } from 'vue'
+import { useAuthStore } from '../stores/auth'
+
+const authStore = useAuthStore()
+provide('authStore', authStore)
 </script>
 
 <style scoped>

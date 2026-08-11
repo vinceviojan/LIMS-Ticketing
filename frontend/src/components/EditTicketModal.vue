@@ -67,15 +67,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useQuasar } from 'quasar'
+import { ref, watch, computed, inject } from 'vue'
 import { api } from '../boot/axios'
-import { useAuthStore } from '../stores/auth'
+import { useQuasar } from 'quasar'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
-  ticket: { type: Object, default: () => null },
-  mode: { type: String, default: 'view' },
+  ticket:     { type: Object, default: () => ({}) },
   categoryOptions: { type: Array, default: () => [] },
   staffOptions: { type: Array, default: () => [] },
   priorityOptions: { type: Array, default: () => [] },
@@ -84,7 +82,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'update:mode', 'refresh'])
 
 const $q = useQuasar()
-const authStore = useAuthStore()
+const authStore = inject('authStore')
 
 const isAdmin = computed(() => authStore.userRole === 'admin')
 

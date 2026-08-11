@@ -35,13 +35,13 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { inject } from 'vue'
 
 const router = useRouter()
-const authStore = useAuthStore()
+const authStore = inject('authStore', null)
 
 const goHome = () => {
-    const role = authStore.userRole
+    const role = authStore?.userRole || (JSON.parse(localStorage.getItem('user') || '{}')?.role || '').toLowerCase()
     if (role === 'admin') return router.push('/admin/dashboard')
     if (role === 'staff') return router.push('/staff/dashboard')
     if (role === 'user') return router.push('/user/dashboard')
