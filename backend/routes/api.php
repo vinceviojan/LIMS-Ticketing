@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Tickets
     Route::apiResource('/tickets', TicketController::class);
+    Route::get('/tickets/{ticket}/attachment/{type}', [TicketController::class, 'attachment']);
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
     Route::get('/logs', [LogController::class, 'index']);
 

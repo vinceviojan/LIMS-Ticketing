@@ -294,8 +294,6 @@ onMounted(fetchCategories)
 <style lang="scss" scoped>
 @import '@/css/themes.scss';
 
-@import '@/css/themes.scss';
-
 .pc-page {
   padding: 32px;
   background: $min-bg;

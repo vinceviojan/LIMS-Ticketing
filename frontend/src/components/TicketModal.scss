@@ -1,0 +1,151 @@
+// ─────────────────────────────────────────────────────────────
+// Shared styles for AddTicketModal.vue / EditTicketModal.vue
+// Import with: @import '@/css/TicketModal.scss';
+// ─────────────────────────────────────────────────────────────
+@import '../css/themes.scss';
+
+.ticket-page__dialog {
+  @include min-card();
+  width: 560px;
+  max-width: 95vw;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ticket-page__dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid $min-border;
+}
+
+.ticket-page__dialog-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: $min-text;
+  font-family: 'Nunito', sans-serif;
+}
+
+.ticket-page__dialog-body {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+
+  :deep(.q-field__control) {
+    border-radius: 8px;
+  }
+}
+
+.ticket-page__form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ticket-page__dialog-actions {
+  padding: 12px 16px 16px;
+  gap: 10px;
+  background: $min-bg;
+  border-top: 1px solid $min-border;
+  border-radius: 0 0 12px 12px;
+}
+
+.ticket-page__status-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid $min-border;
+}
+
+// ── Ticket Detail (view mode) ───────────────────────────────────
+.ticket-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 20px;
+
+  &__row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+
+    &--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  &__label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $min-text-soft;
+  }
+
+  &__value {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: $min-text;
+    word-break: break-word;
+  }
+
+  &__desc {
+    font-size: 0.86rem;
+    color: $min-text;
+    line-height: 1.55;
+    margin: 0;
+    white-space: pre-wrap;
+  }
+
+  a {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: $accent-login;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// ── Status / priority chips (shared with ticket cards & tables) ─
+.ticket-card__status {
+  display: inline-block;
+  width: fit-content;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+
+  &--open      { background: $accent-login; }
+  &--escalated { background: #f59e0b; }
+  &--close     { background: $positive; }
+  &--cancel    { background: $min-text-soft; }
+  &--pending   { background: #f59e0b; }
+  &--resolved  { background: $positive; }
+}
+
+.ticket-card__priority {
+  display: inline-block;
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $min-text-soft;
+  background: $min-surface;
+  border: 1px solid $min-border;
+}
+
+// ── Buttons used inside the modal actions ───────────────────────
+.clay-btn {
+  &--primary { @include min-button($accent-login); }
+}
