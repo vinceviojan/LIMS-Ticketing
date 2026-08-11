@@ -144,15 +144,19 @@
       <p>No tickets found</p>
     </div>
 
-    <!-- ── View/Create Dialog ──────────────────────────────────── -->
-    <TicketModal 
-      v-model="showDialog" 
-      :ticket="selectedTicket" 
-      v-model:mode="modalMode" 
-      :category-options="categoryOptions" 
-      :staff-options="staffOptions" 
+    <!-- ── Create Dialog ───────────────────────────────────────── -->
+    <AddTicketModal
+      v-model="showAddDialog"
+      :category-options="categoryOptions"
+      :staff-options="staffOptions"
       :priority-options="priorityOptions"
       @refresh="fetchTickets"
+    />
+
+    <!-- ── View Dialog (read-only) ─────────────────────────────── -->
+    <ViewTicketModal
+      v-model="showViewDialog"
+      :ticket="selectedTicket"
     />
 
   </q-page>
@@ -162,7 +166,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from '../../boot/axios'
-import TicketModal from '../../components/TicketModal.vue'
+import AddTicketModal from '../../components/AddTicketModal.vue'
+import ViewTicketModal from '../../components/ViewTicketModal.vue'
 import './TicketManagementPage.scss'
 const $q = useQuasar()
 
@@ -172,8 +177,8 @@ const search  = ref('')
 const filterPriority = ref(null)
 const activeTab = ref('ALL')
 const displayMode = ref('card')
-const showDialog = ref(false)
-const modalMode = ref('create')
+const showAddDialog = ref(false)
+const showViewDialog = ref(false)
 const selectedTicket = ref(null)
 
 const priorityOptions = [
@@ -225,7 +230,7 @@ async function fetchStaff() {
 async function fetchTickets() {
   loading.value = true
   try {
-    const res = await api.get('/getTickets')
+    const res = await api.get('/tickets')
     const data = res.data?.data || res.data || []
 
     // Map backend array to UI properties internally
@@ -279,17 +284,11 @@ function tabCount(status) {
 
 // ── Actions ─────────────────────────────────────────────────
 function openCreateDialog() {
-  modalMode.value = 'create'
-  selectedTicket.value = null
-  showDialog.value = true
+  showAddDialog.value = true
 }
 
 function viewTicket(ticket) {
-  modalMode.value = 'view'
   selectedTicket.value = ticket
-  showDialog.value = true
+  showViewDialog.value = true
 }
 </script>
-
-<style lang="scss" scoped>
-</style>
