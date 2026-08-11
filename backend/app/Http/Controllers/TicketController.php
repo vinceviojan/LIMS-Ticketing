@@ -113,6 +113,20 @@ class TicketController extends Controller
         return response()->json($tickets);
     }
 
+    public function getOpenTickets(Request $request)
+    {
+        $tickets = Ticket::with([
+            'user',
+            'assignedStaff',
+            'problemCategory',
+        ])
+            ->where('status', 'OPEN')
+            ->latest()
+            ->get();
+
+        return response()->json($tickets);
+    }
+
     /**
      * Update the specified ticket in storage.
      */
