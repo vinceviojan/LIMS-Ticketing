@@ -210,6 +210,21 @@
         text-transform: uppercase;
     }
 
+    &__role {
+        width: 72px;
+        padding: 3px 7px;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.66rem;
+        font-weight: 700;
+        flex-shrink: 0;
+
+        &--admin { color: #1d4ed8; background: #dbeafe; }
+        &--staff { color: #7e22ce; background: #f3e8ff; }
+        &--user { color: #047857; background: #d1fae5; }
+        &--system { color: #475569; background: #e2e8f0; }
+    }
+
     &__msg {
         flex: 1;
         color: $min-text;

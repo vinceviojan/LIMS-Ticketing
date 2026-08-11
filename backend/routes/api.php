@@ -32,10 +32,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tickets/{ticket}/attachment/{type}', [TicketController::class, 'attachment']);
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
     Route::get('/getOpenTickets', [TicketController::class, 'getOpenTickets']);
-    Route::get('/logs', [LogController::class, 'index']);
-
     Route::middleware('role:ADMIN')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
+        Route::get('/logs', [LogController::class, 'index']);
     });
 
     Route::prefix('problem-categories')->group(function () {
