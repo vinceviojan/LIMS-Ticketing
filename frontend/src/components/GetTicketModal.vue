@@ -15,8 +15,8 @@
       <!-- Ticket Information -->
       <q-card-section v-if="props.ticket">
         <q-input
-          label="Ticket ID"
-          :model-value="props.ticket.id"
+          label="Ticket Number"
+          :model-value="props.ticket.ticket_no"
           readonly
           outlined
           class="q-mb-md"
@@ -43,6 +43,16 @@
           :model-value="props.ticket.problem_category.categories"
           readonly
           outlined
+          class="q-mb-md"
+        />
+
+        <q-input
+          label="Description"
+          :model-value="props.ticket.description"
+          readonly
+          outlined
+          type="textarea"
+          autogrow
           class="q-mb-md"
         />
 
