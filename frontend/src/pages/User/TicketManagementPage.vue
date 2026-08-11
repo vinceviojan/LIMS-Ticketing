@@ -3,8 +3,8 @@
     <!-- ── Header ──────────────────────────────────────────────── -->
     <div class="row items-center justify-between q-mb-lg">
       <div>
-        <div class="text-h5 text-weight-bolder text-dark">Ticket Management</div>
-        <div class="text-caption text-grey-7 q-mt-xs">Review, assign and resolve support tickets</div>
+        <div class="text-h5 text-weight-bolder text-dark">My Tickets</div>
+        <div class="text-caption text-grey-7 q-mt-xs">Submit and track your support tickets</div>
       </div>
       <q-btn
         color="primary"
@@ -107,30 +107,23 @@
       :tickets="filteredTickets"
       :displayMode="displayMode"
       :loading="loading"
-      :readonly="false"
-      :selectable="true"
+      :readonly="true"
       @view-ticket="viewTicket"
-      @edit-ticket="editTicket"
     />
 
     <!-- ── Create Dialog ───────────────────────────────────────── -->
     <AddTicketModal
       v-model="showAddDialog"
       :category-options="categoryOptions"
-      :staff-options="staffOptions"
+      :staff-options="[]"
       :priority-options="priorityOptions"
       @refresh="fetchTickets"
     />
 
-    <!-- ── View/Edit Dialog ────────────────────────────────────── -->
-    <EditTicketModal
-      v-model="showEditDialog"
+    <!-- ── View Dialog (read-only) ─────────────────────────────── -->
+    <ViewTicketModal
+      v-model="showViewDialog"
       :ticket="selectedTicket"
-      v-model:mode="modalMode"
-      :category-options="categoryOptions"
-      :staff-options="staffOptions"
-      :priority-options="priorityOptions"
-      @refresh="fetchTickets"
     />
 
   </q-page>
@@ -141,24 +134,30 @@ import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from '../../boot/axios'
 import AddTicketModal from '../../components/AddTicketModal.vue'
-import EditTicketModal from '../../components/EditTicketModal.vue'
+import ViewTicketModal from '../../components/ViewTicketModal.vue'
 import TicketListView from '../../components/TicketListView.vue'
 import './TicketManagementPage.scss'
 const $q = useQuasar()
 
-// ── State ────────────────────────────────────────────────────
+// State 
 const loading = ref(true)
 const search  = ref('')
 const filterPriority = ref(null)
 const filterCategory = ref(null)
 const sortBy = ref('newest')
-
 const activeTab = ref('ALL')
 const displayMode = ref('table')
 const showAddDialog = ref(false)
-const showEditDialog = ref(false)
-const modalMode = ref('view')
+const showViewDialog = ref(false)
 const selectedTicket = ref(null)
+
+const sortOptions = [
+  { label: 'Newest First', value: 'newest' },
+  { label: 'Oldest First', value: 'oldest' },
+  { label: 'Ticket # (A-Z)', value: 'ticket_asc' },
+  { label: 'Title (A-Z)', value: 'title_asc' },
+  { label: 'Priority (High to Low)', value: 'priority_desc' }
+]
 
 const priorityOptions = [
   { label: 'Low',      value: 'LOW'      },
@@ -166,16 +165,7 @@ const priorityOptions = [
   { label: 'High',     value: 'HIGH'     },
 ]
 
-const sortOptions = [
-  { label: 'Newest First',          value: 'newest'        },
-  { label: 'Oldest First',          value: 'oldest'        },
-  { label: 'Ticket # (A-Z)',        value: 'ticket_asc'    },
-  { label: 'Title (A-Z)',           value: 'title_asc'     },
-  { label: 'Priority (High->Low)',  value: 'priority_desc' }
-]
-
 const categoryOptions = ref([])
-const staffOptions = ref([])
 const tickets = ref([])
 
 const statusTabs = [
@@ -189,7 +179,6 @@ const statusTabs = [
 // ── Lifecycle ────────────────────────────────────────────────
 onMounted(async () => {
   await fetchCategories()
-  await fetchStaff()
   await fetchTickets()
 })
 
@@ -203,23 +192,12 @@ async function fetchCategories() {
   }
 }
 
-async function fetchStaff() {
-  try {
-    const { data } = await api.get('/users')
-    staffOptions.value = (data.data || data || [])
-      .filter(user => user.role === 'STAFF')
-      .map(user => ({ label: user.name || `${user.first_name} ${user.last_name}`, value: user.id }))
-  } catch (err) {
-    console.error('Failed to load staff', err)
-  }
-}
-
 async function fetchTickets() {
   loading.value = true
   try {
     const res = await api.get('/tickets')
     const data = res.data?.data || res.data || []
-    
+
     // Map backend array to UI properties internally
     tickets.value = data.map(t => ({
       id: t.id,
@@ -247,14 +225,12 @@ async function fetchTickets() {
   }
 }
 
-// ── Computed & Watchers ───────────────────────────────────────
+// ── Computed ─────────────────────────────────────────────────
 const filteredTickets = computed(() => {
-  let data = [...tickets.value]
-  
+  let data = tickets.value
   if (activeTab.value !== 'ALL') data = data.filter(t => t.status === activeTab.value)
   if (filterPriority.value) data = data.filter(t => t.priority === filterPriority.value)
-  if (filterCategory.value) data = data.filter(t => t.problem_category_id === filterCategory.value || t.category === filterCategory.value)
-  
+  if (filterCategory.value) data = data.filter(t => t.category === filterCategory.value)
   if (search.value) {
     const q = search.value.toLowerCase()
     data = data.filter(t =>
@@ -265,7 +241,6 @@ const filteredTickets = computed(() => {
     )
   }
 
-  // Sorting
   if (sortBy.value === 'newest') {
     data.sort((a, b) => new Date(b.created) - new Date(a.created))
   } else if (sortBy.value === 'oldest') {
@@ -295,69 +270,12 @@ function resetFilters() {
   sortBy.value = 'newest'
 }
 
-// ── Actions ─────────────────────────────────────────────────
 function openCreateDialog() {
   showAddDialog.value = true
 }
 
 function viewTicket(ticket) {
-  modalMode.value = 'view'
   selectedTicket.value = ticket
-  showEditDialog.value = true
-}
-
-function editTicket(ticket) {
-  modalMode.value = 'edit'
-  selectedTicket.value = ticket
-  showEditDialog.value = true
+  showViewDialog.value = true
 }
 </script>
-
-<style scoped>
-.border-radius-8 {
-  border-radius: 8px;
-}
-.border-radius-12 {
-  border-radius: 12px;
-}
-.uppercase-header th {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.75rem;
-}
-
-.ticket-card {
-  border-radius: 14px;
-  border: 1px solid #dbe2ea;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  height: 210px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.ticket-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.03) !important;
-  border-color: #cbd5e1;
-}
-
-.dashed-top {
-  border-top: 1px dashed #e2e8f0;
-}
-
-.status-tag,
-.priority-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 6px;
-  border: 1px solid;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  line-height: 1.2;
-}
-</style>

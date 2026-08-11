@@ -84,6 +84,11 @@ export const PrivateRoutes = [
         component: () => import('../pages/User/DashboardPage.vue')
       },
       {
+        path: 'ticket-management',
+        name: 'user-tickets',
+        component: () => import('../pages/User/TicketManagementPage.vue')
+      },
+      {
         path: 'settings',
         name: 'user-settings',
         component: () => import('../pages/User/SettingsPage.vue')
