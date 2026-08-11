@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -66,6 +67,8 @@ class UserController extends Controller
 
         $user = User::create($data);
 
+        $this->writeLog($request, 'CREATE', "User #{$user->id} created: {$user->first_name} {$user->last_name} ({$user->email}), role {$user->role}.");
+
         return response()->json($user, 201);
     }
 
@@ -101,6 +104,7 @@ class UserController extends Controller
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
             'password' => ['sometimes', 'nullable', 'string', 'min:8'],
+            'current_password' => ['sometimes', 'required', 'current_password:sanctum'],
             'division' => ['nullable', 'string', 'max:255'],
             'sections' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', 'string', 'in:ACTIVE,INACTIVE,SUSPENDED,ARCHIVED'],
@@ -113,6 +117,8 @@ class UserController extends Controller
         }
 
         $data = $validator->validated();
+        $passwordChanged = !empty($data['password']);
+        unset($data['current_password']);
 
         if (!empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
@@ -126,7 +132,22 @@ class UserController extends Controller
             );
         }
 
+        $trackedFields = ['first_name', 'last_name', 'email', 'division', 'sections', 'status', 'role', 'position'];
+        $original = $user->only($trackedFields);
         $user->update($data);
+
+        $changes = [];
+        foreach ($user->getChanges() as $field => $value) {
+            if (in_array($field, $trackedFields, true)) {
+                $changes[] = "{$field} changed from '" . ($original[$field] ?? '') . "' to '" . ($value ?? '') . "'";
+            }
+        }
+        if ($passwordChanged) {
+            $changes[] = 'password changed';
+        }
+        if ($changes) {
+            $this->writeLog($request, 'UPDATE', "User #{$user->id} ({$user->email}) updated: " . implode(', ', $changes) . '.');
+        }
 
         return response()->json($user);
     }
@@ -134,10 +155,22 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
+        $message = "User #{$user->id} deleted: {$user->first_name} {$user->last_name} ({$user->email}), role {$user->role}.";
+        $this->writeLog($request, 'DELETE', $message);
         $user->delete();
 
         return response()->json(null, 204);
+    }
+
+    private function writeLog(Request $request, string $action, string $message): void
+    {
+        Log::create([
+            'user_id' => $request->user()->id,
+            'action' => $action,
+            'message' => $message,
+            'address' => $request->ip(),
+        ]);
     }
 }
