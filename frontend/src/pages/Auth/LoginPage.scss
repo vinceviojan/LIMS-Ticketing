@@ -1,6 +1,3 @@
-// ==========================================================================
-// Responsive Full-Page Theme — Login screen
-// ==========================================================================
 @import '../../css/themes.scss';
 
 // Full Screen Page Container
@@ -34,7 +31,7 @@
   }
 }
 
-// ---- Left Inner Rounded Card (Corporate Branding) -----------------------
+// Left Inner Rounded Card (Corporate Branding)
 .login-left-card {
   flex: 1.15;
   height: calc(100vh - 32px);
@@ -353,6 +350,7 @@
   .field-icon-toggle {
     color: #94a3b8;
     transition: color 0.2s ease;
+
     &:hover {
       color: #1e3a63;
     }
@@ -379,7 +377,7 @@
       background-color: #ffffff;
       box-shadow: 0 0 0 4px rgba(30, 58, 99, 0.1);
     }
-    
+
     .q-field__control:after {
       border-color: #1e3a63;
       border-width: 2px;

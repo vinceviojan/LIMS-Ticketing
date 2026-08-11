@@ -1,46 +1,52 @@
 <template>
-  <q-page class="ticket-page">
-
+  <q-page class="ticket-page q-pa-lg bg-grey-1">
     <!-- ── Header ──────────────────────────────────────────────── -->
-    <div class="ticket-page__header">
+    <div class="row items-center justify-between q-mb-lg">
       <div>
-        <div class="text-h5 ticket-page__title">Ticket Management</div>
-        <div class="ticket-page__subtitle">Review, assign and resolve support tickets</div>
+        <div class="text-h5 text-weight-bolder text-dark">Ticket Management</div>
+        <div class="text-caption text-grey-7 q-mt-xs">Review, assign and resolve support tickets</div>
       </div>
       <q-btn
-        class="clay-btn clay-btn--primary"
+        color="primary"
         label="New Ticket"
         icon="add_circle_outline"
         unelevated
         no-caps
+        class="border-radius-8 text-weight-bold"
         @click="openCreateDialog"
       />
     </div>
 
     <!-- ── Status Tabs ─────────────────────────────────────────── -->
-    <div class="ticket-page__tabs">
-      <button
+    <div class="row q-gutter-sm q-mb-lg">
+      <q-btn
         v-for="tab in statusTabs"
         :key="tab.value"
-        class="ticket-page__tab"
-        :class="{ 'ticket-page__tab--active': activeTab === tab.value }"
-        @click="onTabChange(tab.value)"
+        :color="activeTab === tab.value ? 'primary' : 'grey-8'"
+        :flat="activeTab !== tab.value"
+        :unelevated="activeTab === tab.value"
+        no-caps
+        class="border-radius-8 text-weight-bold"
+        style="padding: 4px 16px;"
+        @click="activeTab = tab.value"
       >
-        <q-icon :name="tab.icon" size="16px" />
+        <q-icon :name="tab.icon" size="18px" class="q-mr-sm" />
         {{ tab.label }}
-        <span class="ticket-page__tab-count">{{ tabCount(tab.value) }}</span>
-      </button>
+        <q-badge :color="activeTab === tab.value ? 'white' : 'grey-3'" :text-color="activeTab === tab.value ? 'primary' : 'grey-8'" class="q-ml-sm text-weight-bolder">
+          {{ tabCount(tab.value) }}
+        </q-badge>
+      </q-btn>
     </div>
 
     <!-- ── Toolbar ─────────────────────────────────────────────── -->
-    <div class="ticket-page__toolbar">
+    <div class="row items-center q-gutter-md q-mb-lg flex-wrap">
       <q-input
         v-model="search"
         dense outlined clearable
         placeholder="Search tickets..."
-        class="ticket-page__search"
-        @update:model-value="onSearchInput"
-        @clear="onSearchInput"
+        bg-color="white"
+        class="col-12 col-sm-auto border-radius-8"
+        style="min-width: 240px;"
       >
         <template #prepend><q-icon name="search" /></template>
       </q-input>
@@ -51,122 +57,59 @@
         label="Priority"
         dense outlined clearable
         emit-value map-options
-        class="ticket-page__filter"
-        @update:model-value="onPriorityChange"
-        @clear="onPriorityChange"
+        bg-color="white"
+        class="col-12 col-sm-auto border-radius-8"
+        style="min-width: 150px;"
+      />
+
+      <q-select
+        v-model="filterCategory"
+        :options="categoryOptions"
+        label="Category"
+        dense outlined clearable
+        emit-value map-options
+        bg-color="white"
+        class="col-12 col-sm-auto border-radius-8"
+        style="min-width: 170px;"
+      />
+
+      <q-select
+        v-model="sortBy"
+        :options="sortOptions"
+        label="Sort By"
+        dense outlined
+        emit-value map-options
+        bg-color="white"
+        class="col-12 col-sm-auto border-radius-8"
+        style="min-width: 190px;"
+      />
+
+      <q-btn
+        v-if="search || filterPriority || filterCategory || sortBy !== 'newest'"
+        flat dense no-caps
+        color="negative"
+        icon="restart_alt"
+        label="Reset"
+        class="q-px-sm border-radius-8"
+        @click="resetFilters"
       />
 
       <q-space />
 
-      <q-btn-group outline class="ticket-page__view-toggle">
-        <q-btn :color="displayMode === 'card' ? 'primary' : 'grey-7'" :outline="displayMode !== 'card'" unelevated icon="grid_view" @click="displayMode = 'card'" />
-        <q-btn :color="displayMode === 'table' ? 'primary' : 'grey-7'" :outline="displayMode !== 'table'" unelevated icon="list" @click="displayMode = 'table'" />
+      <q-btn-group outline class="bg-white border-radius-8">
+        <q-btn :color="displayMode === 'card' ? 'primary' : 'grey-7'" :flat="displayMode !== 'card'" unelevated icon="grid_view" @click="displayMode = 'card'" />
+        <q-btn :color="displayMode === 'table' ? 'primary' : 'grey-7'" :flat="displayMode !== 'table'" unelevated icon="list" @click="displayMode = 'table'" />
       </q-btn-group>
     </div>
 
-    <!-- ── Ticket Views ────────────────────────────────────────── -->
-    <template v-if="!loading && tickets.length">
-      <!-- Grid View -->
-      <div v-if="displayMode === 'card'" class="ticket-page__grid">
-        <div
-          v-for="ticket in tickets"
-          :key="ticket.id"
-          class="ticket-card"
-          :class="`ticket-card--${ticket.priority?.toLowerCase()}`"
-          @click="viewTicket(ticket)"
-        >
-          <div class="ticket-card__top">
-            <span class="ticket-card__id">{{ ticket.ticket_no || '#' + ticket.id }}</span>
-            <span class="ticket-card__priority">{{ ticket.priority }}</span>
-          </div>
-          <div class="ticket-card__title">{{ ticket.title }}</div>
-          <div class="ticket-card__description">{{ ticket.description || 'No description provided.' }}</div>
-          <div class="ticket-card__meta">
-            <q-icon name="person" size="13px" />
-            {{ ticket.requester }}
-            <q-icon name="category" size="13px" class="q-ml-sm" />
-            {{ ticket.category }}
-            <q-icon name="support_agent" size="13px" class="q-ml-sm" />
-            {{ ticket.assignedStaff || 'Unassigned' }}
-            <q-icon v-if="ticket.hasAttachments" name="attach_file" size="13px" class="q-ml-sm" />
-          </div>
-          <div class="ticket-card__footer">
-            <span :class="['ticket-card__status', `ticket-card__status--${ticket.status?.toLowerCase()}`]">
-              {{ ticket.status }}
-            </span>
-            <span class="ticket-card__date">{{ ticket.created }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Table View -->
-      <div v-else-if="displayMode === 'table'" class="ticket-page__table-wrap">
-        <table class="mini-table">
-          <thead>
-            <tr>
-              <th>Ticket #</th>
-              <th>Title</th>
-              <th>Description</th>
-              <th>Requester</th>
-              <th>Assigned Staff</th>
-              <th>Category</th>
-              <th>Priority</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Files</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="ticket in tickets" :key="ticket.id" @click="viewTicket(ticket)" class="cursor-pointer">
-              <td class="mini-table__id">{{ ticket.ticket_no || '#' + ticket.id }}</td>
-              <td class="mini-table__title"><strong>{{ ticket.title }}</strong></td>
-              <td>{{ ticket.description || '—' }}</td>
-              <td>{{ ticket.requester }}</td>
-              <td>{{ ticket.assignedStaff || 'Unassigned' }}</td>
-              <td>{{ ticket.category }}</td>
-              <td><span class="ticket-card__priority">{{ ticket.priority }}</span></td>
-              <td>
-                <span :class="['ticket-card__status', `ticket-card__status--${ticket.status?.toLowerCase()}`]">
-                  {{ ticket.status }}
-                </span>
-              </td>
-              <td class="mini-table__date">{{ ticket.created }}</td>
-              <td><q-icon v-if="ticket.hasAttachments" name="attach_file" size="17px" color="primary" /></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- ── Pagination ─────────────────────────────────────────── -->
-      <div class="ticket-page__pagination q-mt-lg flex items-center justify-between">
-        <div class="text-caption text-grey-7">
-          Showing {{ paginationInfo.from }}–{{ paginationInfo.to }} of {{ totalTickets }} tickets
-        </div>
-        <q-pagination
-          v-if="lastPage > 1"
-          v-model="currentPage"
-          :max="lastPage"
-          :max-pages="6"
-          direction-links
-          boundary-links
-          active-color="primary"
-          active-text-color="white"
-          color="grey-8"
-          flat
-          @update:model-value="fetchTickets"
-        />
-      </div>
-    </template>
-
-    <div v-else-if="loading" class="ticket-page__loading">
-      <q-spinner-dots size="40px" color="primary" />
-      <p>Loading tickets…</p>
-    </div>
-
-    <div v-else class="ticket-page__empty">
-      <q-icon name="confirmation_number" size="52px" color="grey-5" />
-      <p>No tickets found</p>
-    </div>
+    <!-- ── Ticket Views (Reusable Component) ─────────────────── -->
+    <TicketListView
+      :tickets="filteredTickets"
+      :displayMode="displayMode"
+      :loading="loading"
+      :readonly="true"
+      @view-ticket="viewTicket"
+    />
 
     <!-- ── Create Dialog ───────────────────────────────────────── -->
     <AddTicketModal
@@ -192,6 +135,7 @@ import { useQuasar } from 'quasar'
 import { api } from '../../boot/axios'
 import AddTicketModal from '../../components/AddTicketModal.vue'
 import ViewTicketModal from '../../components/ViewTicketModal.vue'
+import TicketListView from '../../components/TicketListView.vue'
 import './TicketManagementPage.scss'
 const $q = useQuasar()
 
@@ -199,19 +143,21 @@ const $q = useQuasar()
 const loading = ref(true)
 const search  = ref('')
 const filterPriority = ref(null)
+const filterCategory = ref(null)
+const sortBy = ref('newest')
 const activeTab = ref('ALL')
-const displayMode = ref('card')
+const displayMode = ref('table')
 const showAddDialog = ref(false)
 const showViewDialog = ref(false)
 const selectedTicket = ref(null)
 
-const currentPage = ref(1)
-const lastPage = ref(1)
-const totalTickets = ref(0)
-const perPage = ref(12)
-const statusCounts = ref({ ALL: 0, OPEN: 0, ESCALATED: 0, CLOSE: 0, CANCEL: 0 })
-
-let searchTimeout = null
+const sortOptions = [
+  { label: 'Newest First', value: 'newest' },
+  { label: 'Oldest First', value: 'oldest' },
+  { label: 'Ticket # (A-Z)', value: 'ticket_asc' },
+  { label: 'Title (A-Z)', value: 'title_asc' },
+  { label: 'Priority (High to Low)', value: 'priority_desc' }
+]
 
 const priorityOptions = [
   { label: 'Low',      value: 'LOW'      },
@@ -259,40 +205,10 @@ async function fetchStaff() {
   }
 }
 
-function onSearchInput() {
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    currentPage.value = 1
-    fetchTickets()
-  }, 300)
-}
-
-function onTabChange(val) {
-  activeTab.value = val
-  currentPage.value = 1
-  fetchTickets()
-}
-
-function onPriorityChange() {
-  currentPage.value = 1
-  fetchTickets()
-}
-
-function tabCount(status) {
-  return statusCounts.value[status] ?? 0
-}
-
-const paginationInfo = computed(() => {
-  if (totalTickets.value === 0) return { from: 0, to: 0 }
-  const from = (currentPage.value - 1) * perPage.value + 1
-  const to = Math.min(currentPage.value * perPage.value, totalTickets.value)
-  return { from, to }
-})
-
 async function fetchTickets() {
   loading.value = true
   try {
-    const res = await api.get('/getTickets')
+    const res = await api.get('/tickets')
     const data = res.data?.data || res.data || []
 
     // Map backend array to UI properties internally
@@ -301,7 +217,7 @@ async function fetchTickets() {
       real_id: t.id,
       ticket_no: t.ticket_no,
       title: t.issue || 'No Title',
-      requester: t.user ? (t.user.first_name + ' ' + t.user.last_name) : (t.user?.name || 'Unknown'),
+      requester: t.user ? (t.user.first_name + ' ' + t.user.last_name) : 'Unknown',
       assignedStaff: t.assigned_staff ? (t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`) : '',
       assigned_staff_id: t.assigned_staff_id,
       category: t.problem_category ? t.problem_category.categories : 'Uncategorized',
@@ -309,7 +225,6 @@ async function fetchTickets() {
       priority: t.urgency || 'NORMAL',
       status: t.status || 'OPEN',
       description: t.description || '',
-      remarks: t.remarks || '',
       upload_intralab: t.upload_intralab,
       upload_limsportal: t.upload_limsportal,
       hasAttachments: Boolean(t.upload_intralab || t.upload_limsportal),
@@ -323,7 +238,51 @@ async function fetchTickets() {
   }
 }
 
+// ── Computed ─────────────────────────────────────────────────
+const filteredTickets = computed(() => {
+  let data = tickets.value
+  if (activeTab.value !== 'ALL') data = data.filter(t => t.status === activeTab.value)
+  if (filterPriority.value) data = data.filter(t => t.priority === filterPriority.value)
+  if (filterCategory.value) data = data.filter(t => t.category === filterCategory.value)
+  if (search.value) {
+    const q = search.value.toLowerCase()
+    data = data.filter(t =>
+      t.title?.toLowerCase().includes(q) ||
+      t.ticket_no?.toLowerCase().includes(q) ||
+      t.requester?.toLowerCase().includes(q) ||
+      t.category?.toLowerCase().includes(q)
+    )
+  }
+
+  if (sortBy.value === 'newest') {
+    data.sort((a, b) => new Date(b.created) - new Date(a.created))
+  } else if (sortBy.value === 'oldest') {
+    data.sort((a, b) => new Date(a.created) - new Date(b.created))
+  } else if (sortBy.value === 'ticket_asc') {
+    data.sort((a, b) => (a.ticket_no || '').localeCompare(b.ticket_no || ''))
+  } else if (sortBy.value === 'title_asc') {
+    data.sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+  } else if (sortBy.value === 'priority_desc') {
+    const pWeight = { CRITICAL: 4, HIGH: 3, NORMAL: 2, LOW: 1 }
+    data.sort((a, b) => (pWeight[b.priority] || 0) - (pWeight[a.priority] || 0))
+  }
+
+  return data
+})
+
+function tabCount(status) {
+  if (status === 'ALL') return tickets.value.length
+  return tickets.value.filter(t => t.status === status).length
+}
+
 // ── Actions ─────────────────────────────────────────────────
+function resetFilters() {
+  search.value = ''
+  filterPriority.value = null
+  filterCategory.value = null
+  sortBy.value = 'newest'
+}
+
 function openCreateDialog() {
   showAddDialog.value = true
 }

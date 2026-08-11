@@ -197,6 +197,22 @@ class TicketController extends Controller
         $this->ensureTicketAccess(request(), $ticket);
         return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory', 'logs']));
     }
+
+    public function getOpenTickets(Request $request)
+    {
+        $tickets = Ticket::with([
+            'user',
+            'assignedStaff',
+            'problemCategory',
+        ])
+            ->whereNull('assigned_staff_id')
+            ->where('status', 'OPEN')
+            ->latest()
+            ->get();
+
+        return response()->json($tickets);
+    }
+
     /**
      * Update the specified ticket in storage.
      */
