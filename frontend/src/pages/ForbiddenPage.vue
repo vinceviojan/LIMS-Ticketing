@@ -1,32 +1,23 @@
 <template>
-  <div class="clay-page">
-    <div class="clay-card">
-      
-      <!-- Lock Icon -->
-      <div class="forbidden-icon-wrapper">
-        <q-icon name="lock" class="forbidden-icon" />
-      </div>
+  <div class="error-page">
+    <div class="error-page__content">
 
-      <h1 class="clay-title text-center">403</h1>
-      <h2 class="forbidden-subtitle">Access Forbidden</h2>
-      
-      <p class="forbidden-text">
-        You do not have the required permissions to view this page. If you believe this is an error, please contact your administrator.
+      <span class="error-page__code">403</span>
+
+      <div class="error-page__rule" />
+
+      <h1 class="error-page__title">Access forbidden</h1>
+      <p class="error-page__text">
+        You don't have permission to view this page. If you think this is a mistake, contact your administrator.
       </p>
 
-      <div class="clay-actions">
-        <q-btn 
-          class="clay-btn clay-btn--login" 
-          unelevated 
-          label="Go Back" 
-          @click="$router.back()" 
-        />
-        <q-btn 
-          class="clay-btn clay-btn--home" 
-          unelevated 
-          label="Return Home" 
-          @click="goHome" 
-        />
+      <div class="error-page__actions">
+        <button class="error-page__btn error-page__btn--ghost" @click="$router.back()">
+          Go back
+        </button>
+        <button class="error-page__btn error-page__btn--solid" @click="goHome">
+          Return home
+        </button>
       </div>
 
     </div>
@@ -41,49 +32,102 @@ const router = useRouter()
 const authStore = inject('authStore', null)
 
 const goHome = () => {
-    const role = authStore?.userRole || (JSON.parse(localStorage.getItem('user') || '{}')?.role || '').toLowerCase()
-    if (role === 'admin') return router.push('/admin/dashboard')
-    if (role === 'staff') return router.push('/staff/dashboard')
-    if (role === 'user') return router.push('/user/dashboard')
-    router.push('/login')
+  const role = authStore?.userRole || (JSON.parse(localStorage.getItem('user') || '{}')?.role || '').toLowerCase()
+  if (role === 'admin') return router.push('/admin/dashboard')
+  if (role === 'staff') return router.push('/staff/dashboard')
+  if (role === 'user') return router.push('/user/dashboard')
+  router.push('/login')
 }
 </script>
 
 <style lang="scss" scoped>
-@import './Auth/LoginPage.scss';
-
-.forbidden-icon-wrapper {
-  margin-bottom: -10px;
+.error-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  padding: 24px;
 }
 
-.forbidden-icon {
-  font-size: 64px;
-  color: #ef4444;
-}
-
-.clay-title {
-  margin: 0;
-  padding: 10px 32px;
-  color: #ef4444;
-}
-
-.forbidden-subtitle {
-  font-family: 'Nunito', 'Quicksand', sans-serif;
-  font-weight: 800;
-  font-size: 1.4rem;
-  color: $min-text;
-  margin: 0;
-}
-
-.forbidden-text {
+.error-page__content {
+  width: 100%;
+  max-width: 380px;
   text-align: center;
-  color: $min-text-soft;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin: 0 0 10px 0;
 }
 
-.clay-btn--home {
-  @include min-button($min-text-soft);
+.error-page__code {
+  display: block;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'SFMono-Regular', ui-monospace, monospace;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: #b91c1c;
+}
+
+.error-page__rule {
+  width: 32px;
+  height: 1px;
+  background: #d4d4d8;
+  margin: 20px auto;
+}
+
+.error-page__title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #18181b;
+  margin: 0 0 12px;
+}
+
+.error-page__text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #71717a;
+  margin: 0 0 32px;
+}
+
+.error-page__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.error-page__btn {
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 9px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.error-page__btn--ghost {
+  background: transparent;
+  border: 1px solid #e4e4e7;
+  color: #52525b;
+
+  &:hover {
+    border-color: #a1a1aa;
+    color: #18181b;
+  }
+}
+
+.error-page__btn--solid {
+  background: #18181b;
+  border: 1px solid #18181b;
+  color: #fafafa;
+
+  &:hover {
+    background: #27272a;
+  }
+}
+
+@media (max-width: 420px) {
+  .error-page__actions {
+    flex-direction: column;
+  }
 }
 </style>
