@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/tickets', TicketController::class);
     Route::get('/tickets/{ticket}/attachment/{type}', [TicketController::class, 'attachment']);
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
+    Route::get('/getOpenTickets', [TicketController::class, 'getOpenTickets']);
     Route::get('/logs', [LogController::class, 'index']);
 
     Route::middleware('role:ADMIN')->prefix('admin')->group(function () {
