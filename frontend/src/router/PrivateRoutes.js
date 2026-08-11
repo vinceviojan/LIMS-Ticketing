@@ -63,6 +63,11 @@ export const PrivateRoutes = [
         path: 'settings',
         name: 'staff-settings',
         component: () => import('../pages/Staff/SettingsPage.vue')
+      },
+      {
+        path: 'accomplishment',
+        name: 'staff-accomplishment',
+        component: () => import('../pages/Staff/AccomplishmentReport.vue')
       }
     ]
   },
@@ -77,6 +82,11 @@ export const PrivateRoutes = [
         path: 'dashboard',
         name: 'user-dashboard',
         component: () => import('../pages/User/DashboardPage.vue')
+      },
+      {
+        path: 'settings',
+        name: 'user-settings',
+        component: () => import('../pages/User/SettingsPage.vue')
       }
     ]
   }

@@ -1,0 +1,120 @@
+@import '@/css/themes.scss';
+
+.accomplishment-page {
+    padding: 32px;
+    background: $min-bg;
+    min-height: 100vh;
+
+    &__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 28px;
+    }
+
+    &__title {
+        color: $min-text;
+        font-weight: 800;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    &__subtitle {
+        color: $min-text-soft;
+        font-size: 0.85rem;
+        margin-top: 2px;
+    }
+
+    &__filters {
+        @include min-card();
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+
+        .date-input {
+            width: 200px;
+        }
+    }
+
+    &__table-card {
+        @include min-card();
+        padding: 0;
+        overflow: hidden;
+    }
+
+    &__empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 0;
+        color: $min-text-soft;
+
+        p {
+            margin-top: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+    }
+}
+
+.report-dialog {
+    &__card {
+        width: 600px;
+        max-width: 90vw;
+        border-radius: 12px;
+    }
+
+    &__content {
+        padding: 0;
+    }
+
+    &__options {
+        padding: 16px 20px;
+        background: #f8fafc;
+        border-bottom: 1px solid $min-border;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    &__preview {
+        padding: 20px;
+        background: white;
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 12px;
+            border: 1px solid $min-border;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: $min-text;
+            resize: none;
+
+            &:focus {
+                outline: none;
+                border-color: $accent-login;
+            }
+        }
+    }
+}
+
+.clay-btn {
+    &--primary {
+        @include min-button($accent-login);
+    }
+    
+    &--secondary {
+        @include min-button($min-text-soft);
+        background: $min-surface;
+        color: $min-text;
+        
+        &:hover {
+            background: #e2e8f0;
+        }
+    }
+}
