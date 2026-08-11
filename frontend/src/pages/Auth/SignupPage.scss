@@ -1,223 +1,1105 @@
+// ==========================================================================
+// Responsive Full-Page Theme — Signup Screen
+// ==========================================================================
+
+@import '../../css/themes.scss';
+
+// ==========================================================================
+// Global
+// ==========================================================================
+
+html,
+body,
+#q-app {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+// ==========================================================================
+// Full Screen Page Container
+// ==========================================================================
+
 .signup-page {
-    min-height: 100vh;
+    width: 100%;
+    height: 100vh;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    background: #f5f7fa;
+    background-color: #ffffff;
 
-    padding: 24px;
-}
+    overflow: hidden;
 
-.signup-container {
-    width: 100%;
-    max-width: 520px;
-}
-
-.signup-card {
-    width: 100%;
-
-    background: #ffffff;
-
-    padding: 32px;
-
-    border-radius: 16px;
-
-    box-shadow:
-        0 8px 30px rgba(0, 0, 0, 0.08);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 
     box-sizing: border-box;
 }
 
-/* =========================================
-   Header
-========================================= */
+// ==========================================================================
+// Main Signup Card
+// ==========================================================================
 
-.signup-header {
-    text-align: center;
+.signup-card {
+    width: 100%;
+    max-width: 1500px;
+    height: 100vh;
 
-    margin-bottom: 28px;
+    background: #ffffff;
+
+    padding: 16px;
+
+    display: flex;
+    flex-direction: row;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
 }
 
-.signup-header h1 {
-    margin: 0 0 8px;
+// ==========================================================================
+// Left Branding Card
+// ==========================================================================
 
-    font-size: 28px;
-    font-weight: 700;
+.login-left-card {
+    flex: 1.15;
 
-    color: #1f2937;
+    height: 100%;
+
+    min-width: 0;
+
+    background: linear-gradient(135deg,
+            #1e3a63 0%,
+            #3a2d52 50%,
+            #862122 100%);
+
+    border-radius: 24px;
+
+    padding: 48px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    position: relative;
+
+    overflow: hidden;
+
+    color: #ffffff;
+
+    box-sizing: border-box;
+
+    @media (min-width: 900px) and (max-width: 1199px) {
+        padding: 36px 32px;
+    }
 }
 
-.signup-header p {
-    margin: 0;
+// ==========================================================================
+// Watermark Logo
+// ==========================================================================
 
-    font-size: 14px;
+.card-watermark {
+    position: absolute;
 
-    color: #6b7280;
+    bottom: -40px;
+    right: -60px;
+
+    width: 440px;
+    height: auto;
+
+    opacity: 0.12;
+
+    pointer-events: none;
+
+    @media (max-width: 1199px) {
+        width: 340px;
+        right: -40px;
+    }
 }
 
-/* =========================================
-   Form
-========================================= */
+// ==========================================================================
+// Left Header
+// ==========================================================================
 
-.signup-form {
+.left-header {
+    position: relative;
+    z-index: 2;
+
+    .brand-mark {
+        display: inline-flex;
+        align-items: center;
+
+        gap: 12px;
+    }
+
+    .brand-mark-logo {
+        width: 40px;
+        height: 40px;
+
+        filter:
+            drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+    }
+
+    .brand-mark-title {
+        font-size: 1.35rem;
+
+        font-weight: 700;
+
+        letter-spacing: -0.3px;
+
+        color: #ffffff;
+    }
+}
+
+// ==========================================================================
+// Left Body
+// ==========================================================================
+
+.left-body {
+    position: relative;
+
+    z-index: 2;
+
+    margin: auto 0;
+}
+
+// ==========================================================================
+// Agency Title
+// ==========================================================================
+
+.brand-title-group {
+    margin-bottom: 32px;
+
+    .agency-title {
+        font-size: 2.1rem;
+
+        font-weight: 800;
+
+        line-height: 1.25;
+
+        margin: 0 0 14px 0;
+
+        color: #ffffff;
+
+        letter-spacing: -0.4px;
+
+        @media (max-width: 1199px) {
+            font-size: 1.7rem;
+        }
+    }
+
+    .division-badge {
+        display: inline-flex;
+
+        align-items: center;
+
+        color: rgba(255, 255, 255, 0.9);
+
+        font-size: 0.9rem;
+
+        font-weight: 500;
+
+        letter-spacing: 0.2px;
+
+        background: rgba(255, 255, 255, 0.1);
+
+        padding: 6px 14px;
+
+        border-radius: 8px;
+
+        backdrop-filter: blur(4px);
+
+        border: 1px solid rgba(255, 255, 255, 0.12);
+
+        transition: all 0.25s ease;
+
+        cursor: default;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.18);
+
+            border-color:
+                rgba(255, 255, 255, 0.3);
+
+            color: #ffffff;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.15);
+
+            .q-icon {
+                color: #f87171;
+
+                transform: rotate(12deg);
+
+                transition:
+                    transform 0.25s ease,
+                    color 0.25s ease;
+            }
+        }
+    }
+}
+
+// ==========================================================================
+// Feature Grid
+// ==========================================================================
+
+.feature-grid {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+.feature-card {
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    padding: 4px 0;
+
+    cursor: default;
+
+    transition: all 0.25s ease;
+
+    .feature-icon-wrapper {
+        width: 40px;
+        height: 40px;
+
+        min-width: 40px;
+
+        border-radius: 10px;
+
+        background:
+            rgba(255, 255, 255, 0.12);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        color: #ffffff;
+
+        transition:
+            all 0.25s cubic-bezier(0.4,
+                0,
+                0.2,
+                1);
+    }
+
+    &:hover {
+        .feature-icon-wrapper {
+            background:
+                rgba(255, 255, 255, 0.22);
+
+            color: #f87171;
+
+            transform:
+                scale(1.08) translateY(-2px);
+
+            box-shadow:
+                0 4px 14px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-heading {
+            transform: translateX(2px);
+        }
+    }
+
+    .feature-info {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 2px;
+
+        .feature-heading {
+            font-size: 0.98rem;
+
+            font-weight: 700;
+
+            color: #ffffff;
+
+            letter-spacing: -0.2px;
+
+            transition:
+                transform 0.25s ease;
+        }
+
+        .feature-subtext {
+            font-size: 0.84rem;
+
+            color:
+                rgba(255, 255, 255, 0.75);
+
+            line-height: 1.3;
+        }
+    }
+
+    @media (max-width: 1199px) {
+        gap: 12px;
+
+        .feature-icon-wrapper {
+            width: 34px;
+            height: 34px;
+
+            min-width: 34px;
+        }
+
+        .feature-info .feature-heading {
+            font-size: 0.9rem;
+        }
+
+        .feature-info .feature-subtext {
+            font-size: 0.78rem;
+        }
+    }
+}
+
+// ==========================================================================
+// Right Signup Content
+// ==========================================================================
+
+.login-right-content {
+    flex: 0.85;
+
+    height: 100%;
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 24px 40px;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+// ==========================================================================
+// Form Wrapper
+// ==========================================================================
+
+.form-wrapper {
+    width: 100%;
+
+    max-width: 520px;
+
+    margin: 0 auto;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+// ==========================================================================
+// Mobile Branding
+// ==========================================================================
+
+.mobile-brand-header {
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-bottom: 20px;
+
+    .mobile-logo {
+        width: 44px;
+        height: auto;
+    }
+
+    .mobile-brand-title {
+        font-size: 1.5rem;
+
+        font-weight: 800;
+
+        color: #1e3a63;
+
+        letter-spacing: -0.5px;
+    }
+}
+
+// ==========================================================================
+// Form Header
+// ==========================================================================
+
+.form-header {
+    margin-bottom: 20px;
+
+    text-align: left;
+
+    .welcome-title {
+        font-size: 2rem;
+
+        font-weight: 800;
+
+        color: #0f172a;
+
+        margin: 0 0 6px 0;
+
+        letter-spacing: -0.5px;
+    }
+
+    .welcome-subtitle {
+        font-size: 0.88rem;
+
+        color: #64748b;
+
+        margin: 0;
+    }
+}
+
+// ==========================================================================
+// Form
+// ==========================================================================
+
+.form-body {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
     width: 100%;
 }
 
-/* =========================================
-   Inputs / Selects
-========================================= */
+// ==========================================================================
+// Input Group
+// ==========================================================================
 
-.signup-input {
-    width: 100%;
+.input-group {
+    display: flex;
 
-    margin-bottom: 18px;
+    flex-direction: column;
+
+    gap: 5px;
+
+    flex: 1;
+
+    min-width: 0;
+
+    .input-label {
+        font-size: 0.82rem;
+
+        font-weight: 700;
+
+        color: #1e293b;
+    }
+
+    .label-row {
+        margin-bottom: 2px;
+    }
 }
 
-/* =========================================
-   Two Column Fields
-========================================= */
+// ==========================================================================
+// Two Column Fields
+// ==========================================================================
 
 .signup-row {
     display: flex;
 
     width: 100%;
 
-    gap: 16px;
+    gap: 12px;
+
+    min-width: 0;
 }
 
-.signup-row .signup-input {
+.signup-row .input-group {
     flex: 1;
 
     min-width: 0;
 }
 
-/* =========================================
-   Signup Button
-========================================= */
+// ==========================================================================
+// Quasar Input / Select
+// ==========================================================================
 
-.signup-button {
-    width: 100%;
+.custom-field {
 
-    height: 46px;
+    .field-icon {
+        color: #64748b;
 
-    margin-top: 4px;
-
-    border-radius: 8px;
-
-    background: #1976d2;
-
-    color: #ffffff;
-
-    font-size: 15px;
-
-    font-weight: 600;
-
-    transition:
-        background 0.2s ease,
-        transform 0.1s ease;
-}
-
-.signup-button:hover {
-    background: #1565c0;
-}
-
-.signup-button:active {
-    transform: translateY(1px);
-}
-
-/* =========================================
-   Login Section
-========================================= */
-
-.login-section {
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    gap: 4px;
-
-    margin-top: 24px;
-
-    font-size: 14px;
-
-    color: #6b7280;
-}
-
-.login-button {
-    color: #1976d2;
-
-    font-weight: 600;
-
-    padding: 0 6px;
-}
-
-.login-button:hover {
-    color: #1565c0;
-}
-
-/* =========================================
-   Mobile Responsive
-========================================= */
-
-@media (max-width: 600px) {
-    .signup-page {
-        padding: 16px;
+        transition:
+            color 0.2s ease;
     }
 
-    .signup-container {
-        max-width: 100%;
+    .field-icon-toggle {
+        color: #94a3b8;
+
+        transition:
+            color 0.2s ease;
+
+        &:hover {
+            color: #1e3a63;
+        }
+    }
+
+    :deep(.q-field__control) {
+        border-radius: 10px;
+
+        height: 44px;
+
+        min-height: 44px;
+
+        background-color: #f8fafc;
+
+        transition:
+            all 0.25s cubic-bezier(0.4,
+                0,
+                0.2,
+                1);
+    }
+
+    :deep(.q-field--outlined .q-field__control:before) {
+        border-color: #e2e8f0;
+
+        border-width: 1.5px;
+    }
+
+    :deep(.q-field--outlined .q-field__control:hover:before) {
+        border-color: #cbd5e1;
+    }
+
+    :deep(.q-field--outlined.q-field--focused) {
+
+        .q-field__control {
+            background-color: #ffffff;
+
+            box-shadow:
+                0 0 0 4px rgba(30, 58, 99, 0.1);
+        }
+
+        .q-field__control:after {
+            border-color: #1e3a63;
+
+            border-width: 2px;
+        }
+
+        .field-icon {
+            color: #1e3a63;
+        }
+    }
+
+    :deep(.q-field__native) {
+        font-size: 0.9rem;
+
+        color: #0f172a;
+
+        font-weight: 500;
+
+        &::placeholder {
+            color: #94a3b8;
+
+            font-weight: 400;
+        }
+    }
+}
+
+// ==========================================================================
+// Action
+// ==========================================================================
+
+.action-group {
+    margin-top: 4px;
+}
+
+.gradient-submit-btn {
+    width: 100%;
+
+    height: 44px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(135deg,
+            #1e3a63 0%,
+            #3a2d52 50%,
+            #862122 100%) !important;
+
+    color: #ffffff !important;
+
+    font-weight: 700;
+
+    font-size: 0.95rem;
+
+    letter-spacing: 0.3px;
+
+    text-transform: none;
+
+    box-shadow:
+        0 8px 20px -4px rgba(30, 58, 99, 0.35);
+
+    transition:
+        all 0.3s cubic-bezier(0.4,
+            0,
+            0.2,
+            1);
+
+    &:hover:not(:disabled) {
+        box-shadow:
+            0 12px 24px -4px rgba(134, 33, 34, 0.45);
+
+        transform: translateY(-2px);
+
+        opacity: 0.96;
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+
+        box-shadow:
+            0 4px 12px rgba(30, 58, 99, 0.3);
+    }
+}
+
+// ==========================================================================
+// Login Footer
+// ==========================================================================
+
+.signup-footer-text {
+    font-size: 0.85rem;
+
+    .link-signup {
+        text-decoration: none;
+
+        color: #1e3a63;
+
+        margin-left: 4px;
+
+        transition:
+            color 0.2s ease;
+
+        &:hover {
+            color: #862122;
+
+            text-decoration: underline;
+        }
+    }
+}
+
+// ==========================================================================
+// Validation Message
+// ==========================================================================
+
+:deep(.q-field__bottom) {
+    padding-top: 3px;
+
+    font-size: 0.7rem;
+}
+
+:deep(.q-field--error .q-field__control) {
+    background-color: #fffafa;
+}
+
+// ==========================================================================
+// Desktop Height Adjustments
+// ==========================================================================
+
+// Standard laptop / desktop
+@media (min-width: 900px) and (max-height: 850px) {
+
+    .login-left-card {
+        padding: 32px;
+    }
+
+    .brand-title-group {
+        margin-bottom: 24px;
+
+        .agency-title {
+            font-size: 1.75rem;
+        }
+    }
+
+    .feature-grid {
+        gap: 12px;
+    }
+
+    .feature-card {
+        .feature-icon-wrapper {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+        }
+
+        .feature-heading {
+            font-size: 0.88rem;
+        }
+
+        .feature-subtext {
+            font-size: 0.75rem;
+        }
+    }
+
+    .login-right-content {
+        padding: 20px 32px;
+    }
+
+    .form-header {
+        margin-bottom: 14px;
+
+        .welcome-title {
+            font-size: 1.8rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 0.82rem;
+        }
+    }
+
+    .form-body {
+        gap: 9px;
+    }
+
+    .input-group {
+        gap: 3px;
+
+        .input-label {
+            font-size: 0.78rem;
+        }
+    }
+
+    .custom-field {
+
+        :deep(.q-field__control) {
+            height: 40px;
+            min-height: 40px;
+        }
+
+        :deep(.q-field__native) {
+            font-size: 0.85rem;
+        }
+    }
+
+    .gradient-submit-btn {
+        height: 40px;
+        min-height: 40px;
+    }
+
+    .signup-footer-text {
+        margin-top: 10px !important;
+    }
+}
+
+// Very short desktop screens
+@media (min-width: 900px) and (max-height: 700px) {
+
+    .signup-card {
+        padding: 10px;
+    }
+
+    .login-left-card {
+        padding: 24px;
+    }
+
+    .left-body {
+        margin: auto 0;
+    }
+
+    .brand-title-group {
+        margin-bottom: 16px;
+
+        .agency-title {
+            font-size: 1.5rem;
+        }
+    }
+
+    .feature-grid {
+        gap: 8px;
+    }
+
+    .feature-card {
+        gap: 10px;
+
+        .feature-icon-wrapper {
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+        }
+
+        .feature-heading {
+            font-size: 0.8rem;
+        }
+
+        .feature-subtext {
+            font-size: 0.68rem;
+        }
+    }
+
+    .login-right-content {
+        padding: 12px 24px;
+    }
+
+    .form-wrapper {
+        max-width: 500px;
+    }
+
+    .form-header {
+        margin-bottom: 10px;
+
+        .welcome-title {
+            font-size: 1.6rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 0.76rem;
+        }
+    }
+
+    .form-body {
+        gap: 6px;
+    }
+
+    .input-group {
+        gap: 2px;
+
+        .input-label {
+            font-size: 0.72rem;
+        }
+    }
+
+    .custom-field {
+
+        :deep(.q-field__control) {
+            height: 36px;
+            min-height: 36px;
+        }
+
+        :deep(.q-field__native) {
+            font-size: 0.8rem;
+        }
+    }
+
+    .gradient-submit-btn {
+        height: 36px;
+        min-height: 36px;
+    }
+
+    .signup-footer-text {
+        font-size: 0.75rem;
+
+        margin-top: 6px !important;
+    }
+}
+
+// ==========================================================================
+// Tablet
+// ==========================================================================
+
+@media (max-width: 899px) {
+
+    .signup-page {
+        width: 100%;
+        height: 100vh;
+
+        min-height: 100vh;
+
+        overflow: hidden;
     }
 
     .signup-card {
-        padding: 24px;
+        width: 100%;
+        height: 100vh;
 
-        border-radius: 12px;
+        min-height: 100vh;
+
+        padding: 16px;
+
+        flex-direction: column;
+
+        overflow: hidden;
     }
 
-    .signup-header {
-        margin-bottom: 24px;
+    .login-left-card {
+        display: none;
     }
 
-    .signup-header h1 {
-        font-size: 24px;
+    .login-right-content {
+        width: 100%;
+
+        height: 100%;
+
+        min-height: 0;
+
+        padding: 20px;
+
+        align-items: flex-start;
+
+        overflow: hidden;
+    }
+
+    .form-wrapper {
+        width: 100%;
+
+        max-width: 520px;
+
+        margin: 0 auto;
+    }
+
+    .mobile-brand-header {
+        display: flex;
+    }
+
+    .form-header {
+        text-align: center;
+    }
+}
+
+// ==========================================================================
+// Mobile
+// ==========================================================================
+
+@media (max-width: 600px) {
+
+    .signup-card {
+        padding: 12px;
+    }
+
+    .login-right-content {
+        padding: 16px 12px;
+    }
+
+    .mobile-brand-header {
+        margin-bottom: 16px;
+
+        .mobile-logo {
+            width: 38px;
+        }
+
+        .mobile-brand-title {
+            font-size: 1.25rem;
+        }
+    }
+
+    .form-header {
+        margin-bottom: 16px;
+
+        .welcome-title {
+            font-size: 1.65rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 0.82rem;
+        }
+    }
+
+    .form-body {
+        gap: 10px;
     }
 
     .signup-row {
         flex-direction: column;
 
-        gap: 0;
+        gap: 10px;
     }
 
-    .signup-input {
-        margin-bottom: 16px;
+    .input-group {
+        gap: 4px;
     }
 
-    .login-section {
-        margin-top: 20px;
+    .custom-field {
+
+        :deep(.q-field__control) {
+            height: 44px;
+
+            min-height: 44px;
+        }
+    }
+
+    .gradient-submit-btn {
+        height: 44px;
     }
 }
 
-/* =========================================
-   Small Mobile Devices
-========================================= */
+// ==========================================================================
+// Small Mobile
+// ==========================================================================
 
 @media (max-width: 400px) {
-    .signup-page {
-        padding: 12px;
-    }
 
     .signup-card {
-        padding: 20px;
+        padding: 8px;
     }
 
-    .signup-header h1 {
-        font-size: 22px;
+    .login-right-content {
+        padding: 12px 8px;
     }
 
-    .signup-header p {
-        font-size: 13px;
+    .mobile-brand-header {
+        margin-bottom: 12px;
+
+        .mobile-logo {
+            width: 34px;
+        }
+
+        .mobile-brand-title {
+            font-size: 1.1rem;
+        }
+    }
+
+    .form-header {
+
+        .welcome-title {
+            font-size: 1.45rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 0.75rem;
+        }
+    }
+
+    .form-body {
+        gap: 8px;
+    }
+
+    .signup-row {
+        gap: 8px;
+    }
+
+    .input-group {
+
+        .input-label {
+            font-size: 0.76rem;
+        }
+    }
+
+    .custom-field {
+
+        :deep(.q-field__control) {
+            height: 40px;
+
+            min-height: 40px;
+        }
+
+        :deep(.q-field__native) {
+            font-size: 0.82rem;
+        }
+    }
+
+    .gradient-submit-btn {
+        height: 40px;
+
+        font-size: 0.85rem;
+    }
+
+    .signup-footer-text {
+        font-size: 0.78rem;
+
+        margin-top: 8px !important;
     }
 }
