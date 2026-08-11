@@ -74,7 +74,7 @@
           <span class="panel__title">User Roles</span>
           <span class="panel__sub">Distribution by role</span>
         </div>
-        <div v-if="usersLoading" class="panel__empty">
+        <div v-if="analyticsLoading" class="panel__empty">
           <q-spinner color="primary" size="28px" />
           <span>Loading users&hellip;</span>
         </div>
@@ -270,13 +270,15 @@ const currentDate = computed(() =>
 // ── Reactive Data ─────────────────────────────────────────────
 const allUsers   = ref([])
 const categories = ref([])
+const analytics = ref({ user_roles: {}, tickets_by_status: {}, tickets_by_priority: {} })
 
 // ── Per-source loading state ────────────────────────────────────
 // Each section owns its own flag so it can render the moment its own
 // request resolves, instead of the whole page waiting on everything.
 const usersLoading      = ref(false)
 const categoriesLoading = ref(false)
-const loading = computed(() => usersLoading.value || categoriesLoading.value)
+const analyticsLoading  = ref(false)
+const loading = computed(() => usersLoading.value || categoriesLoading.value || analyticsLoading.value)
 
 // ── KPIs (computed from live data) ────────────────────────────
 const totalUsers    = computed(() => allUsers.value.length)
@@ -310,11 +312,9 @@ const kpis = computed(() => [
 // ── Role Donut ────────────────────────────────────────────────
 const roles = computed(() => {
   const map = { ADMIN: { label: 'Admin', color: '#3b82f6', count: 0 }, STAFF: { label: 'Staff', color: '#a855f7', count: 0 }, USER: { label: 'User', color: '#009747', count: 0 } }
-  allUsers.value.forEach(u => {
-    const r = (u.role || 'USER').toUpperCase()
-    if (map[r]) map[r].count++
-    else if (!map.OTHER) map.OTHER = { label: 'Other', color: '#9ca3af', count: 1 }
-    else map.OTHER.count++
+  Object.entries(analytics.value.user_roles || {}).forEach(([role, count]) => {
+    if (map[role]) map[role].count = count
+    else map[role] = { label: role, color: '#9ca3af', count }
   })
   return Object.values(map).filter(r => r.count > 0)
 })
@@ -349,19 +349,19 @@ const userStatuses = computed(() => {
 const maxStatus = computed(() => Math.max(...userStatuses.value.map(s => s.count)) || 1)
 const statusPct = (n) => Math.round((n / maxStatus.value) * 100)
 
-// ── Ticket Status / Priority Donuts (Mock) ────────────────────
-const ticketStatusData = [
-  { label: 'Open', color: '#f97316', count: 38 },
-  { label: 'Pending', color: '#eab308', count: 21 },
-  { label: 'Resolved', color: '#009747', count: 54 },
-  { label: 'Closed', color: '#9ca3af', count: 11 },
-]
+// ── Ticket Status / Priority Donuts ───────────────────────────
+const statusColors = { OPEN: '#f97316', ESCALATED: '#ef4444', PENDING: '#eab308', RESOLVED: '#009747', CLOSE: '#9ca3af', CANCEL: '#64748b' }
+const ticketStatusData = computed(() => Object.entries(analytics.value.tickets_by_status || {}).map(([status, count]) => ({
+  label: status === 'CLOSE' ? 'Closed' : status.charAt(0) + status.slice(1).toLowerCase(),
+  color: statusColors[status] || '#94a3b8',
+  count,
+})))
 
-const totalTicketsStatus = computed(() => ticketStatusData.reduce((acc, curr) => acc + curr.count, 0))
+const totalTicketsStatus = computed(() => ticketStatusData.value.reduce((acc, curr) => acc + curr.count, 0))
 const ticketStatusDonut = computed(() => {
   const total = totalTicketsStatus.value || 1
   let offset = CIRC * 0.25
-  return ticketStatusData.map(r => {
+  return ticketStatusData.value.map(r => {
     const dash = (r.count / total) * CIRC
     const seg = { dash, offset: -offset + CIRC, color: r.color, ...r }
     offset += dash
@@ -369,18 +369,18 @@ const ticketStatusDonut = computed(() => {
   })
 })
 
-const ticketPriorityData = [
-  { label: 'Critical', color: '#ef4444', count: 12 },
-  { label: 'High', color: '#006836', count: 28 },
-  { label: 'Medium', color: '#d98c00', count: 45 },
-  { label: 'Low', color: '#b5c7b5', count: 39 },
-]
+const priorityColors = { CRITICAL: '#ef4444', HIGH: '#006836', NORMAL: '#d98c00', LOW: '#b5c7b5' }
+const ticketPriorityData = computed(() => Object.entries(analytics.value.tickets_by_priority || {}).map(([priority, count]) => ({
+  label: priority.charAt(0) + priority.slice(1).toLowerCase(),
+  color: priorityColors[priority] || '#94a3b8',
+  count,
+})))
 
-const totalTicketsPriority = computed(() => ticketPriorityData.reduce((acc, curr) => acc + curr.count, 0))
+const totalTicketsPriority = computed(() => ticketPriorityData.value.reduce((acc, curr) => acc + curr.count, 0))
 const ticketPriorityDonut = computed(() => {
   const total = totalTicketsPriority.value || 1
   let offset = CIRC * 0.25
-  return ticketPriorityData.map(r => {
+  return ticketPriorityData.value.map(r => {
     const dash = (r.count / total) * CIRC
     const seg = { dash, offset: -offset + CIRC, color: r.color, ...r }
     offset += dash
@@ -437,12 +437,23 @@ async function loadCategories() {
   }
 }
 
+async function loadAnalytics() {
+  analyticsLoading.value = true
+  try {
+    const res = await api.get('/admin/dashboard')
+    analytics.value = res.data
+  } catch {
+    analytics.value = { user_roles: {}, tickets_by_status: {}, tickets_by_priority: {} }
+  } finally {
+    analyticsLoading.value = false
+  }
+}
+
 // Lazy-load one query at a time: users first, then categories — each
 // section paints as soon as its own data lands instead of the whole
 // dashboard waiting behind a single Promise.all.
 async function loadAll() {
-  await loadUsers()
-  await loadCategories()
+  await Promise.all([loadUsers(), loadCategories(), loadAnalytics()])
 }
 
 onMounted(loadAll)

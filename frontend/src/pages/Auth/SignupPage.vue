@@ -599,6 +599,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../../boot/axios'
+import { DIVISION_OPTIONS, SECTION_OPTIONS } from '../../constants/organization'
 
 import './SignupPage.scss'
 
@@ -648,19 +649,8 @@ const errors = reactive({
 // Options
 // ==========================================================================
 
-// Replace these with your actual Division and Section values.
-const divisionOptions = [
-  'Laboratory Services Division'
-]
-
-const sectionOptions = [
-  'Soil Chemistry',
-  'Soil Physics',
-  'Water Chemistry',
-  'Rapid Soil Test',
-  'TEIM',
-  'Customer Center'
-]
+const divisionOptions = DIVISION_OPTIONS
+const sectionOptions = SECTION_OPTIONS
 
 // ==========================================================================
 // Clear Validation Errors

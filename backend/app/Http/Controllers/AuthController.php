@@ -105,5 +105,4 @@ class AuthController extends Controller
             'address' => $request->ip(),
         ]);
     }
-
 }

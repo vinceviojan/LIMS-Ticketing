@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProblemCategory;
+use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -119,6 +120,11 @@ class ProblemCategoryController extends Controller
         }
 
         $category = ProblemCategory::create($request->only(['type', 'categories']));
+        $this->writeLog(
+            $request,
+            'CREATE',
+            "Problem category #{$category->id} created: {$category->type} / {$category->categories}."
+        );
 
         return response()->json([
             'success' => true,
@@ -154,7 +160,23 @@ class ProblemCategoryController extends Controller
             ], 422);
         }
 
+        $original = $category->only(['type', 'categories']);
         $category->update($request->only(['type', 'categories']));
+
+        $changes = [];
+        foreach ($category->getChanges() as $field => $value) {
+            if (in_array($field, ['type', 'categories'], true)) {
+                $changes[] = "{$field} changed from '{$original[$field]}' to '{$value}'";
+            }
+        }
+
+        if ($changes) {
+            $this->writeLog(
+                $request,
+                'UPDATE',
+                "Problem category #{$category->id} updated: " . implode(', ', $changes) . '.'
+            );
+        }
 
         return response()->json([
             'success' => true,
@@ -166,7 +188,7 @@ class ProblemCategoryController extends Controller
     /**
      * Remove a problem category.
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy(Request $request, int $id): JsonResponse
     {
         $category = ProblemCategory::find($id);
 
@@ -177,11 +199,30 @@ class ProblemCategoryController extends Controller
             ], 404);
         }
 
+        $categoryId = $category->id;
+        $categoryType = $category->type;
+        $categoryName = $category->categories;
         $category->delete();
+
+        $this->writeLog(
+            $request,
+            'DELETE',
+            "Problem category #{$categoryId} deleted: {$categoryType} / {$categoryName}."
+        );
 
         return response()->json([
             'success' => true,
             'message' => 'Problem category deleted successfully.',
+        ]);
+    }
+
+    private function writeLog(Request $request, string $action, string $message): void
+    {
+        Log::create([
+            'user_id' => $request->user()->id,
+            'action' => $action,
+            'message' => $message,
+            'address' => $request->ip(),
         ]);
     }
 }

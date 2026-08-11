@@ -19,6 +19,7 @@
       </q-btn-group>
     </div>
 
+    
     <!-- ── KPI Cards ────────────────────────────────────────────── -->
     <div class="report-page__kpis">
       <div v-for="kpi in kpiCards" :key="kpi.label" class="kpi-card" :class="`kpi-card--${kpi.color}`">

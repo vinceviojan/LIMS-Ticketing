@@ -48,7 +48,7 @@
               </div>
               <q-input v-model="profileForm.position" label="Position" outlined dense class="q-mt-sm" />
               <div class="settings-form__actions">
-                <q-btn class="clay-btn clay-btn--primary" label="Save Profile" icon="save" unelevated no-caps :loading="profileSaving" @click="saveProfile" />
+                <q-btn class="clay-btn clay-btn--primary" label="Save Profile" icon="save" unelevated no-caps @click="saveProfile" />
               </div>
             </div>
           </div>
@@ -63,7 +63,7 @@
               <q-input v-model="passwordForm.new"     label="New Password"     outlined dense type="password" class="q-mt-sm" />
               <q-input v-model="passwordForm.confirm" label="Confirm New Password" outlined dense type="password" class="q-mt-sm" />
               <div class="settings-form__actions">
-                <q-btn class="clay-btn clay-btn--primary" label="Update Password" icon="lock" unelevated no-caps :loading="passwordSaving" @click="savePassword" />
+                <q-btn class="clay-btn clay-btn--primary" label="Update Password" icon="lock" unelevated no-caps @click="savePassword" />
               </div>
             </div>
           </div>
@@ -78,61 +78,6 @@
               </div>
               <q-badge v-if="session.current" color="positive" label="Current" />
               <q-btn v-else flat no-caps dense label="Revoke" color="negative" size="sm" />
-            </div>
-          </div>
-        </div>
-
-        <!-- System Tab -->
-        <div v-if="activeTab === 'system'">
-          <div class="settings-panel__section-title">System Configuration</div>
-          <div class="settings-panel__card">
-            <div class="settings-toggle-row">
-              <div>
-                <div class="settings-toggle-row__label">Maintenance Mode</div>
-                <div class="settings-toggle-row__desc">Disable access for all non-admin users</div>
-              </div>
-              <q-toggle v-model="systemConfig.maintenance" color="primary" />
-            </div>
-            <q-separator class="q-my-sm" />
-            <div class="settings-toggle-row">
-              <div>
-                <div class="settings-toggle-row__label">Email Notifications</div>
-                <div class="settings-toggle-row__desc">Send email alerts for new tickets</div>
-              </div>
-              <q-toggle v-model="systemConfig.emailNotifs" color="primary" />
-            </div>
-            <q-separator class="q-my-sm" />
-            <div class="settings-toggle-row">
-              <div>
-                <div class="settings-toggle-row__label">Auto-close Resolved Tickets</div>
-                <div class="settings-toggle-row__desc">Automatically close tickets after 7 days of resolution</div>
-              </div>
-              <q-toggle v-model="systemConfig.autoClose" color="primary" />
-            </div>
-            <q-separator class="q-my-sm" />
-            <div class="settings-toggle-row">
-              <div>
-                <div class="settings-toggle-row__label">Audit Logging</div>
-                <div class="settings-toggle-row__desc">Log all create, update, delete actions</div>
-              </div>
-              <q-toggle v-model="systemConfig.auditLog" color="primary" />
-            </div>
-          </div>
-
-          <div class="settings-panel__section-title">Ticket SLA</div>
-          <div class="settings-panel__card">
-            <div class="settings-form">
-              <div class="settings-form__row">
-                <q-input v-model.number="slaConfig.critical" label="Critical SLA (hours)" outlined dense type="number" />
-                <q-input v-model.number="slaConfig.high"     label="High SLA (hours)"     outlined dense type="number" />
-              </div>
-              <div class="settings-form__row q-mt-sm">
-                <q-input v-model.number="slaConfig.medium" label="Medium SLA (hours)" outlined dense type="number" />
-                <q-input v-model.number="slaConfig.low"    label="Low SLA (hours)"    outlined dense type="number" />
-              </div>
-              <div class="settings-form__actions">
-                <q-btn class="clay-btn clay-btn--primary" label="Save Configuration" icon="settings" unelevated no-caps @click="saveSystem" />
-              </div>
             </div>
           </div>
         </div>
@@ -162,22 +107,19 @@
 </template>
 
 <script setup>
-import { ref, computed, inject } from 'vue'
+import { ref, computed } from 'vue'
 import { useQuasar } from 'quasar'
-import { api } from '../../boot/axios'
+import { useAuthStore } from '../../stores/auth'
 import './SettingsPage.scss'
 
 const $q = useQuasar()
-const authStore = inject('authStore')
+const authStore = useAuthStore()
 
 const activeTab = ref('profile')
-const profileSaving = ref(false)
-const passwordSaving = ref(false)
 
 const settingsTabs = [
   { label: 'Profile',  value: 'profile',  icon: 'person'       },
   { label: 'Security', value: 'security', icon: 'lock'          },
-  { label: 'System',   value: 'system',   icon: 'settings'      },
   { label: 'About',    value: 'about',    icon: 'info_outline'  },
 ]
 
@@ -197,15 +139,6 @@ const profileForm = ref({
 
 const passwordForm = ref({ current: '', new: '', confirm: '' })
 
-const systemConfig = ref({
-  maintenance: false,
-  emailNotifs: true,
-  autoClose: true,
-  auditLog: true,
-})
-
-const slaConfig = ref({ critical: 2, high: 8, medium: 24, low: 72 })
-
 const sessions = ref([
   { id: 1, device: 'Desktop', browser: 'Chrome 126', ip: '192.168.1.5',  time: 'Active now',    current: true  },
   { id: 2, device: 'Mobile',  browser: 'Safari 17',  ip: '192.168.1.20', time: '2 hours ago',   current: false },
@@ -216,51 +149,19 @@ function notify(type, message) {
   $q.notify({ type, message, position: 'top-right', timeout: 2000 })
 }
 
-function apiError(error, fallback) {
-  const errors = error.response?.data?.errors
-  return errors ? Object.values(errors).flat()[0] : error.response?.data?.message || fallback
+function saveProfile() {
+  notify('positive', 'Profile saved successfully.')
 }
 
-async function saveProfile() {
-  profileSaving.value = true
-  try {
-    await api.patch(`/users/${authStore.user.id}`, profileForm.value)
-    await authStore.fetchUser()
-    notify('positive', 'Profile saved successfully.')
-  } catch (error) {
-    notify('negative', apiError(error, 'Failed to save profile.'))
-  } finally {
-    profileSaving.value = false
-  }
-}
-
-async function savePassword() {
-  if (!passwordForm.value.current || !passwordForm.value.new) {
-    notify('negative', 'Current and new passwords are required.')
-    return
-  }
+function savePassword() {
   if (passwordForm.value.new !== passwordForm.value.confirm) {
     notify('negative', 'Passwords do not match.')
     return
   }
-  passwordSaving.value = true
-  try {
-    await api.patch(`/users/${authStore.user.id}`, {
-      current_password: passwordForm.value.current,
-      password: passwordForm.value.new,
-    })
-    notify('positive', 'Password updated successfully.')
-    passwordForm.value = { current: '', new: '', confirm: '' }
-  } catch (error) {
-    notify('negative', apiError(error, 'Failed to update password.'))
-  } finally {
-    passwordSaving.value = false
-  }
+  notify('positive', 'Password updated successfully.')
+  passwordForm.value = { current: '', new: '', confirm: '' }
 }
 
-function saveSystem() {
-  notify('positive', 'System configuration saved.')
-}
 </script>
 
 <style lang="scss" scoped>
