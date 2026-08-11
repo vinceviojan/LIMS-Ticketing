@@ -48,7 +48,7 @@
               </div>
               <q-input v-model="profileForm.position" label="Position" outlined dense class="q-mt-sm" />
               <div class="settings-form__actions">
-                <q-btn class="clay-btn clay-btn--primary" label="Save Profile" icon="save" unelevated no-caps @click="saveProfile" />
+                <q-btn class="clay-btn clay-btn--primary" label="Save Profile" icon="save" unelevated no-caps :loading="profileSaving" @click="saveProfile" />
               </div>
             </div>
           </div>
@@ -63,7 +63,7 @@
               <q-input v-model="passwordForm.new"     label="New Password"     outlined dense type="password" class="q-mt-sm" />
               <q-input v-model="passwordForm.confirm" label="Confirm New Password" outlined dense type="password" class="q-mt-sm" />
               <div class="settings-form__actions">
-                <q-btn class="clay-btn clay-btn--primary" label="Update Password" icon="lock" unelevated no-caps @click="savePassword" />
+                <q-btn class="clay-btn clay-btn--primary" label="Update Password" icon="lock" unelevated no-caps :loading="passwordSaving" @click="savePassword" />
               </div>
             </div>
           </div>
@@ -164,12 +164,15 @@
 <script setup>
 import { ref, computed, inject } from 'vue'
 import { useQuasar } from 'quasar'
+import { api } from '../../boot/axios'
 import './SettingsPage.scss'
 
 const $q = useQuasar()
 const authStore = inject('authStore')
 
 const activeTab = ref('profile')
+const profileSaving = ref(false)
+const passwordSaving = ref(false)
 
 const settingsTabs = [
   { label: 'Profile',  value: 'profile',  icon: 'person'       },
@@ -213,17 +216,46 @@ function notify(type, message) {
   $q.notify({ type, message, position: 'top-right', timeout: 2000 })
 }
 
-function saveProfile() {
-  notify('positive', 'Profile saved successfully.')
+function apiError(error, fallback) {
+  const errors = error.response?.data?.errors
+  return errors ? Object.values(errors).flat()[0] : error.response?.data?.message || fallback
 }
 
-function savePassword() {
+async function saveProfile() {
+  profileSaving.value = true
+  try {
+    await api.patch(`/users/${authStore.user.id}`, profileForm.value)
+    await authStore.fetchUser()
+    notify('positive', 'Profile saved successfully.')
+  } catch (error) {
+    notify('negative', apiError(error, 'Failed to save profile.'))
+  } finally {
+    profileSaving.value = false
+  }
+}
+
+async function savePassword() {
+  if (!passwordForm.value.current || !passwordForm.value.new) {
+    notify('negative', 'Current and new passwords are required.')
+    return
+  }
   if (passwordForm.value.new !== passwordForm.value.confirm) {
     notify('negative', 'Passwords do not match.')
     return
   }
-  notify('positive', 'Password updated successfully.')
-  passwordForm.value = { current: '', new: '', confirm: '' }
+  passwordSaving.value = true
+  try {
+    await api.patch(`/users/${authStore.user.id}`, {
+      current_password: passwordForm.value.current,
+      password: passwordForm.value.new,
+    })
+    notify('positive', 'Password updated successfully.')
+    passwordForm.value = { current: '', new: '', confirm: '' }
+  } catch (error) {
+    notify('negative', apiError(error, 'Failed to update password.'))
+  } finally {
+    passwordSaving.value = false
+  }
 }
 
 function saveSystem() {

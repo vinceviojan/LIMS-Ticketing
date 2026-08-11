@@ -15,6 +15,7 @@ use App\Http\Controllers\AdminController;
 | Auth Routes (Public)
 |--------------------------------------------------------------------------
 */
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [SignupController::class, 'store']);
 Route::middleware('auth:sanctum')->group(function () {
