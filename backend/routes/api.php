@@ -18,42 +18,7 @@ use App\Http\Controllers\AdminController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [SignupController::class, 'store']);
-
-/*
-# Get all
-curl -X GET http://localhost:8000/api/problem-categories
-
-# Get by type
-curl -X GET http://localhost:8000/api/problem-categories/type/hardware
-
-    # Count by type
-    curl -X GET http://localhost:8000/api/problem-categories/type/hardware/count
-
-    # Get single
-    curl -X GET http://localhost:8000/api/problem-categories/1
-
-    # Create
-    curl -X POST http://localhost:8000/api/problem-categories \
-    -H "Content-Type: application/json" \
-    -d '{"type":"hardware","categories":"Laptop Issue"}'
-
-    # Update
-    curl -X PUT http://localhost:8000/api/problem-categories/1 \
-    -H "Content-Type: application/json" \
-    -d '{"type":"software","categories":"OS Crash"}'
-
-    # Delete
-    curl -X DELETE http://localhost:8000/api/problem-categories/1
-*/
-
-/*
-|--------------------------------------------------------------------------
-| Protected Routes (Sanctum Token Required)
-Invoke-RestMethod -Uri "http://localhost:8000/api/login" -Method POST -ContentType "application/json" -Body '{"email":"admin@lims.gov.ph","password":"password"}'
-|--------------------------------------------------------------------------
-*/
 Route::middleware('auth:sanctum')->group(function () {
-
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
@@ -65,10 +30,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tickets/{ticket}/attachment/{type}', [TicketController::class, 'attachment']);
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
     Route::get('/logs', [LogController::class, 'index']);
-
-    // Admin Reports
-    Route::get('/reports/summary', [AdminController::class, 'reportsSummary']);
-    Route::get('/reports/top-requesters', [AdminController::class, 'topRequesters']);
 
     Route::prefix('problem-categories')->group(function () {
         Route::get('/', [ProblemCategoryController::class, 'getAll']);
