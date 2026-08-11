@@ -125,7 +125,7 @@
 
 <script setup>
 import { ref } from 'vue'
-
+import './ReportPage.scss'
 const activePeriod = ref('month')
 const periods = [
   { label: 'Week',  value: 'week'  },

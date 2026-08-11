@@ -7,14 +7,39 @@
         <div class="text-h5 ticket-page__title">Ticket Management</div>
         <div class="ticket-page__subtitle">Review, assign and resolve support tickets</div>
       </div>
-      <q-btn
-        class="clay-btn clay-btn--primary"
-        label="New Ticket"
-        icon="add_circle_outline"
-        unelevated
-        no-caps
-        @click="openCreateDialog"
-      />
+      <div class="row q-gutter-sm">
+        <q-btn-dropdown
+          class="clay-btn"
+          label="Export"
+          icon="file_download"
+          unelevated
+          no-caps
+          :loading="exporting"
+        >
+          <q-list>
+            <q-item clickable v-close-popup @click="handleExport('csv')">
+              <q-item-section avatar><q-icon name="grid_on" /></q-item-section>
+              <q-item-section>Export CSV</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click="handleExport('json')">
+              <q-item-section avatar><q-icon name="data_object" /></q-item-section>
+              <q-item-section>Export JSON</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click="handleExport('pdf')">
+              <q-item-section avatar><q-icon name="picture_as_pdf" /></q-item-section>
+              <q-item-section>Export PDF (all tickets)</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+        <q-btn
+          class="clay-btn clay-btn--primary"
+          label="New Ticket"
+          icon="add_circle_outline"
+          unelevated
+          no-caps
+          @click="openCreateDialog"
+        />
+      </div>
     </div>
 
     <!-- ── Status Tabs ─────────────────────────────────────────── -->
@@ -95,6 +120,15 @@
               {{ ticket.status }}
             </span>
             <span class="ticket-card__date">{{ ticket.created }}</span>
+            <q-btn
+              flat dense round
+              icon="file_download"
+              size="sm"
+              class="q-ml-auto"
+              @click.stop="exportSingle(ticket)"
+            >
+              <q-tooltip>Export ticket as PDF</q-tooltip>
+            </q-btn>
           </div>
         </div>
       </div>
@@ -114,6 +148,7 @@
               <th>Status</th>
               <th>Date</th>
               <th>Files</th>
+              <th>Export</th>
             </tr>
           </thead>
           <tbody>
@@ -132,6 +167,11 @@
               </td>
               <td class="mini-table__date">{{ ticket.created }}</td>
               <td><q-icon v-if="ticket.hasAttachments" name="attach_file" size="17px" color="primary" /></td>
+              <td>
+                <q-btn flat dense round icon="file_download" size="sm" @click.stop="exportSingle(ticket)">
+                  <q-tooltip>Export ticket as PDF</q-tooltip>
+                </q-btn>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -197,6 +237,7 @@ import { useQuasar } from 'quasar'
 import { api } from '../../boot/axios'
 import AddTicketModal from '../../components/AddTicketModal.vue'
 import EditTicketModal from '../../components/EditTicketModal.vue'
+import { exportTicketToPdf, exportTicketsToPdf, exportTicketsToCSV, exportTicketsToJSON } from '../../assets/TicketExport.js'
 import './TicketManagementPage.scss'
 const $q = useQuasar()
 
@@ -210,6 +251,7 @@ const showAddDialog = ref(false)
 const showEditDialog = ref(false)
 const modalMode = ref('view')
 const selectedTicket = ref(null)
+const exporting = ref(false)
 
 const currentPage = ref(1)
 const lastPage = ref(1)
@@ -353,5 +395,36 @@ function viewTicket(ticket) {
   modalMode.value = 'view'
   selectedTicket.value = ticket
   showEditDialog.value = true
+}
+
+// ── Export ──────────────────────────────────────────────────
+async function exportSingle(ticket) {
+  exporting.value = true
+  try {
+    await exportTicketToPdf(ticket)
+  } catch (err) {
+    console.error('Failed to export ticket', err)
+    $q.notify({ type: 'negative', message: 'Failed to export ticket.' })
+  } finally {
+    exporting.value = false
+  }
+}
+
+async function handleExport(format) {
+  if (!tickets.value.length) {
+    $q.notify({ type: 'warning', message: 'No tickets to export.' })
+    return
+  }
+  exporting.value = true
+  try {
+    if (format === 'csv') exportTicketsToCSV(tickets.value)
+    else if (format === 'json') exportTicketsToJSON(tickets.value)
+    else if (format === 'pdf') await exportTicketsToPdf(tickets.value)
+  } catch (err) {
+    console.error('Failed to export tickets', err)
+    $q.notify({ type: 'negative', message: 'Failed to export tickets.' })
+  } finally {
+    exporting.value = false
+  }
 }
 </script>

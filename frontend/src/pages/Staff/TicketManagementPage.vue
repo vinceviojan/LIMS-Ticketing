@@ -296,7 +296,7 @@ async function fetchTickets() {
     const data = res.data?.data || res.data || []
 
     // Map backend array to UI properties internally
-    tickets.value = rawList.map(t => ({
+    tickets.value = data.map(t => ({
       id: t.id,
       real_id: t.id,
       ticket_no: t.ticket_no,
