@@ -3,10 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SignupController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ProblemCategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,42 +16,8 @@ use App\Http\Controllers\LogController;
 |--------------------------------------------------------------------------
 */
 Route::post('/login', [AuthController::class, 'login']);
-
-/*
-# Get all
-curl -X GET http://localhost:8000/api/problem-categories
-
-# Get by type
-curl -X GET http://localhost:8000/api/problem-categories/type/hardware
-
-    # Count by type
-    curl -X GET http://localhost:8000/api/problem-categories/type/hardware/count
-
-    # Get single
-    curl -X GET http://localhost:8000/api/problem-categories/1
-
-    # Create
-    curl -X POST http://localhost:8000/api/problem-categories \
-    -H "Content-Type: application/json" \
-    -d '{"type":"hardware","categories":"Laptop Issue"}'
-
-    # Update
-    curl -X PUT http://localhost:8000/api/problem-categories/1 \
-    -H "Content-Type: application/json" \
-    -d '{"type":"software","categories":"OS Crash"}'
-
-    # Delete
-    curl -X DELETE http://localhost:8000/api/problem-categories/1
-*/
-
-/*
-|--------------------------------------------------------------------------
-| Protected Routes (Sanctum Token Required)
-Invoke-RestMethod -Uri "http://localhost:8000/api/login" -Method POST -ContentType "application/json" -Body '{"email":"admin@lims.gov.ph","password":"password"}'
-|--------------------------------------------------------------------------
-*/
+Route::post('/register', [SignupController::class, 'store']);
 Route::middleware('auth:sanctum')->group(function () {
-
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
@@ -61,6 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tickets/{ticket}/attachment/{type}', [TicketController::class, 'attachment']);
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
     Route::get('/logs', [LogController::class, 'index']);
+
+    Route::middleware('role:ADMIN')->prefix('admin')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'dashboard']);
+    });
 
     Route::prefix('problem-categories')->group(function () {
         Route::get('/', [ProblemCategoryController::class, 'getAll']);
