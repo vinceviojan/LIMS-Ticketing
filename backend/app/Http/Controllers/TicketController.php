@@ -42,6 +42,7 @@ class TicketController extends Controller
             'urgency' => ['nullable', 'string', 'in:LOW,NORMAL,HIGH'],
             'assigned_staff_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'STAFF')],
             'description' => ['nullable', 'string'],
+            'remarks' => ['nullable', 'string'],
             'upload_intralab' => ['nullable', 'file', 'max:10240'],
             'upload_limsportal' => ['nullable', 'file', 'max:10240'],
         ]);
@@ -130,6 +131,7 @@ class TicketController extends Controller
             'assigned_staff_id' => ['sometimes', 'nullable', Rule::exists('users', 'id')->where('role', 'STAFF')],
             'problem_category_id' => ['nullable', 'exists:problem_categories,id'],
             'description' => ['sometimes', 'nullable', 'string'],
+            'remarks' => ['sometimes', 'nullable', 'string'],
             'issue' => ['sometimes', 'required', 'string', 'max:255'],
             'upload_intralab' => ['sometimes', 'nullable', 'file', 'max:10240'],
             'upload_limsportal' => ['sometimes', 'nullable', 'file', 'max:10240'],

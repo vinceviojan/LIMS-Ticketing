@@ -24,6 +24,7 @@ class Ticket extends Model
         'upload_intralab',
         'upload_limsportal',
         'description',
+        'remarks',
     ];
 
     protected function casts(): array
