@@ -198,6 +198,12 @@ class UserController extends Controller
 
         $user->update($data);
 
+        $this->writeLog(
+            $request,
+            'UPDATE',
+            "User #{$user->id} ({$user->email}) updated: password changed."
+        );
+
         return response()->json($user);
     }
 }
