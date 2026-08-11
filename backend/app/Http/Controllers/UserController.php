@@ -173,4 +173,31 @@ class UserController extends Controller
             'address' => $request->ip(),
         ]);
     }
+
+    public function updatePassword(Request $request)
+    {
+        $user = $request->user();
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'old_password' => ['required', 'current_password'],
+            'password' => ['required', 'string', 'min:8'],
+            'confirm_password' => ['required', 'string', 'min:8'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        if($input['password'] !== $input['confirm_password']){
+            return response()->json(['errors' => 'Password and confirm password does not match'], 400);
+        }
+
+        $data = $validator->validated();
+        $data['password'] = Hash::make($data['password']);
+
+        $user->update($data);
+
+        return response()->json($user);
+    }
 }

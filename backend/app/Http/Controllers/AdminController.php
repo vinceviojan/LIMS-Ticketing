@@ -312,12 +312,6 @@ class AdminController extends Controller
         });
     }
 
-use App\Models\Ticket;
-use App\Models\User;
-use Illuminate\Http\JsonResponse;
-
-class AdminController extends Controller
-{
     public function dashboard(): JsonResponse
     {
         return response()->json([
