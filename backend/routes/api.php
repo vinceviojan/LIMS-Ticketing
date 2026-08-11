@@ -8,12 +8,14 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ProblemCategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
 | Auth Routes (Public)
 |--------------------------------------------------------------------------
 */
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [SignupController::class, 'store']);
 
@@ -63,6 +65,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tickets/{ticket}/attachment/{type}', [TicketController::class, 'attachment']);
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
     Route::get('/logs', [LogController::class, 'index']);
+
+    // Admin Reports
+    Route::get('/reports/summary', [AdminController::class, 'reportsSummary']);
+    Route::get('/reports/top-requesters', [AdminController::class, 'topRequesters']);
 
     Route::prefix('problem-categories')->group(function () {
         Route::get('/', [ProblemCategoryController::class, 'getAll']);
