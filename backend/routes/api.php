@@ -31,6 +31,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
     Route::get('/logs', [LogController::class, 'index']);
 
+    Route::middleware('role:ADMIN')->prefix('admin')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'dashboard']);
+    });
+
     Route::prefix('problem-categories')->group(function () {
         Route::get('/', [ProblemCategoryController::class, 'getAll']);
         Route::post('/', [ProblemCategoryController::class, 'store']);

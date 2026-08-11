@@ -312,6 +312,12 @@ class AdminController extends Controller
         });
     }
 
+use App\Models\Ticket;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+
+class AdminController extends Controller
+{
     public function dashboard(): JsonResponse
     {
         return response()->json([
@@ -329,6 +335,7 @@ class AdminController extends Controller
             ->groupBy($column)
             ->pluck('aggregate', $column)
             ->mapWithKeys(fn($count, $value) => [strtoupper((string) $value) => (int) $count])
+            ->mapWithKeys(fn ($count, $value) => [strtoupper((string) $value) => (int) $count])
             ->all();
 
         return array_replace(array_fill_keys($knownValues, 0), $counts);
