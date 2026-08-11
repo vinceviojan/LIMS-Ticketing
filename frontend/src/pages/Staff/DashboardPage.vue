@@ -198,7 +198,7 @@ const categories = ref([
 const priority = ref(['LOW', 'NORMAL', 'HIGH'])
 
 const ticketColumns = [
-  { name: 'id', label: 'Ticket ID', field: 'id', align: 'left', sortable: true },
+  // { name: 'id', label: 'Ticket ID', field: 'ticket', align: 'left', sortable: true },
   { name: 'title', label: 'Title', field: 'issue', align: 'left', sortable: true },
   {
     name: 'requester',

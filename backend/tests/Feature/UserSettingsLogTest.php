@@ -35,4 +35,21 @@ class UserSettingsLogTest extends TestCase
         ]);
         $this->assertDatabaseMissing('logs', ['message' => 'new-password123']);
     }
+
+    public function test_dedicated_password_route_is_logged(): void
+    {
+        $admin = User::factory()->admin()->create(['password' => 'old-password']);
+
+        $this->actingAs($admin, 'sanctum')->postJson('/api/update-password', [
+            'old_password' => 'old-password',
+            'password' => 'new-password123',
+            'confirm_password' => 'new-password123',
+        ])->assertOk();
+
+        $this->assertDatabaseHas('logs', [
+            'user_id' => $admin->id,
+            'action' => 'UPDATE',
+            'message' => "User #{$admin->id} ({$admin->email}) updated: password changed.",
+        ]);
+    }
 }

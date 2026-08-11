@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Log;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -34,6 +35,13 @@ class SignupController extends Controller
             'position' => $data['position'],
             'role' => 'USER',
             'status' => 'ACTIVE',
+        ]);
+
+        Log::create([
+            'user_id' => $user->id,
+            'action' => 'CREATE',
+            'message' => "User #{$user->id} registered: {$user->first_name} {$user->last_name} ({$user->email}), role USER.",
+            'address' => $request->ip(),
         ]);
 
         return response()->json([
