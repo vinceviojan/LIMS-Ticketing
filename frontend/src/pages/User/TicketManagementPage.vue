@@ -3,8 +3,8 @@
     <!-- ── Header ──────────────────────────────────────────────── -->
     <div class="row items-center justify-between q-mb-lg">
       <div>
-        <div class="text-h5 text-weight-bolder text-dark">Ticket Management</div>
-        <div class="text-caption text-grey-7 q-mt-xs">Review, assign and resolve support tickets</div>
+        <div class="text-h5 text-weight-bolder text-dark">My Tickets</div>
+        <div class="text-caption text-grey-7 q-mt-xs">Submit and track your support tickets</div>
       </div>
       <q-btn
         color="primary"
@@ -115,7 +115,7 @@
     <AddTicketModal
       v-model="showAddDialog"
       :category-options="categoryOptions"
-      :staff-options="staffOptions"
+      :staff-options="[]"
       :priority-options="priorityOptions"
       @refresh="fetchTickets"
     />
@@ -139,7 +139,7 @@ import TicketListView from '../../components/TicketListView.vue'
 import './TicketManagementPage.scss'
 const $q = useQuasar()
 
-// ── State ────────────────────────────────────────────────────
+// State 
 const loading = ref(true)
 const search  = ref('')
 const filterPriority = ref(null)
@@ -166,7 +166,6 @@ const priorityOptions = [
 ]
 
 const categoryOptions = ref([])
-const staffOptions = ref([])
 const tickets = ref([])
 
 const statusTabs = [
@@ -180,7 +179,6 @@ const statusTabs = [
 // ── Lifecycle ────────────────────────────────────────────────
 onMounted(async () => {
   await fetchCategories()
-  await fetchStaff()
   await fetchTickets()
 })
 
@@ -191,17 +189,6 @@ async function fetchCategories() {
     categoryOptions.value = cats.map(c => ({ label: c.categories, value: c.id }))
   } catch (err) {
     console.error('Failed to load categories', err)
-  }
-}
-
-async function fetchStaff() {
-  try {
-    const { data } = await api.get('/users')
-    staffOptions.value = (data.data || data || [])
-      .filter(user => user.role === 'STAFF')
-      .map(user => ({ label: user.name || `${user.first_name} ${user.last_name}`, value: user.id }))
-  } catch (err) {
-    console.error('Failed to load staff', err)
   }
 }
 

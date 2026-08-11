@@ -205,6 +205,7 @@ class TicketController extends Controller
             'assignedStaff',
             'problemCategory',
         ])
+            ->whereNull('assigned_staff_id')
             ->where('status', 'OPEN')
             ->latest()
             ->get();
