@@ -251,11 +251,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useAuthStore } from '../../stores/auth'
+import { ref, computed, onMounted, inject } from 'vue'
 import { api } from '../../boot/axios'
 import './DashboardPage.scss'
-const authStore = useAuthStore()
+const authStore = inject('authStore')
+
 
 // ── Greeting ──────────────────────────────────────────────────
 const firstName = computed(() => (authStore.userName ?? '').split(' ')[0] || 'Admin')

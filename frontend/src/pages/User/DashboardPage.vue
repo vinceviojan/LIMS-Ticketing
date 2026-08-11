@@ -82,14 +82,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, inject } from 'vue'
 import { useQuasar } from 'quasar'
-import { useAuthStore } from '../../stores/auth'
 import { api } from '../../boot/axios'
 import AddTicketModal from '../../components/AddTicketModal.vue'
 
 const $q = useQuasar()
-const authStore = useAuthStore()
+const authStore = inject('authStore')
 
 const showDialog = ref(false)
 const dialogPrefill = ref({})

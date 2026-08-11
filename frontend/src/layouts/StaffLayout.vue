@@ -44,8 +44,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, provide } from 'vue'
+import { useAuthStore } from '../stores/auth'
 import AppHeader from '../components/AppHeader.vue'
+
+const authStore = useAuthStore()
+provide('authStore', authStore)
+
 
 const drawerOpen = ref(true)
 

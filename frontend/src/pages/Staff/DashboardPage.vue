@@ -78,12 +78,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useQuasar } from 'quasar'
-import { useAuthStore } from '../../stores/auth'
 
 const $q = useQuasar()
-const authStore = useAuthStore()
+const authStore = inject('authStore')
 
 const firstName = computed(() => {
   const name = authStore.userName ?? ''

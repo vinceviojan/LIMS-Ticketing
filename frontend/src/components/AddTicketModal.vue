@@ -64,10 +64,12 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useQuasar } from 'quasar'
+import { ref, computed, watch, inject } from 'vue'
 import { api } from '../boot/axios'
-import { useAuthStore } from '../stores/auth'
+import { useQuasar } from 'quasar'
+
+const $q = useQuasar()
+const authStore = inject('authStore')
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -77,9 +79,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'refresh'])
-
-const $q = useQuasar()
-const authStore = useAuthStore()
 
 const isAdmin = computed(() => authStore.userRole === 'admin')
 
