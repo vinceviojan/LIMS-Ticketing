@@ -21,6 +21,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
+    Route::post('/update-password', [UserController::class, 'updatePassword']);
+
     Route::apiResource('users', UserController::class);
 
     // Tickets

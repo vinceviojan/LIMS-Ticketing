@@ -230,7 +230,7 @@ async function fetchStaff() {
 async function fetchTickets() {
   loading.value = true
   try {
-    const res = await api.get('/tickets')
+    const res = await api.get('/getTickets')
     const data = res.data?.data || res.data || []
 
     // Map backend array to UI properties internally
