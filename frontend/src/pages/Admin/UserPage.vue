@@ -177,15 +177,19 @@
           </div>
 
           <div class="user-page__form-row q-mt-sm">
-            <q-input
+            <q-select
               v-model="form.division"
+              :options="divisionOptions"
               label="Division"
               outlined dense
+              clearable
             />
-            <q-input
+            <q-select
               v-model="form.sections"
+              :options="sectionOptions"
               label="Sections"
               outlined dense
+              clearable
             />
           </div>
 
@@ -254,6 +258,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from '../../boot/axios'
+import { DIVISION_OPTIONS, SECTION_OPTIONS } from '../../constants/organization'
 import './UserPage.scss'
 const $q = useQuasar()
 
@@ -286,13 +291,15 @@ const form = ref(emptyForm())
 let editingId = null
 
 // ── Options ──────────────────────────────────────────────────
-const roleOptions   = ['ADMIN', 'STAFF', 'USER'].map(v => ({ label: v, value: v }))
-const statusOptions = [
+const roleOptions     = ['ADMIN', 'STAFF', 'USER'].map(v => ({ label: v, value: v }))
+const statusOptions   = [
   { label: 'Active',    value: 'ACTIVE' },
   { label: 'Inactive',  value: 'INACTIVE' },
   { label: 'Suspended', value: 'SUSPENDED' },
   { label: 'Archived',  value: 'ARCHIVED' },
 ]
+const divisionOptions = DIVISION_OPTIONS
+const sectionOptions  = SECTION_OPTIONS
 
 // ── Computed ─────────────────────────────────────────────────
 const activeCount  = computed(() => rows.value.filter(r => r.status?.toUpperCase() === 'ACTIVE').length)
