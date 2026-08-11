@@ -292,23 +292,8 @@ const paginationInfo = computed(() => {
 async function fetchTickets() {
   loading.value = true
   try {
-    const params = {
-      page: currentPage.value,
-      per_page: perPage.value,
-      status: activeTab.value,
-      priority: filterPriority.value,
-      search: search.value,
-    }
-    const res = await api.get('/tickets', { params })
-    const payload = res.data || {}
-    const rawList = payload.data || (Array.isArray(payload) ? payload : [])
-
-    if (payload.status_counts) {
-      statusCounts.value = payload.status_counts
-    }
-    totalTickets.value = payload.total ?? rawList.length
-    lastPage.value = payload.last_page ?? 1
-    currentPage.value = payload.current_page ?? 1
+    const res = await api.get('/getTickets')
+    const data = res.data?.data || res.data || []
 
     // Map backend array to UI properties internally
     tickets.value = rawList.map(t => ({
