@@ -24,7 +24,7 @@
         :key="tab.value"
         class="ticket-page__tab"
         :class="{ 'ticket-page__tab--active': activeTab === tab.value }"
-        @click="activeTab = tab.value"
+        @click="onTabChange(tab.value)"
       >
         <q-icon :name="tab.icon" size="16px" />
         {{ tab.label }}
@@ -39,6 +39,8 @@
         dense outlined clearable
         placeholder="Search tickets..."
         class="ticket-page__search"
+        @update:model-value="onSearchInput"
+        @clear="onSearchInput"
       >
         <template #prepend><q-icon name="search" /></template>
       </q-input>
@@ -50,6 +52,8 @@
         dense outlined clearable
         emit-value map-options
         class="ticket-page__filter"
+        @update:model-value="onPriorityChange"
+        @clear="onPriorityChange"
       />
 
       <q-space />
@@ -61,11 +65,11 @@
     </div>
 
     <!-- ── Ticket Views ────────────────────────────────────────── -->
-    <template v-if="!loading && filteredTickets.length">
+    <template v-if="!loading && tickets.length">
       <!-- Grid View -->
       <div v-if="displayMode === 'card'" class="ticket-page__grid">
         <div
-          v-for="ticket in filteredTickets"
+          v-for="ticket in tickets"
           :key="ticket.id"
           class="ticket-card"
           :class="`ticket-card--${ticket.priority?.toLowerCase()}`"
@@ -113,7 +117,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="ticket in filteredTickets" :key="ticket.id" @click="viewTicket(ticket)" class="cursor-pointer">
+            <tr v-for="ticket in tickets" :key="ticket.id" @click="viewTicket(ticket)" class="cursor-pointer">
               <td class="mini-table__id">{{ ticket.ticket_no || '#' + ticket.id }}</td>
               <td class="mini-table__title"><strong>{{ ticket.title }}</strong></td>
               <td>{{ ticket.description || '—' }}</td>
@@ -131,6 +135,26 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- ── Pagination ─────────────────────────────────────────── -->
+      <div class="ticket-page__pagination q-mt-lg flex items-center justify-between">
+        <div class="text-caption text-grey-7">
+          Showing {{ paginationInfo.from }}–{{ paginationInfo.to }} of {{ totalTickets }} tickets
+        </div>
+        <q-pagination
+          v-if="lastPage > 1"
+          v-model="currentPage"
+          :max="lastPage"
+          :max-pages="6"
+          direction-links
+          boundary-links
+          active-color="primary"
+          active-text-color="white"
+          color="grey-8"
+          flat
+          @update:model-value="fetchTickets"
+        />
       </div>
     </template>
 
@@ -181,6 +205,14 @@ const showAddDialog = ref(false)
 const showViewDialog = ref(false)
 const selectedTicket = ref(null)
 
+const currentPage = ref(1)
+const lastPage = ref(1)
+const totalTickets = ref(0)
+const perPage = ref(12)
+const statusCounts = ref({ ALL: 0, OPEN: 0, ESCALATED: 0, CLOSE: 0, CANCEL: 0 })
+
+let searchTimeout = null
+
 const priorityOptions = [
   { label: 'Low',      value: 'LOW'      },
   { label: 'Normal',   value: 'NORMAL'   },
@@ -227,19 +259,64 @@ async function fetchStaff() {
   }
 }
 
+function onSearchInput() {
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    currentPage.value = 1
+    fetchTickets()
+  }, 300)
+}
+
+function onTabChange(val) {
+  activeTab.value = val
+  currentPage.value = 1
+  fetchTickets()
+}
+
+function onPriorityChange() {
+  currentPage.value = 1
+  fetchTickets()
+}
+
+function tabCount(status) {
+  return statusCounts.value[status] ?? 0
+}
+
+const paginationInfo = computed(() => {
+  if (totalTickets.value === 0) return { from: 0, to: 0 }
+  const from = (currentPage.value - 1) * perPage.value + 1
+  const to = Math.min(currentPage.value * perPage.value, totalTickets.value)
+  return { from, to }
+})
+
 async function fetchTickets() {
   loading.value = true
   try {
-    const res = await api.get('/tickets')
-    const data = res.data?.data || res.data || []
+    const params = {
+      page: currentPage.value,
+      per_page: perPage.value,
+      status: activeTab.value,
+      priority: filterPriority.value,
+      search: search.value,
+    }
+    const res = await api.get('/tickets', { params })
+    const payload = res.data || {}
+    const rawList = payload.data || (Array.isArray(payload) ? payload : [])
+
+    if (payload.status_counts) {
+      statusCounts.value = payload.status_counts
+    }
+    totalTickets.value = payload.total ?? rawList.length
+    lastPage.value = payload.last_page ?? 1
+    currentPage.value = payload.current_page ?? 1
 
     // Map backend array to UI properties internally
-    tickets.value = data.map(t => ({
+    tickets.value = rawList.map(t => ({
       id: t.id,
       real_id: t.id,
       ticket_no: t.ticket_no,
       title: t.issue || 'No Title',
-      requester: t.user ? (t.user.first_name + ' ' + t.user.last_name) : 'Unknown',
+      requester: t.user ? (t.user.first_name + ' ' + t.user.last_name) : (t.user?.name || 'Unknown'),
       assignedStaff: t.assigned_staff ? (t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`) : '',
       assigned_staff_id: t.assigned_staff_id,
       category: t.problem_category ? t.problem_category.categories : 'Uncategorized',
@@ -247,6 +324,7 @@ async function fetchTickets() {
       priority: t.urgency || 'NORMAL',
       status: t.status || 'OPEN',
       description: t.description || '',
+      remarks: t.remarks || '',
       upload_intralab: t.upload_intralab,
       upload_limsportal: t.upload_limsportal,
       hasAttachments: Boolean(t.upload_intralab || t.upload_limsportal),
@@ -258,28 +336,6 @@ async function fetchTickets() {
   } finally {
     loading.value = false
   }
-}
-
-// ── Computed ─────────────────────────────────────────────────
-const filteredTickets = computed(() => {
-  let data = tickets.value
-  if (activeTab.value !== 'ALL') data = data.filter(t => t.status === activeTab.value)
-  if (filterPriority.value) data = data.filter(t => t.priority === filterPriority.value)
-  if (search.value) {
-    const q = search.value.toLowerCase()
-    data = data.filter(t =>
-      t.title?.toLowerCase().includes(q) ||
-      t.ticket_no?.toLowerCase().includes(q) ||
-      t.requester?.toLowerCase().includes(q) ||
-      t.category?.toLowerCase().includes(q)
-    )
-  }
-  return data
-})
-
-function tabCount(status) {
-  if (status === 'ALL') return tickets.value.length
-  return tickets.value.filter(t => t.status === status).length
 }
 
 // ── Actions ─────────────────────────────────────────────────
