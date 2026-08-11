@@ -312,12 +312,6 @@ class AdminController extends Controller
         });
     }
 
-use App\Models\Ticket;
-use App\Models\User;
-use Illuminate\Http\JsonResponse;
-
-class AdminController extends Controller
-{
     public function dashboard(): JsonResponse
     {
         return response()->json([
@@ -327,7 +321,6 @@ class AdminController extends Controller
         ]);
     }
 
-    /** @param class-string<\Illuminate\Database\Eloquent\Model> $model */
     private function countsFor(string $model, string $column, array $knownValues): array
     {
         $counts = $model::query()
@@ -335,9 +328,15 @@ class AdminController extends Controller
             ->groupBy($column)
             ->pluck('aggregate', $column)
             ->mapWithKeys(fn($count, $value) => [strtoupper((string) $value) => (int) $count])
-            ->mapWithKeys(fn ($count, $value) => [strtoupper((string) $value) => (int) $count])
             ->all();
 
         return array_replace(array_fill_keys($knownValues, 0), $counts);
+    }
+
+    public function updateAdminInfo(Request $request)
+    {
+        $user = $request->user();
+        $user->update($request->all());
+        return response()->json($user);
     }
 }

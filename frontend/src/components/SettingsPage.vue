@@ -38,15 +38,15 @@
           <div class="settings-panel__card">
             <div class="settings-form">
               <div class="settings-form__row">
-                <q-input v-model="profileForm.first_name" label="First Name" outlined dense />
-                <q-input v-model="profileForm.last_name"  label="Last Name"  outlined dense />
+                <q-input v-model="profileForm.first_name" label="First Name" outlined dense :disable="authStore.user?.role !== 'ADMIN'" />
+                <q-input v-model="profileForm.last_name"  label="Last Name"  outlined dense :disable="authStore.user?.role !== 'ADMIN'" />
               </div>
-              <q-input v-model="profileForm.email" label="Email Address" outlined dense type="email" class="q-mt-sm" />
+              <q-input v-model="profileForm.email" label="Email Address" outlined dense type="email" class="q-mt-sm" :disable="authStore.user?.role !== 'ADMIN'" />
               <div class="settings-form__row q-mt-sm">
-                <q-input v-model="profileForm.division"  label="Division"  outlined dense />
-                <q-input v-model="profileForm.sections"  label="Sections"  outlined dense />
+                <q-input v-model="profileForm.division"  label="Division"  outlined dense disable />
+                <q-input v-model="profileForm.sections"  label="Sections"  outlined dense disable />
               </div>
-              <q-input v-model="profileForm.position" label="Position" outlined dense class="q-mt-sm" />
+              <q-input v-model="profileForm.position" label="Position" outlined dense class="q-mt-sm" :disable="authStore.user?.role !== 'ADMIN'" />
               <div class="settings-form__actions" v-if="authStore.user?.role === 'ADMIN'">
                 <q-btn class="clay-btn clay-btn--primary" label="Save Profile" icon="save" unelevated no-caps @click="saveProfile" />
               </div>
@@ -223,8 +223,24 @@ function notify(type, message) {
   $q.notify({ type, message, position: 'top-right', timeout: 2000 })
 }
 
-function saveProfile() {
-  notify('positive', 'Profile saved successfully.')
+async function saveProfile() {
+  try {
+    const { data } = await api.put('/admin/update-admin-info', profileForm.value)
+    
+    authStore.user = data
+    localStorage.setItem('user', JSON.stringify(data))
+    
+    notify('positive', 'Profile saved successfully.')
+  } catch (error) {
+    let errorMsg = 'Failed to save profile.'
+    const data = error.response?.data
+    if (data?.message) {
+      errorMsg = data.message
+    } else if (data?.errors) {
+      errorMsg = Object.values(data.errors).flat()[0]
+    }
+    notify('negative', errorMsg)
+  }
 }
 
 async function savePassword() {

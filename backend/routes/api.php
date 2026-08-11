@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role:ADMIN')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
+        Route::put('/update-admin-info', [AdminController::class, 'updateAdminInfo']);
     });
 
     Route::prefix('problem-categories')->group(function () {
