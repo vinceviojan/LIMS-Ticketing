@@ -56,8 +56,15 @@
       </div>
     </div>
 
+    <!-- ── Loading State ─────────────────────────────────────────── -->
+    <div v-if="loading" class="column items-center justify-center q-pa-xl text-grey-6 bg-white rounded-lg" style="border: 1px solid #dbe2ea; min-height: 280px; border-radius: 12px;">
+      <q-spinner-dots size="52px" color="primary" />
+      <p class="text-h6 q-mt-md text-weight-medium text-grey-7">Loading problem categories…</p>
+    </div>
+
     <!-- ── Table ─────────────────────────────────────────────────── -->
     <q-table
+      v-else
       class="clay-table"
       :rows="filteredRows"
       :columns="columns"
