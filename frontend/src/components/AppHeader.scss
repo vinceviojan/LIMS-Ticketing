@@ -5,8 +5,8 @@
 
 // ---- Header shell ---------------------------------------------------------
 .app-header {
-    background: $min-surface !important;
-    border-bottom: 1px solid $min-border !important;
+    background: $primary-blue !important;
+    border-bottom: 1px solid $primary-blue !important;
     box-shadow: none !important;
 
     &__toolbar {
@@ -35,7 +35,7 @@
     font-family: 'Nunito', 'Quicksand', sans-serif;
     font-size: 1.15rem;
     font-weight: 800;
-    color: $min-text;
+    color: #ffffff !important;
     letter-spacing: 0.3px;
     white-space: nowrap;
 }
@@ -72,7 +72,7 @@
 .app-header__user-btn {
     border-radius: 8px;
     padding: 6px 14px;
-    color: $min-text !important;
+    color: #ffffff !important;
     font-family: 'Nunito', 'Quicksand', sans-serif;
     font-weight: 600;
     font-size: 0.88rem;
@@ -80,7 +80,7 @@
     transition: background 0.15s ease;
 
     &:hover {
-        background: $min-bg;
+        background: rgba(255, 255, 255, 0.15) !important;
     }
 
     .app-header__user-name {
