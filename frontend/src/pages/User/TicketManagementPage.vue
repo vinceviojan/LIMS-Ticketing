@@ -210,7 +210,7 @@ const categoryOptions = ref([])
 const tickets = ref([])
 
 const unratedTicket = computed(() => {
-  return tickets.value.find((t) => ['CLOSE'].includes(t.status) && (!t.rating || !t.feedback))
+  return tickets.value.find(t => ['CLOSE'].includes(t.status) && (!t.rating || !t.feedback || t.feedback.trim() === ''))
 })
 
 const statusTabs = [

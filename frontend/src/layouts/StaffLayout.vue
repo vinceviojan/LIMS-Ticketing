@@ -2,12 +2,13 @@
   <q-layout view="hHh Lpr lFf">
 
     <!-- ── Header ───────────────────────────────────────── -->
-    <AppHeader />
+    <AppHeader @toggle-drawer="toggleSidebar" />
 
     <!-- ── Sidebar ──────────────────────────────────────── -->
     <q-drawer
       v-model="drawerOpen"
       show-if-above
+      :mini="miniState"
       :width="220"
       :breakpoint="768"
       class="staff-sidebar"
@@ -15,7 +16,7 @@
       <q-scroll-area class="fit">
 
         <!-- ── Sidebar Logos ───────────────────────────── -->
-        <div class="staff-sidebar__logos">
+        <div class="staff-sidebar__logos" v-show="!miniState">
 
           <!-- BSWM Logo -->
           <img
@@ -99,13 +100,14 @@
 import { ref, provide } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import AppHeader from '../components/AppHeader.vue'
-
+import { useQuasar } from 'quasar'
 
 // ─────────────────────────────────────────────────────────
 // Authentication Store
 // ─────────────────────────────────────────────────────────
 
 const authStore = useAuthStore()
+const $q = useQuasar()
 
 provide('authStore', authStore)
 
@@ -115,6 +117,16 @@ provide('authStore', authStore)
 // ─────────────────────────────────────────────────────────
 
 const drawerOpen = ref(true)
+const miniState = ref(false)
+
+const toggleSidebar = () => {
+  if ($q.screen.width < 768) {
+    drawerOpen.value = !drawerOpen.value
+    miniState.value = false
+  } else {
+    miniState.value = !miniState.value
+  }
+}
 
 
 // ─────────────────────────────────────────────────────────
