@@ -173,7 +173,7 @@ import TicketListView from '../../components/TicketListView.vue'
 import './TicketManagementPage.scss'
 const $q = useQuasar()
 
-// State 
+// State
 const loading = ref(true)
 const search  = ref('')
 const filterPriority = ref(null)
@@ -210,7 +210,7 @@ const categoryOptions = ref([])
 const tickets = ref([])
 
 const unratedTicket = computed(() => {
-  return tickets.value.find(t => ['RESOLVED', 'CLOSE'].includes(t.status) && (!t.rating || !t.feedback))
+  return tickets.value.find((t) => ['CLOSE'].includes(t.status) && (!t.rating || !t.feedback))
 })
 
 const statusTabs = [
@@ -289,9 +289,9 @@ const filteredTickets = computed(() => {
   if (search.value) {
     const q = search.value.toLowerCase()
     data = data.filter(t =>
-      t.title?.toLowerCase().includes(q) ||
-      t.ticket_no?.toLowerCase().includes(q) ||
-      t.requester?.toLowerCase().includes(q) ||
+        t.title?.toLowerCase().includes(q) ||
+        t.ticket_no?.toLowerCase().includes(q) ||
+        t.requester?.toLowerCase().includes(q) ||
       t.category?.toLowerCase().includes(q)
     )
   }
