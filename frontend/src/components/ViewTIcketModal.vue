@@ -83,12 +83,19 @@
 
           <!-- Date Submitted -->
           <div class="col-12 col-sm-6">
-            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Date Submitted</label>
-            <q-input :model-value="displayCreated" outlined dense readonly bg-color="grey-1">
-              <template #prepend>
-                <q-icon name="event" color="primary" size="20px" />
-              </template>
-            </q-input>
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Date Submitted / Target Date</label>
+            <div class="row items-center gap-sm">
+              <q-input :model-value="displayCreated" outlined dense readonly bg-color="grey-1" class="col">
+                <template #prepend>
+                  <q-icon name="event" color="primary" size="20px" />
+                </template>
+              </q-input>
+              <q-input v-if="ticket?.target_resolution_date" :model-value="displayTargetDate" outlined dense readonly bg-color="orange-1" class="col" :input-style="{ color: '#c2410c', fontWeight: '700' }">
+                <template #prepend>
+                  <q-icon name="event_available" color="orange-9" size="20px" />
+                </template>
+              </q-input>
+            </div>
           </div>
         </div>
 
@@ -130,11 +137,11 @@
           </q-input>
         </div>
 
-        <!-- Resolution Remarks (if resolved) -->
-        <div v-if="ticket?.remarks" class="q-mb-md">
-          <label class="form-label text-weight-bold text-positive block q-mb-xs">Resolution Remarks</label>
+        <!-- Resolution & Remarks (if resolved) -->
+        <div v-if="ticket?.status === 'RESOLVED' || ticket?.status === 'CLOSE'" class="q-mb-md">
+          <label class="form-label text-weight-bold text-positive block q-mb-xs">Resolution</label>
           <q-input
-            :model-value="ticket.remarks"
+            :model-value="displayResolution"
             outlined dense readonly
             type="textarea" rows="2"
             bg-color="green-1"
@@ -142,6 +149,37 @@
           >
             <template #prepend>
               <q-icon name="task_alt" color="positive" size="20px" />
+            </template>
+          </q-input>
+          
+          <div class="row q-mt-xs text-caption text-grey-8 justify-between">
+            <div v-if="displayApprovedBy" class="q-mb-xs">
+              <q-icon name="verified_user" color="grey-6" size="16px" class="q-mr-xs"/>
+              Approved/Closed By: <span class="text-weight-bold">{{ displayApprovedBy }}</span>
+            </div>
+            <div v-if="ticket?.date_action" class="q-mb-xs">
+              <q-icon name="history" color="grey-6" size="16px" class="q-mr-xs"/>
+              Date of Action: <span class="text-weight-bold">{{ displayDateAction }}</span>
+            </div>
+            <div v-if="ticket?.date_closed" class="q-mb-xs">
+              <q-icon name="event_available" color="grey-6" size="16px" class="q-mr-xs"/>
+              Date Closed: <span class="text-weight-bold">{{ displayDateClosed }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Final Remarks -->
+        <div v-if="ticket?.final_remarks" class="q-mb-md">
+          <label class="form-label text-weight-bold text-grey-9 block q-mb-xs">Final Remarks (Admin)</label>
+          <q-input
+            :model-value="ticket.final_remarks"
+            outlined dense readonly
+            type="textarea" rows="2"
+            bg-color="grey-3"
+            input-class="text-grey-9 text-weight-medium"
+          >
+            <template #prepend>
+              <q-icon name="admin_panel_settings" color="grey-7" size="20px" />
             </template>
           </q-input>
         </div>
@@ -299,14 +337,15 @@
       </q-card-section>
       
       <q-card-section class="q-pt-sm">
-        <div class="text-body2 text-grey-8 q-mb-md">Please provide remarks or details regarding the resolution.</div>
+        <div class="text-body2 text-grey-8 q-mb-md">Please provide remarks/resolution details regarding the resolution.</div>
+        <label class="text-caption text-weight-bold text-grey-7 q-mb-xs block">Resolution / Remarks <span class="text-negative">*</span></label>
         <q-input
-          v-model="resolveRemarks"
+          v-model="resolveResolution"
           type="textarea"
           outlined dense
           autofocus
           placeholder="E.g. Fixed router settings and restarted..."
-          :rules="[val => !!val || 'Remarks are required']"
+          :rules="[val => !!val || 'Resolution is required']"
           bg-color="white"
         />
       </q-card-section>
@@ -345,7 +384,7 @@ const showDrawer = ref(false)
 const selectedAttachment = ref(null)
 
 const showResolveDialog = ref(false)
-const resolveRemarks = ref('')
+const resolveResolution = ref('')
 const resolving = ref(false)
 
 const isEndUser = computed(() => {
@@ -390,6 +429,11 @@ const displayCreated = computed(() => props.ticket?.created || props.ticket?.cre
 const displayTitle = computed(() => props.ticket?.title || props.ticket?.issue || '—')
 const displayCategory = computed(() => props.ticket?.category || props.ticket?.problem_category?.categories || 'Uncategorized')
 const displayDescription = computed(() => props.ticket?.description || props.ticket?.details || 'No description provided.')
+const displayResolution = computed(() => props.ticket?.resolution || props.ticket?.remarks || 'No resolution recorded.')
+const displayApprovedBy = computed(() => props.ticket?.approved_by || (props.ticket?.approvedBy?.first_name ? `${props.ticket.approvedBy.first_name} ${props.ticket.approvedBy.last_name}` : ''))
+const displayDateAction = computed(() => props.ticket?.date_action || '—')
+const displayDateClosed = computed(() => props.ticket?.date_closed || '—')
+const displayTargetDate = computed(() => props.ticket?.target_resolution_date || '—')
 
 // Color-coded text for status
 const statusColor = computed(() => {
@@ -514,13 +558,14 @@ async function claimTicket() {
 }
 
 async function resolveTicket() {
-  if (!resolveRemarks.value || !resolveRemarks.value.trim()) return
+  if (!resolveResolution.value || !resolveResolution.value.trim()) return
   const id = props.ticket.real_id || props.ticket.id
   
   resolving.value = true
   try {
     const res = await api.post(`/tickets/${id}/resolve`, {
-      remarks: resolveRemarks.value.trim()
+      remarks: resolveResolution.value.trim(),
+      resolution: resolveResolution.value.trim(),
     })
     $q.notify({
       type: 'positive',

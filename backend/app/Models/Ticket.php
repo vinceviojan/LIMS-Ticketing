@@ -25,12 +25,21 @@ class Ticket extends Model
         'remarks',
         'rating',
         'feedback',
+        'date_action',
+        'date_closed',
+        'resolution',
+        'target_resolution_date',
+        'final_remarks',
+        'approved_by_id',
     ];
 
     protected function casts(): array
     {
         return [
             'date_submitted' => 'datetime',
+            'date_action' => 'datetime',
+            'date_closed' => 'datetime',
+            'target_resolution_date' => 'date',
             'rating' => 'integer',
         ];
     }
@@ -71,5 +80,13 @@ class Ticket extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(TicketAttachment::class);
+    }
+
+    /**
+     * Get the user who approved/closed the ticket.
+     */
+    public function approvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'approved_by_id');
     }
 }

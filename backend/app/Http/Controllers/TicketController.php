@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use App\Models\Log;
+use App\Models\ProblemCategory;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +30,12 @@ class TicketController extends Controller
         'created_at',
         'rating',
         'feedback',
+        'resolution',
+        'final_remarks',
+        'target_resolution_date',
+        'date_action',
+        'date_closed',
+        'approved_by_id',
     ];
 
     /**
@@ -75,8 +83,9 @@ class TicketController extends Controller
         $query = (clone $baseQuery)
             ->select(self::LIST_COLUMNS)
             ->with([
-                'user:id,first_name,last_name,name',
+                'user:id,first_name,last_name,name,email',
                 'assignedStaff:id,first_name,last_name,name',
+                'approvedBy:id,first_name,last_name,name',
                 'problemCategory:id,categories',
                 'attachments',
             ]);
@@ -132,27 +141,11 @@ class TicketController extends Controller
 
         // For non-admin users, enforce creation guards
         if ($user->role !== 'ADMIN') {
-            // Guard 1: Check if the user has an active ticket that is not closed or canceled
-            $activeTicket = Ticket::where('user_id', $user->id)
-                ->whereNotIn('status', ['CLOSE', 'CANCEL'])
-                ->first();
-
-            if ($activeTicket) {
-                return response()->json([
-                    'message' => "You cannot create a new ticket while you have an active ticket ({$activeTicket->ticket_no}) in progress.",
-                    'active_ticket' => [
-                        'id' => $activeTicket->id,
-                        'ticket_no' => $activeTicket->ticket_no,
-                        'status' => $activeTicket->status,
-                    ],
-                ], 422);
-            }
-
             // Guard 2: Check if the user has a closed or resolved ticket missing rating or feedback
             $unratedTicket = Ticket::where('user_id', $user->id)
-                ->whereIn('status', ['CLOSE', 'RESOLVED'])
+                ->whereIn('status', ['CLOSE'])
                 ->where(function ($q) {
-                    $q->whereNull('rating')->orWhereNull('feedback');
+                    $q->whereNull('rating')->orWhereNull('feedback')->orWhere('feedback', '');
                 })
                 ->first();
 
@@ -174,7 +167,7 @@ class TicketController extends Controller
             'urgency' => ['nullable', 'string', 'in:LOW,NORMAL,HIGH'],
             'assigned_staff_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'STAFF')],
             'description' => ['nullable', 'string'],
-            'remarks' => ['nullable', 'string'],
+            'target_resolution_date' => ['sometimes', 'nullable', 'date'],
             'attachments.*' => ['nullable', 'file', 'mimes:pdf,png,jpg,jpeg,doc,docx', 'max:10240'],
             'gdrive_links' => ['nullable', 'array'],
             'gdrive_links.*' => ['nullable', 'string', 'url'],
@@ -248,7 +241,7 @@ class TicketController extends Controller
 
         $this->writeLog($request, $ticket, 'CREATE', "Ticket {$ticket->ticket_no} created: {$ticket->issue}.");
 
-        return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory', 'attachments']), 201);
+        return response()->json($ticket->load(['user', 'assignedStaff', 'approvedBy', 'problemCategory', 'attachments']), 201);
     }
 
     /**
@@ -278,7 +271,7 @@ class TicketController extends Controller
 
         return response()->json([
             'message' => 'Thank you for your rating and feedback!',
-            'ticket' => $ticket->fresh(['user', 'assignedStaff', 'problemCategory', 'attachments']),
+            'ticket' => $ticket->fresh(['user', 'assignedStaff', 'approvedBy', 'problemCategory', 'attachments']),
         ]);
     }
 
@@ -307,7 +300,7 @@ class TicketController extends Controller
 
         return response()->json([
             'message' => 'Ticket assigned successfully to you.',
-            'ticket' => $ticket->fresh(['user', 'assignedStaff', 'problemCategory', 'attachments']),
+            'ticket' => $ticket->fresh(['user', 'assignedStaff', 'approvedBy', 'problemCategory', 'attachments']),
         ]);
     }
 
@@ -337,6 +330,8 @@ class TicketController extends Controller
         $ticket->update([
             'status' => 'RESOLVED',
             'remarks' => $request->remarks,
+            'resolution' => $request->resolution,
+            'date_action' => now(),
         ]);
 
         $this->writeLog(
@@ -348,7 +343,7 @@ class TicketController extends Controller
 
         return response()->json([
             'message' => 'Ticket resolved successfully.',
-            'ticket' => $ticket->fresh(['user', 'assignedStaff', 'problemCategory', 'attachments']),
+            'ticket' => $ticket->fresh(['user', 'assignedStaff', 'approvedBy', 'problemCategory', 'attachments']),
         ]);
     }
 
@@ -358,7 +353,7 @@ class TicketController extends Controller
     public function show(Ticket $ticket)
     {
         $this->ensureTicketAccess(request(), $ticket);
-        return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory', 'logs', 'attachments']));
+        return response()->json($ticket->load(['user', 'assignedStaff', 'approvedBy', 'problemCategory', 'logs', 'attachments']));
     }
 
     public function getOpenTickets(Request $request)
@@ -366,6 +361,7 @@ class TicketController extends Controller
         $tickets = Ticket::with([
             'user',
             'assignedStaff',
+            'approvedBy',
             'problemCategory',
             'attachments',
         ])
@@ -389,12 +385,15 @@ class TicketController extends Controller
         }
 
         $validator = Validator::make($input, [
-            'status' => ['sometimes', 'string', 'in:OPEN,ESCALATED,CANCEL,CLOSE'],
-            'urgency' => ['sometimes', 'string', 'in:LOW,NORMAL,HIGH'],
+            'status' => ['sometimes', 'string', 'in:OPEN,ON-GOING,PENDING,ESCALATED,RESOLVED,CLOSE,CANCEL'],
+            'urgency' => ['sometimes', 'string', 'in:LOW,NORMAL,HIGH,CRITICAL'],
             'assigned_staff_id' => ['sometimes', 'nullable', Rule::exists('users', 'id')->where('role', 'STAFF')],
             'problem_category_id' => ['nullable', 'exists:problem_categories,id'],
             'description' => ['sometimes', 'nullable', 'string'],
             'remarks' => ['sometimes', 'nullable', 'string'],
+            'resolution' => ['sometimes', 'nullable', 'string'],
+            'final_remarks' => ['sometimes', 'nullable', 'string'],
+            'target_resolution_date' => ['sometimes', 'nullable', 'date'],
             'issue' => ['sometimes', 'required', 'string', 'max:255'],
             'rating' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:5'],
             'feedback' => ['sometimes', 'nullable', 'string'],
@@ -418,13 +417,19 @@ class TicketController extends Controller
             }
         }
         $original = $ticket->only(array_keys($changes));
+        if (isset($changes['status']) && $changes['status'] === 'CLOSE' && ($original['status'] ?? null) !== 'CLOSE') {
+            $changes['date_closed'] = now();
+            // Assign the active user who closed it, or fallback to user ID 1 as a default
+            $changes['approved_by_id'] = $request->user()->id ?? 1;
+        }
+
         $ticket->update($changes);
 
         if ($changes) {
             $descriptions = [];
             foreach ($changes as $field => $value) {
                 if (($original[$field] ?? null) !== $value) {
-                    $descriptions[] = $field . ' changed to ' . ($value ?? 'empty');
+                    $descriptions[] = $this->describeTicketChange($field, $value);
                 }
             }
             if ($descriptions) {
@@ -462,7 +467,7 @@ class TicketController extends Controller
             }
         }
 
-        return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory', 'attachments']));
+        return response()->json($ticket->load(['user', 'assignedStaff', 'approvedBy', 'problemCategory', 'attachments']));
     }
 
     /**
@@ -499,6 +504,30 @@ class TicketController extends Controller
             'message' => $message,
             'address' => $request->ip(),
         ]);
+    }
+
+    private function describeTicketChange(string $field, mixed $value): string
+    {
+        if ($field === 'assigned_staff_id') {
+            $staff = $value ? User::find($value) : null;
+            $name = $staff
+                ? (trim("{$staff->first_name} {$staff->last_name}") ?: $staff->name ?: $staff->email)
+                : 'Unassigned';
+
+            return "assigned staff changed to {$name}";
+        }
+
+        if ($field === 'problem_category_id') {
+            $category = $value ? ProblemCategory::find($value) : null;
+            $name = $category
+                ? "{$category->type} / {$category->categories}"
+                : 'No category';
+
+            return "problem category changed to {$name}";
+        }
+
+        $label = str_replace('_', ' ', $field);
+        return $label . ' changed to ' . ($value ?? 'empty');
     }
 
     private function storeAttachment(Request $request, string $field): ?string

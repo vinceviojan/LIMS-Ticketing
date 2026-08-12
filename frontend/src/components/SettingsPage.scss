@@ -206,6 +206,20 @@
         color: $min-text-soft;
         margin-top: 2px;
     }
+
+    &__empty {
+        font-size: 0.82rem;
+        color: $min-text-soft;
+        padding: 8px 0;
+    }
+}
+
+.session-pagination {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    margin-top: 4px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 // ── About ─────────────────────────────────────────────────────

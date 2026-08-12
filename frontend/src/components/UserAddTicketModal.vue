@@ -82,6 +82,25 @@
             </q-input>
           </div>
 
+          <!-- Target Resolution Date -->
+          <div class="row q-col-gutter-md q-mb-md">
+            <div class="col-12 col-sm-6">
+              <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">
+                Target Resolution Date <span class="text-caption text-grey-5">(Optional)</span>
+              </label>
+              <q-input
+                v-model="form.target_resolution_date"
+                outlined dense type="date"
+                bg-color="grey-1"
+                placeholder="Select target date"
+              >
+                <template #prepend>
+                  <q-icon name="event" color="primary" size="20px" />
+                </template>
+              </q-input>
+            </div>
+          </div>
+
           <!-- Attachments Dropzone -->
           <div class="q-mt-lg">
             <div class="row items-center justify-between q-mb-xs">
@@ -218,6 +237,7 @@ function emptyForm() {
     title: props.prefill?.title || '',
     description: props.prefill?.description || '',
     category: props.prefill?.category || null,
+    target_resolution_date: null,
     gdrive_links: [],
   }
 }
@@ -230,6 +250,7 @@ watch(() => props.modelValue, (isOpen) => {
       title: props.prefill?.title || '',
       description: props.prefill?.description || '',
       category: props.prefill?.category || null,
+      target_resolution_date: null,
       gdrive_links: [],
     }
     fileList.value = []
@@ -283,6 +304,7 @@ async function submitTicket() {
     payload.append('issue', form.value.title)
     payload.append('description', form.value.description || '')
     if (form.value.category) payload.append('problem_category_id', form.value.category)
+    if (form.value.target_resolution_date) payload.append('target_resolution_date', form.value.target_resolution_date)
 
     // Append multiple files
     if (fileList.value && fileList.value.length) {

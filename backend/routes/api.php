@@ -46,6 +46,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/attachments/{attachment}', [TicketController::class, 'viewAttachment']);
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
     Route::get('/getOpenTickets', [TicketController::class, 'getOpenTickets']);
+    Route::get('/logs', [LogController::class, 'index']);
+    Route::get('/logs/session', [LogController::class, 'getBySession']);
+
     // Reports & Analytics
     Route::get('/reports/analytics', [ReportController::class, 'analytics']);
 
@@ -56,6 +59,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/settings', [SystemSettingController::class, 'show']);
         Route::put('/settings', [SystemSettingController::class, 'update']);
     });
+
+    Route::get('/getDivisionAndSection', [AdminController::class, 'getDivisionAndSection']);
 
     Route::prefix('problem-categories')->group(function () {
         Route::get('/', [ProblemCategoryController::class, 'getAll']);

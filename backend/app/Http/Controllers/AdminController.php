@@ -337,6 +337,8 @@ class AdminController extends Controller
     public function updateAdminInfo(Request $request)
     {
         $user = $request->user();
+        $user->update($request->all());
+        $user->load(['division', 'section']);
         $validated = $request->validate([
             'first_name' => 'sometimes|required|string|max:255',
             'last_name' => 'sometimes|required|string|max:255',
@@ -363,4 +365,18 @@ class AdminController extends Controller
         }
         return response()->json($user);
     }
+
+    public function getDivisionAndSection(Request $request)
+    {
+        $user = $request->user();
+        $user->load(['division', 'section']);
+        return response()->json([
+            'message' => 'Successful',
+            'division' => $user->division,
+            'section' => $user->section,
+        ]);
+    }
+    
+
+    
 }

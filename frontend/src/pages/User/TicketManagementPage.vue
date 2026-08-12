@@ -16,7 +16,7 @@
         :disable="Boolean(unratedTicket)"
         @click="openCreateDialog"
       >
-        <q-tooltip v-if="unratedTicket" class="bg-amber-9">
+        <q-tooltip v-if="unratedTicket" class="bg-amber-9 text-weight-bold">
           Please rate your resolved ticket before submitting a new one.
         </q-tooltip>
       </q-btn>
@@ -173,7 +173,7 @@ import TicketListView from '../../components/TicketListView.vue'
 import './TicketManagementPage.scss'
 const $q = useQuasar()
 
-// State 
+// State
 const loading = ref(true)
 const search  = ref('')
 const filterPriority = ref(null)
@@ -210,7 +210,11 @@ const categoryOptions = ref([])
 const tickets = ref([])
 
 const unratedTicket = computed(() => {
-  return tickets.value.find(t => ['RESOLVED', 'CLOSE'].includes(t.status) && (!t.rating || !t.feedback))
+<<<<<<< HEAD
+  return tickets.value.find(t => ['CLOSE'].includes(t.status) && (!t.rating || !t.feedback || t.feedback.trim() === ''))
+=======
+  return tickets.value.find((t) => ['CLOSE'].includes(t.status) && (!t.rating || !t.feedback))
+>>>>>>> 48768233758be3f7c10f1f199a69cae7995efb8b
 })
 
 const statusTabs = [
@@ -289,9 +293,9 @@ const filteredTickets = computed(() => {
   if (search.value) {
     const q = search.value.toLowerCase()
     data = data.filter(t =>
-      t.title?.toLowerCase().includes(q) ||
-      t.ticket_no?.toLowerCase().includes(q) ||
-      t.requester?.toLowerCase().includes(q) ||
+        t.title?.toLowerCase().includes(q) ||
+        t.ticket_no?.toLowerCase().includes(q) ||
+        t.requester?.toLowerCase().includes(q) ||
       t.category?.toLowerCase().includes(q)
     )
   }

@@ -158,7 +158,7 @@
       :selectable="true"
       @view-ticket="viewTicket"
       @edit-ticket="editTicket"
-      @update:selected="tickets => selectedTickets = tickets"
+      @update:selected="ticket => selectedTickets = ticket ? [ticket] : []"
     />
 
     <!-- ── Create Dialog ───────────────────────────────────────── -->
@@ -285,16 +285,23 @@ async function fetchTickets() {
       ticket_no: t.ticket_no,
       title: t.issue || 'No Title',
       requester: t.user ? (t.user.first_name + ' ' + t.user.last_name) : 'Unknown',
+      email: t.user ? t.user.email : '',
       assignedStaff: t.assigned_staff ? (t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`) : '',
       assigned_staff_id: t.assigned_staff_id,
+      approved_by: t.approved_by ? (t.approved_by.name || `${t.approved_by.first_name} ${t.approved_by.last_name}`) : '',
       category: t.problem_category ? t.problem_category.categories : 'Uncategorized',
       problem_category_id: t.problem_category_id,
       priority: t.urgency || 'NORMAL',
       status: t.status || 'OPEN',
       description: t.description || '',
       remarks: t.remarks || '',
+      resolution: t.resolution || '',
+      final_remarks: t.final_remarks || '',
       rating: t.rating,
       feedback: t.feedback,
+      date_action: t.date_action ? new Date(t.date_action).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+      date_closed: t.date_closed ? new Date(t.date_closed).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+      target_resolution_date: t.target_resolution_date ? new Date(t.target_resolution_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
       attachments: t.attachments || [],
       upload_intralab: t.upload_intralab,
       upload_limsportal: t.upload_limsportal,
