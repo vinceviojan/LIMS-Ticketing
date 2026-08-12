@@ -70,14 +70,25 @@
 
           <div class="settings-panel__section-title">Sessions</div>
           <div class="settings-panel__card">
-            <div v-for="session in sessions" :key="session.id" class="session-row">
-              <q-icon :name="session.device === 'Desktop' ? 'computer' : 'smartphone'" size="20px" color="primary" />
+            <div v-if="sessions.length === 0" class="session-row__empty">No session logs found.</div>
+            <div v-for="(session, index) in paginatedSessions" :key="session.id" class="session-row">
+              <q-icon name="history" size="20px" color="primary" />
               <div class="session-row__info">
-                <div class="session-row__device">{{ session.device }} — {{ session.browser }}</div>
-                <div class="session-row__meta">{{ session.ip }} · {{ session.time }}</div>
+                <div class="session-row__device">{{ session.action }}</div>
+                <div class="session-row__meta">{{ session.address }} · {{ formatLogTime(session.created_at) }}</div>
               </div>
-              <q-badge v-if="session.current" color="positive" label="Current" />
-              <q-btn v-else flat no-caps dense label="Revoke" color="negative" size="sm" />
+              <q-badge v-if="sessionPage === 1 && index === 0" color="positive" label="Latest" />
+            </div>
+            <div v-if="sessions.length > sessionPageSize" class="session-pagination">
+              <q-pagination
+                v-model="sessionPage"
+                :max="sessionTotalPages"
+                :max-pages="5"
+                direction-links
+                flat
+                color="primary"
+                active-color="primary"
+              />
             </div>
           </div>
         </div>
@@ -172,16 +183,17 @@ const $q = useQuasar()
 const authStore = useAuthStore()
 
 const activeTab = ref('profile')
-
+const division = ref([])
+const section = ref([])
 const settingsTabs = computed(() => {
   const tabs = [
     { label: 'Profile',  value: 'profile',  icon: 'person'       },
     { label: 'Security', value: 'security', icon: 'lock'          }
   ]
   
-  if (authStore.user?.role === 'ADMIN') {
-    tabs.push({ label: 'System',   value: 'system',   icon: 'settings'      })
-  }
+  // if (authStore.user?.role === 'ADMIN') {
+  //   tabs.push({ label: 'System',   value: 'system',   icon: 'settings'      })
+  // }
   
   tabs.push({ label: 'About',    value: 'about',    icon: 'info_outline'  })
   
@@ -193,12 +205,15 @@ const initials = computed(() => {
   return name.split(' ').map(n => n[0]?.toUpperCase()).slice(0, 2).join('')
 })
 
+// const divSec = await loadDivisionAndSection();
+console.log(division.value);
+
 const profileForm = ref({
   first_name: authStore.user?.first_name ?? '',
   last_name:  authStore.user?.last_name  ?? '',
   email:      authStore.user?.email      ?? '',
-  division:   authStore.user?.division   ?? '',
-  sections:   authStore.user?.sections   ?? '',
+  division:   division.value?.name ?? '',
+  sections:   section.value?.name  ?? '',
   position:   authStore.user?.position   ?? '',
 })
 
@@ -213,11 +228,22 @@ const systemConfig = ref({
 
 const slaConfig = ref({ critical: 2, high: 8, medium: 24, low: 72 })
 
-const sessions = ref([
-  { id: 1, device: 'Desktop', browser: 'Chrome 126', ip: '192.168.1.5',  time: 'Active now',    current: true  },
-  { id: 2, device: 'Mobile',  browser: 'Safari 17',  ip: '192.168.1.20', time: '2 hours ago',   current: false },
-  { id: 3, device: 'Desktop', browser: 'Firefox 128',ip: '192.168.1.5',  time: 'Yesterday',     current: false },
-])
+const sessions = ref([])
+const sessionPage = ref(1)
+const sessionPageSize = 5
+
+const sessionTotalPages = computed(() => Math.ceil(sessions.value.length / sessionPageSize))
+
+const paginatedSessions = computed(() => {
+  const start = (sessionPage.value - 1) * sessionPageSize
+  return sessions.value.slice(start, start + sessionPageSize)
+})
+
+function formatLogTime(dateStr) {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  return date.toLocaleString('en-PH', { dateStyle: 'medium', timeStyle: 'short' })
+}
 
 function notify(type, message) {
   $q.notify({ type, message, position: 'top-right', timeout: 2000 })
@@ -316,6 +342,47 @@ async function saveSystem() {
     notify('negative', 'Failed to save system configuration.')
   }
 }
+async function loadDivisionAndSection() {
+  try {
+    const res = await api.get('/getDivisionAndSection')
+
+    division.value = res.data?.division ?? null
+    section.value = res.data?.section ?? null
+
+    profileForm.value.division = division.value?.name ?? ''
+    profileForm.value.sections = section.value?.name ?? ''
+
+    return {
+      division: division.value,
+      section: section.value
+    }
+  } catch (error) {
+    console.error('Failed to load division and section:', error)
+
+    division.value = null
+    section.value = null
+
+    profileForm.value.division = ''
+    profileForm.value.sections = ''
+
+    return {
+      division: null,
+      section: null
+    }
+  }
+}
+
+onMounted(async () => {
+  loadDivisionAndSection()
+
+  try {
+    const { data } = await api.get('/logs/session')
+    sessions.value = data
+  } catch (error) {
+    console.error('Failed to load session logs:', error)
+  }
+})
+
 </script>
 
 <style lang="scss" scoped>
