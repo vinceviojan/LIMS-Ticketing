@@ -4,7 +4,6 @@
 
       <!-- ── Brand / Logo ─────────────────────────────── -->
       <div class="app-header__brand">
-        <img src="../assets/bswm-logo-sidebar.png" alt="BSWM Logo" class="brand-mark-logo" />
         <span class="app-header__title">LIMS Helpdesk</span>
       </div>
 
