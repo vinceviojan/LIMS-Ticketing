@@ -11,7 +11,7 @@
       <q-separator />
 
       <q-form @submit="submitTicket">
-        <q-card-section class="ticket-page__dialog-body">
+        <q-card-section class="ticket-page__dialog-body" style="max-height: 65vh; overflow-y: auto;">
           <!-- ── Requester (auto-filled, read-only) ────────────── -->
           <div class="ticket-page__form-row">
             <q-input :model-value="requesterName" label="Requester" outlined dense readonly />

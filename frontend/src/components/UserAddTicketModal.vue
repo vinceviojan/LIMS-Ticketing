@@ -20,7 +20,7 @@
 
       <!-- ── Form ────────────────────────────────────────────────── -->
       <q-form @submit="submitTicket">
-        <q-card-section class="user-add-modal__body q-pa-lg">
+        <q-card-section class="user-add-modal__body q-pa-lg" style="max-height: 65vh; overflow-y: auto;">
           
           <!-- Two Column Row: Subject & Category -->
           <div class="row q-col-gutter-md q-mb-xs">
