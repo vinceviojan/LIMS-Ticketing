@@ -66,7 +66,7 @@
             </div>
             <div>
               <div class="user-page__user-name">{{ props.value }}</div>
-              <div class="user-page__user-division">{{ props.row.division }}</div>
+              <div class="user-page__user-division">{{ props.row.division?.name || 'No Division' }}</div>
             </div>
           </div>
         </q-td>
@@ -178,17 +178,22 @@
 
           <div class="user-page__form-row q-mt-sm">
             <q-select
-              v-model="form.division"
+              v-model="form.division_id"
               :options="divisionOptions"
               label="Division"
               outlined dense
+              emit-value
+              map-options
               clearable
+              @update:model-value="onDivisionChange"
             />
             <q-select
-              v-model="form.sections"
-              :options="sectionOptions"
-              label="Sections"
+              v-model="form.section_id"
+              :options="filteredSectionOptions"
+              label="Section"
               outlined dense
+              emit-value
+              map-options
               clearable
             />
           </div>
@@ -258,12 +263,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from '../../boot/axios'
-import { DIVISION_OPTIONS, SECTION_OPTIONS } from '../../constants/organization'
 import './UserPage.scss'
 const $q = useQuasar()
 
 // ── State ────────────────────────────────────────────────────
-const loading  = ref(false)
+const loading  = ref(true)
 const saving   = ref(false)
 const deleting = ref(false)
 const search   = ref('')
@@ -274,32 +278,43 @@ const showDeleteDialog = ref(false)
 const isEditing        = ref(false)
 const deleteTarget     = ref(null)
 
+const divisionsList    = ref([])
+const sectionsList     = ref([])
+
 const pagination = ref({ sortBy: 'first_name', descending: false, page: 1, rowsPerPage: 10 })
 
 const emptyForm = () => ({
-  first_name: '',
-  last_name:  '',
-  email:      '',
-  role:       '',
-  status:     'active',
-  division:   '',
-  sections:   '',
-  position:   '',
-  password:   '',
+  first_name:  '',
+  last_name:   '',
+  email:       '',
+  role:        'USER',
+  status:      'ACTIVE',
+  division_id: null,
+  section_id:  null,
+  position:    '',
+  password:    '',
 })
 const form = ref(emptyForm())
 let editingId = null
 
 // ── Options ──────────────────────────────────────────────────
-const roleOptions     = ['ADMIN', 'STAFF', 'USER'].map(v => ({ label: v, value: v }))
-const statusOptions   = [
+const roleOptions   = ['ADMIN', 'STAFF', 'USER'].map(v => ({ label: v, value: v }))
+const statusOptions = [
   { label: 'Active',    value: 'ACTIVE' },
   { label: 'Inactive',  value: 'INACTIVE' },
   { label: 'Suspended', value: 'SUSPENDED' },
   { label: 'Archived',  value: 'ARCHIVED' },
 ]
-const divisionOptions = DIVISION_OPTIONS
-const sectionOptions  = SECTION_OPTIONS
+
+const divisionOptions = computed(() => divisionsList.value.map(d => ({ label: d.name, value: d.id })))
+const filteredSectionOptions = computed(() => {
+  if (!form.value.division_id) {
+    return sectionsList.value.map(s => ({ label: s.name, value: s.id }))
+  }
+  return sectionsList.value
+    .filter(s => s.division_id === form.value.division_id)
+    .map(s => ({ label: s.name, value: s.id }))
+})
 
 // ── Computed ─────────────────────────────────────────────────
 const activeCount  = computed(() => rows.value.filter(r => r.status?.toUpperCase() === 'ACTIVE').length)
@@ -312,7 +327,7 @@ const columns = [
     field: row => `${row.first_name ?? ''} ${row.last_name ?? ''}`.trim(),
   },
   { name: 'email',    label: 'Email',    field: 'email',    align: 'left', sortable: true },
-  { name: 'sections', label: 'Sections', field: 'sections', align: 'left' },
+  { name: 'section',  label: 'Section',  field: row => row.section?.name || '—', align: 'left' },
   { name: 'role',     label: 'Role',     field: 'role',     align: 'left', sortable: true },
   { name: 'position', label: 'Position', field: 'position', align: 'left' },
   { name: 'status',   label: 'Status',   field: 'status',   align: 'center', sortable: true },
@@ -330,7 +345,29 @@ function notify(type, message) {
   $q.notify({ type, message, position: 'top-right', timeout: 2500 })
 }
 
+function onDivisionChange() {
+  if (form.value.section_id) {
+    const valid = sectionsList.value.some(s => s.id === form.value.section_id && s.division_id === form.value.division_id)
+    if (!valid) {
+      form.value.section_id = null
+    }
+  }
+}
+
 // ── CRUD ─────────────────────────────────────────────────────
+async function fetchOrganizationData() {
+  try {
+    const [divRes, secRes] = await Promise.all([
+      api.get('/divisions'),
+      api.get('/sections')
+    ])
+    divisionsList.value = divRes.data
+    sectionsList.value  = secRes.data
+  } catch (e) {
+    console.error('Failed to load division/section structure:', e)
+  }
+}
+
 async function fetchUsers() {
   loading.value = true
   try {
@@ -355,15 +392,15 @@ function openEditDialog(row) {
   isEditing.value = true
   editingId = row.id
   form.value = {
-    first_name: row.first_name,
-    last_name:  row.last_name,
-    email:      row.email,
-    role:       row.role?.toUpperCase(),
-    status:     row.status?.toUpperCase(),
-    division:   row.division,
-    sections:   row.sections,
-    position:   row.position,
-    password:   '',
+    first_name:  row.first_name,
+    last_name:   row.last_name,
+    email:       row.email,
+    role:        row.role?.toUpperCase(),
+    status:      row.status?.toUpperCase(),
+    division_id: row.division_id || row.division?.id || null,
+    section_id:  row.section_id || row.section?.id || null,
+    position:    row.position,
+    password:    '',
   }
   showDialog.value = true
 }
@@ -410,7 +447,10 @@ async function deleteUser() {
   }
 }
 
-onMounted(fetchUsers)
+onMounted(async () => {
+  await fetchOrganizationData()
+  await fetchUsers()
+})
 </script>
 
 <style lang="scss" scoped>

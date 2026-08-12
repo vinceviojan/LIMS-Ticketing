@@ -20,8 +20,8 @@ class SignupController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'division' => ['required', 'string', 'max:255'],
-            'sections' => ['required', 'string', 'max:255'],
+            'division_id' => ['nullable', 'exists:divisions,id'],
+            'section_id' => ['nullable', 'exists:sections,id'],
             'position' => ['required', 'string', 'max:255'],
         ]);
 
@@ -30,12 +30,14 @@ class SignupController extends Controller
             'last_name' => $data['last_name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'division' => $data['division'],
-            'sections' => $data['sections'],
+            'division_id' => $data['division_id'] ?? null,
+            'section_id' => $data['section_id'] ?? null,
             'position' => $data['position'],
             'role' => 'USER',
             'status' => 'ACTIVE',
         ]);
+
+        $user->load(['division', 'section']);
 
         Log::create([
             'user_id' => $user->id,

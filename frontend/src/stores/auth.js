@@ -20,6 +20,10 @@ export const useAuthStore = defineStore('auth', () => {
         if (!user.value) return ''
         return `${user.value.first_name || ''} ${user.value.last_name || ''}`.trim()
     })
+    const divisionId = computed(() => user.value?.division_id || null)
+    const sectionId = computed(() => user.value?.section_id || null)
+    const userDivision = computed(() => user.value?.division?.name || null)
+    const userSection = computed(() => user.value?.section?.name || null)
 
     // ---------------------------------------------------------------------------
     // Actions
@@ -118,6 +122,10 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated,
         userRole,
         userName,
+        divisionId,
+        sectionId,
+        userDivision,
+        userSection,
 
         // Actions
         login,

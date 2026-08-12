@@ -3,17 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Log;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -24,10 +22,11 @@ class User extends Authenticatable
     protected $fillable = [
         'first_name',
         'last_name',
+        'name',
         'email',
         'password',
-        'division',
-        'sections',
+        'division_id',
+        'section_id',
         'status',
         'role',
         'position',
@@ -56,19 +55,13 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the tickets created by the user.
-     */
-    public function tickets(): HasMany
+    public function division(): BelongsTo
     {
-        return $this->hasMany(Ticket::class);
+        return $this->belongsTo(Division::class);
     }
 
-    /**
-     * Get the logs associated with the user.
-     */
-    public function logs(): HasMany
+    public function section(): BelongsTo
     {
-        return $this->hasMany(Log::class);
+        return $this->belongsTo(Section::class);
     }
 }
