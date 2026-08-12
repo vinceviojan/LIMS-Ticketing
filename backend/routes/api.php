@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SystemSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:ADMIN')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
         Route::get('/logs', [LogController::class, 'index']);
+        Route::put('/update-admin-info', [AdminController::class, 'updateAdminInfo']);
+        Route::get('/settings', [SystemSettingController::class, 'show']);
+        Route::put('/settings', [SystemSettingController::class, 'update']);
     });
 
     Route::prefix('problem-categories')->group(function () {
