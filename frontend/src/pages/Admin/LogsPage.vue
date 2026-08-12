@@ -43,6 +43,14 @@
         class="logs-page__filter"
       />
 
+      <q-select
+        v-model="filterRole"
+        :options="roleOptions"
+        label="Role"
+        dense outlined clearable emit-value map-options
+        class="logs-page__filter"
+      />
+
       <div class="logs-page__stat-chip">
         <q-icon name="format_list_bulleted" size="15px" />
         <span>{{ filteredLogs.length }} entries</span>
@@ -56,6 +64,7 @@
         <span style="width:72px">Level</span>
         <span style="width:80px">Action</span>
         <span style="width:160px">User</span>
+        <span style="width:72px">Role</span>
         <span style="flex:1">Message</span>
         <span style="width:100px">IP Address</span>
       </div>
@@ -73,6 +82,7 @@
           <div class="clay-log-row__avatar">{{ log.user[0] }}</div>
           <span>{{ log.user }}</span>
         </div>
+        <span :class="['clay-log-row__role', `clay-log-row__role--${log.role.toLowerCase()}`]">{{ log.role }}</span>
         <span class="clay-log-row__msg">{{ log.message }}</span>
         <span class="clay-log-row__ip">{{ log.ip }}</span>
       </div>
@@ -97,6 +107,7 @@ const $q = useQuasar()
 const search = ref('')
 const filterLevel = ref(null)
 const filterAction = ref(null)
+const filterRole = ref(null)
 
 const levelOptions = [
   { label: 'Info',    value: 'info'    },
@@ -112,6 +123,8 @@ const actionOptions = [
   { label: 'Update',  value: 'UPDATE'  },
   { label: 'Delete',  value: 'DELETE'  },
 ]
+
+const roleOptions = ['ADMIN', 'STAFF', 'USER'].map(role => ({ label: role, value: role }))
 
 const logs = ref([/*
   { id: 1,  time: '05:12:04', level: 'success', action: 'LOGIN',   user: 'admin@lims.gov.ph',   message: 'Admin user authenticated successfully.',                ip: '192.168.1.5'  },
@@ -132,13 +145,14 @@ onMounted(fetchLogs)
 
 async function fetchLogs() {
   try {
-    const { data } = await api.get('/logs')
+    const { data } = await api.get('/admin/logs')
     logs.value = (data.data || data || []).map(log => ({
       id: log.id,
       time: new Date(log.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'medium' }),
       level: log.action === 'DELETE' ? 'warning' : log.action === 'CREATE' ? 'success' : 'info',
       action: log.action,
       user: log.user?.name || log.user?.email || 'System',
+      role: log.user?.role || 'SYSTEM',
       message: log.message || `${log.action} ticket activity.`,
       ip: log.address || '—',
     }))
@@ -152,11 +166,13 @@ const filteredLogs = computed(() => {
   let data = [...logs.value]
   if (filterLevel.value) data = data.filter(l => l.level === filterLevel.value)
   if (filterAction.value) data = data.filter(l => l.action === filterAction.value)
+  if (filterRole.value) data = data.filter(l => l.role === filterRole.value)
   if (search.value) {
     const q = search.value.toLowerCase()
     data = data.filter(l =>
       l.message.toLowerCase().includes(q) ||
       l.user.toLowerCase().includes(q) ||
+      l.role.toLowerCase().includes(q) ||
       l.ip.includes(q)
     )
   }
@@ -164,8 +180,8 @@ const filteredLogs = computed(() => {
 })
 
 function exportLogs() {
-  const rows = ['Timestamp,Level,Action,User,Message,IP Address', ...filteredLogs.value.map(log =>
-    [log.time, log.level, log.action, log.user, log.message, log.ip].map(value => `"${String(value).replaceAll('"', '""')}"`).join(',')
+  const rows = ['Timestamp,Level,Action,User,Role,Message,IP Address', ...filteredLogs.value.map(log =>
+    [log.time, log.level, log.action, log.user, log.role, log.message, log.ip].map(value => `"${String(value).replaceAll('"', '""')}"`).join(',')
   )]
   const url = URL.createObjectURL(new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8' }))
   const link = document.createElement('a')

@@ -45,13 +45,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/attachments/{attachment}', [TicketController::class, 'viewAttachment']);
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
     Route::get('/getOpenTickets', [TicketController::class, 'getOpenTickets']);
-    Route::get('/logs', [LogController::class, 'index']);
-
     // Reports & Analytics
     Route::get('/reports/analytics', [ReportController::class, 'analytics']);
 
     Route::middleware('role:ADMIN')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
+        Route::get('/logs', [LogController::class, 'index']);
     });
 
     Route::prefix('problem-categories')->group(function () {
