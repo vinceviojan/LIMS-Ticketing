@@ -59,6 +59,7 @@ const drawerOpen = ref(true)
 const navItems = [
   { label: 'Dashboard',           icon: 'dashboard',            to: '/admin/dashboard'           },
   { label: 'User Management',     icon: 'manage_accounts',      to: '/admin/users'               },
+  { label: 'Organization',        icon: 'account_tree',         to: '/admin/organization'        },
   { label: 'Tickets',             icon: 'confirmation_number',  to: '/admin/ticket-management'   },
   { label: 'Problem Categories',  icon: 'category',             to: '/admin/problem-categories'  },
   { label: 'Reports',             icon: 'bar_chart',            to: '/admin/reports'             },

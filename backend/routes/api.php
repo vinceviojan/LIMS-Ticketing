@@ -9,6 +9,9 @@ use App\Http\Controllers\ProblemCategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DivisionController;
+use App\Http\Controllers\SectionController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +21,8 @@ use App\Http\Controllers\AdminController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [SignupController::class, 'store']);
+Route::get('/attachments/{id}', [TicketController::class, 'viewAttachment']);
+
 Route::middleware('auth:sanctum')->group(function () {
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -27,14 +32,26 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('users', UserController::class);
 
-    // Tickets
+    // Organization Structure Routes
+    Route::apiResource('divisions', DivisionController::class);
+    Route::apiResource('sections', SectionController::class);
+
+    // Tickets & Attachments
     Route::apiResource('/tickets', TicketController::class);
+    Route::post('/tickets/{ticket}/rating', [TicketController::class, 'submitRating']);
+    Route::post('/tickets/{ticket}/assign-self', [TicketController::class, 'assignSelf']);
+    Route::post('/tickets/{ticket}/resolve', [TicketController::class, 'resolveTicket']);
     Route::get('/tickets/{ticket}/attachment/{type}', [TicketController::class, 'attachment']);
+    Route::get('/attachments/{attachment}', [TicketController::class, 'viewAttachment']);
     Route::get('/getTickets', [TicketController::class, 'getTickets']);
     Route::get('/getOpenTickets', [TicketController::class, 'getOpenTickets']);
+    Route::get('/logs', [LogController::class, 'index']);
+
+    // Reports & Analytics
+    Route::get('/reports/analytics', [ReportController::class, 'analytics']);
+
     Route::middleware('role:ADMIN')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
-        Route::get('/logs', [LogController::class, 'index']);
     });
 
     Route::prefix('problem-categories')->group(function () {

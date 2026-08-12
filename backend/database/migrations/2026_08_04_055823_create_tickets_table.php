@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,8 +19,6 @@ return new class extends Migration
             $table->timestamp('date_submitted')->useCurrent();
             $table->enum('status', ['OPEN', 'ESCALATED', 'CANCEL', 'CLOSE'])->default('OPEN');
             $table->enum('urgency', ['LOW', 'NORMAL', 'HIGH'])->default('NORMAL');
-            $table->string('upload_intralab')->nullable();
-            $table->string('upload_limsportal')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
         });

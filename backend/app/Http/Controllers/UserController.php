@@ -17,7 +17,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::with(['division', 'section']);
 
         if ($search = $request->query('search')) {
             $query->where(function ($q) use ($search) {
@@ -50,8 +50,8 @@ class UserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8'],
-            'division' => ['nullable', 'string', 'max:255'],
-            'sections' => ['nullable', 'string', 'max:255'],
+            'division_id' => ['nullable', 'exists:divisions,id'],
+            'section_id' => ['nullable', 'exists:sections,id'],
             'status' => ['nullable', 'string', 'in:ACTIVE,INACTIVE,SUSPENDED,ARCHIVED'],
             'role' => ['nullable', 'string', 'in:USER,STAFF,ADMIN'],
             'position' => ['nullable', 'string', 'max:255'],
@@ -66,6 +66,7 @@ class UserController extends Controller
         $data['password'] = Hash::make($data['password']);
 
         $user = User::create($data);
+        $user->load(['division', 'section']);
 
         $this->writeLog($request, 'CREATE', "User #{$user->id} created: {$user->first_name} {$user->last_name} ({$user->email}), role {$user->role}.");
 
@@ -77,7 +78,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return response()->json($user);
+        return response()->json($user->load(['division', 'section']));
     }
 
     /**
@@ -105,8 +106,8 @@ class UserController extends Controller
             ],
             'password' => ['sometimes', 'nullable', 'string', 'min:8'],
             'current_password' => ['sometimes', 'required', 'current_password:sanctum'],
-            'division' => ['nullable', 'string', 'max:255'],
-            'sections' => ['nullable', 'string', 'max:255'],
+            'division_id' => ['nullable', 'exists:divisions,id'],
+            'section_id' => ['nullable', 'exists:sections,id'],
             'status' => ['nullable', 'string', 'in:ACTIVE,INACTIVE,SUSPENDED,ARCHIVED'],
             'role' => ['nullable', 'string', 'in:USER,STAFF,ADMIN'],
             'position' => ['nullable', 'string', 'max:255'],
@@ -132,9 +133,10 @@ class UserController extends Controller
             );
         }
 
-        $trackedFields = ['first_name', 'last_name', 'email', 'division', 'sections', 'status', 'role', 'position'];
+        $trackedFields = ['first_name', 'last_name', 'email', 'division_id', 'section_id', 'status', 'role', 'position'];
         $original = $user->only($trackedFields);
         $user->update($data);
+        $user->load(['division', 'section']);
 
         $changes = [];
         foreach ($user->getChanges() as $field => $value) {
@@ -189,7 +191,7 @@ class UserController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        if($input['password'] !== $input['confirm_password']){
+        if ($input['password'] !== $input['confirm_password']) {
             return response()->json(['errors' => 'Password and confirm password does not match'], 400);
         }
 

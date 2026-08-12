@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Log;
-use App\Models\Ticket;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -26,6 +26,7 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = Auth::user();
+        $user->load(['division', 'section']);
 
         // Check if the user account is active
         if ($user->status !== 'ACTIVE') {
@@ -50,8 +51,10 @@ class AuthController extends Controller
                 'last_name' => $user->last_name,
                 'email' => $user->email,
                 'role' => $user->role,
+                'division_id' => $user->division_id,
+                'section_id' => $user->section_id,
                 'division' => $user->division,
-                'sections' => $user->sections,
+                'section' => $user->section,
                 'position' => $user->position,
                 'status' => $user->status,
             ],
@@ -79,6 +82,7 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
+        $user->load(['division', 'section']);
 
         return response()->json([
             'user' => [
@@ -87,8 +91,10 @@ class AuthController extends Controller
                 'last_name' => $user->last_name,
                 'email' => $user->email,
                 'role' => $user->role,
+                'division_id' => $user->division_id,
+                'section_id' => $user->section_id,
                 'division' => $user->division,
-                'sections' => $user->sections,
+                'section' => $user->section,
                 'position' => $user->position,
                 'status' => $user->status,
             ],
