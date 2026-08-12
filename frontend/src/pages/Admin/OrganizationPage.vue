@@ -47,6 +47,19 @@
         </template>
       </q-input>
 
+      <q-select
+        v-if="activeTab === 'sections'"
+        v-model="sectionDivisionFilter"
+        :options="divisionOptions"
+        label="Filter by Division"
+        dense
+        outlined
+        clearable
+        emit-value
+        map-options
+        class="org-page__division-filter"
+      />
+
       <div class="org-page__stat-chips">
         <div class="org-stat-chip org-stat-chip--total">
           <q-icon name="layers" size="15px" />
@@ -188,6 +201,7 @@ const loading   = ref(false)
 const saving    = ref(false)
 const deleting  = ref(false)
 const search    = ref('')
+const sectionDivisionFilter = ref(null)
 
 const divisions = ref([])
 const sections  = ref([])
@@ -263,6 +277,22 @@ async function fetchAllData() {
   }
 }
 
+async function fetchSections() {
+  loading.value = true
+  try {
+    const params = sectionDivisionFilter.value
+      ? { division_id: sectionDivisionFilter.value }
+      : {}
+    const { data } = await api.get('/sections', { params })
+    sections.value = data
+  } catch {
+    sections.value = []
+    notify('negative', 'Failed to load sections.')
+  } finally {
+    loading.value = false
+  }
+}
+
 function openCreateDialog() {
   isEditing.value = false
   editingId = null
@@ -327,6 +357,8 @@ watch(activeTab, () => {
   search.value = ''
 })
 
+watch(sectionDivisionFilter, fetchSections)
+
 onMounted(fetchAllData)
 </script>
 
@@ -375,6 +407,14 @@ onMounted(fetchAllData)
     min-width: 240px;
     flex: 1;
     max-width: 340px;
+    :deep(.q-field__control) {
+      border-radius: 8px;
+      background: $min-surface;
+    }
+  }
+
+  &__division-filter {
+    width: 240px;
     :deep(.q-field__control) {
       border-radius: 8px;
       background: $min-surface;
