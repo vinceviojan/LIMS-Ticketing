@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Ticket;
 use App\Models\Log;
+use App\Models\ProblemCategory;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -424,7 +426,7 @@ class TicketController extends Controller
             $descriptions = [];
             foreach ($changes as $field => $value) {
                 if (($original[$field] ?? null) !== $value) {
-                    $descriptions[] = $field . ' changed to ' . ($value ?? 'empty');
+                    $descriptions[] = $this->describeTicketChange($field, $value);
                 }
             }
             if ($descriptions) {
@@ -499,6 +501,30 @@ class TicketController extends Controller
             'message' => $message,
             'address' => $request->ip(),
         ]);
+    }
+
+    private function describeTicketChange(string $field, mixed $value): string
+    {
+        if ($field === 'assigned_staff_id') {
+            $staff = $value ? User::find($value) : null;
+            $name = $staff
+                ? (trim("{$staff->first_name} {$staff->last_name}") ?: $staff->name ?: $staff->email)
+                : 'Unassigned';
+
+            return "assigned staff changed to {$name}";
+        }
+
+        if ($field === 'problem_category_id') {
+            $category = $value ? ProblemCategory::find($value) : null;
+            $name = $category
+                ? "{$category->type} / {$category->categories}"
+                : 'No category';
+
+            return "problem category changed to {$name}";
+        }
+
+        $label = str_replace('_', ' ', $field);
+        return $label . ' changed to ' . ($value ?? 'empty');
     }
 
     private function storeAttachment(Request $request, string $field): ?string
