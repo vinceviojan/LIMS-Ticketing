@@ -21,16 +21,17 @@ class Ticket extends Model
         'date_submitted',
         'status',
         'urgency',
-        'upload_intralab',
-        'upload_limsportal',
         'description',
         'remarks',
+        'rating',
+        'feedback',
     ];
 
     protected function casts(): array
     {
         return [
             'date_submitted' => 'datetime',
+            'rating' => 'integer',
         ];
     }
 
@@ -62,5 +63,13 @@ class Ticket extends Model
     public function logs(): HasMany
     {
         return $this->hasMany(Log::class);
+    }
+
+    /**
+     * Get the attachments for the ticket.
+     */
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(TicketAttachment::class);
     }
 }

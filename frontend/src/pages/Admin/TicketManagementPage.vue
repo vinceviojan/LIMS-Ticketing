@@ -1,27 +1,68 @@
 <template>
-  <q-page class="ticket-page q-pa-lg bg-grey-1">
+  <q-page id="ticket-management-page" class="ticket-page q-pa-lg bg-grey-1">
     <!-- ── Header ──────────────────────────────────────────────── -->
-    <div class="row items-center justify-between q-mb-lg">
+    <div id="ticket-management-header" class="row items-center justify-between q-mb-lg">
       <div>
         <div class="text-h5 text-weight-bolder text-dark">Ticket Management</div>
         <div class="text-caption text-grey-7 q-mt-xs">Review, assign and resolve support tickets</div>
       </div>
-      <q-btn
-        color="primary"
-        label="New Ticket"
-        icon="add_circle_outline"
-        unelevated
-        no-caps
-        class="border-radius-8 text-weight-bold"
+      <div class="row q-gutter-sm">
+        <q-btn
+          id="export-selected-btn"
+          class="clay-btn"
+          :label="selectedTickets.length ? `Export Selected (${selectedTickets.length})` : 'Export Selected'"
+          icon="picture_as_pdf"
+          unelevated
+          no-caps
+          :disable="!selectedTickets.length"
+          :loading="exportingSelected"
+          @click="exportSelected"
+        >
+          <q-tooltip v-if="!selectedTickets.length">Select one or more tickets first</q-tooltip>
+        </q-btn>
+        <q-btn-dropdown
+          id="export-dropdown-btn"
+          class="clay-btn"
+          label="Export"
+          icon="file_download"
+          unelevated
+          no-caps
+          :loading="exporting"
+        >
+          <q-list>
+            <q-item id="export-csv-item" clickable v-close-popup @click="handleExport('csv')">
+              <q-item-section avatar><q-icon name="grid_on" /></q-item-section>
+              <q-item-section>Export CSV</q-item-section>
+            </q-item>
+            <q-item id="export-json-item" clickable v-close-popup @click="handleExport('json')">
+              <q-item-section avatar><q-icon name="data_object" /></q-item-section>
+              <q-item-section>Export JSON</q-item-section>
+            </q-item>
+            <q-item id="export-pdf-all-item" clickable v-close-popup @click="handleExport('pdf')">
+              <q-item-section avatar><q-icon name="picture_as_pdf" /></q-item-section>
+              <q-item-section>Export PDF (all tickets)</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+        <q-btn
+          id="new-ticket-btn"
+          color="primary"
+          label="New Ticket"
+          icon="add_circle_outline"
+          unelevated
+          no-caps
+          class="border-radius-8 text-weight-bold"
         @click="openCreateDialog"
-      />
+        />
+      </div>
     </div>
 
     <!-- ── Status Tabs ─────────────────────────────────────────── -->
-    <div class="row q-gutter-sm q-mb-lg">
+    <div id="status-tabs" class="row q-gutter-sm q-mb-lg">
       <q-btn
         v-for="tab in statusTabs"
         :key="tab.value"
+        :id="'status-tab-' + tab.value.toLowerCase()"
         :color="activeTab === tab.value ? 'primary' : 'grey-8'"
         :flat="activeTab !== tab.value"
         :unelevated="activeTab === tab.value"
@@ -39,8 +80,9 @@
     </div>
 
     <!-- ── Toolbar ─────────────────────────────────────────────── -->
-    <div class="row items-center q-gutter-md q-mb-lg flex-wrap">
+    <div id="ticket-toolbar" class="row items-center q-gutter-md q-mb-lg flex-wrap">
       <q-input
+        id="ticket-search-input"
         v-model="search"
         dense outlined clearable
         placeholder="Search tickets..."
@@ -52,6 +94,7 @@
       </q-input>
 
       <q-select
+        id="priority-filter-select"
         v-model="filterPriority"
         :options="priorityOptions"
         label="Priority"
@@ -63,6 +106,7 @@
       />
 
       <q-select
+        id="category-filter-select"
         v-model="filterCategory"
         :options="categoryOptions"
         label="Category"
@@ -74,6 +118,7 @@
       />
 
       <q-select
+        id="sort-by-select"
         v-model="sortBy"
         :options="sortOptions"
         label="Sort By"
@@ -86,6 +131,7 @@
 
       <q-btn
         v-if="search || filterPriority || filterCategory || sortBy !== 'newest'"
+        id="reset-filters-btn"
         flat dense no-caps
         color="negative"
         icon="restart_alt"
@@ -96,14 +142,15 @@
 
       <q-space />
 
-      <q-btn-group outline class="bg-white border-radius-8">
-        <q-btn :color="displayMode === 'card' ? 'primary' : 'grey-7'" :flat="displayMode !== 'card'" unelevated icon="grid_view" @click="displayMode = 'card'" />
-        <q-btn :color="displayMode === 'table' ? 'primary' : 'grey-7'" :flat="displayMode !== 'table'" unelevated icon="list" @click="displayMode = 'table'" />
+      <q-btn-group id="display-mode-toggle" outline class="bg-white border-radius-8">
+        <q-btn id="display-mode-card-btn" :color="displayMode === 'card' ? 'primary' : 'grey-7'" :flat="displayMode !== 'card'" unelevated icon="grid_view" @click="displayMode = 'card'" />
+        <q-btn id="display-mode-table-btn" :color="displayMode === 'table' ? 'primary' : 'grey-7'" :flat="displayMode !== 'table'" unelevated icon="list" @click="displayMode = 'table'" />
       </q-btn-group>
     </div>
 
     <!-- ── Ticket Views (Reusable Component) ─────────────────── -->
     <TicketListView
+      id="ticket-list-view"
       :tickets="filteredTickets"
       :displayMode="displayMode"
       :loading="loading"
@@ -111,10 +158,12 @@
       :selectable="true"
       @view-ticket="viewTicket"
       @edit-ticket="editTicket"
+      @update:selected="tickets => selectedTickets = tickets"
     />
 
     <!-- ── Create Dialog ───────────────────────────────────────── -->
     <AddTicketModal
+      id="add-ticket-modal"
       v-model="showAddDialog"
       :category-options="categoryOptions"
       :staff-options="staffOptions"
@@ -124,8 +173,9 @@
 
     <!-- ── View/Edit Dialog ────────────────────────────────────── -->
     <EditTicketModal
+      id="edit-ticket-modal"
       v-model="showEditDialog"
-      :ticket="selectedTicket"
+      :ticket="selectedTicketForModal"
       v-model:mode="modalMode"
       :category-options="categoryOptions"
       :staff-options="staffOptions"
@@ -143,6 +193,7 @@ import { api } from '../../boot/axios'
 import AddTicketModal from '../../components/AddTicketModal.vue'
 import EditTicketModal from '../../components/EditTicketModal.vue'
 import TicketListView from '../../components/TicketListView.vue'
+import { exportTicketToPdf, exportTicketsToPdf, exportTicketsToCSV, exportTicketsToJSON } from '../../assets/TicketExport.js'
 import './TicketManagementPage.scss'
 const $q = useQuasar()
 
@@ -158,7 +209,12 @@ const displayMode = ref('table')
 const showAddDialog = ref(false)
 const showEditDialog = ref(false)
 const modalMode = ref('view')
-const selectedTicket = ref(null)
+// Ticket opened via the view/edit dialog (separate from the checkbox selection below)
+const selectedTicketForModal = ref(null)
+// All tickets currently checked in TicketListView (table checkboxes / card checkboxes)
+const selectedTickets = ref([])
+const exporting = ref(false)
+const exportingSelected = ref(false)
 
 const priorityOptions = [
   { label: 'Low',      value: 'LOW'      },
@@ -181,6 +237,8 @@ const tickets = ref([])
 const statusTabs = [
   { label: 'All',      value: 'ALL',      icon: 'list_alt'       },
   { label: 'Open',     value: 'OPEN',     icon: 'inbox'          },
+  { label: 'On-going', value: 'ON-GOING', icon: 'autorenew'      },
+  { label: 'Resolved', value: 'RESOLVED', icon: 'task'           },
   { label: 'Escalated',value: 'ESCALATED',icon: 'pending_actions'},
   { label: 'Closed',   value: 'CLOSE',    icon: 'check_box'      },
   { label: 'Canceled', value: 'CANCEL',   icon: 'cancel'         },
@@ -234,9 +292,13 @@ async function fetchTickets() {
       priority: t.urgency || 'NORMAL',
       status: t.status || 'OPEN',
       description: t.description || '',
+      remarks: t.remarks || '',
+      rating: t.rating,
+      feedback: t.feedback,
+      attachments: t.attachments || [],
       upload_intralab: t.upload_intralab,
       upload_limsportal: t.upload_limsportal,
-      hasAttachments: Boolean(t.upload_intralab || t.upload_limsportal),
+      hasAttachments: Boolean((t.attachments && t.attachments.length) || t.upload_intralab || t.upload_limsportal),
       created: new Date(t.date_submitted || t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     }))
   } catch (err) {
@@ -302,62 +364,56 @@ function openCreateDialog() {
 
 function viewTicket(ticket) {
   modalMode.value = 'view'
-  selectedTicket.value = ticket
+  selectedTicketForModal.value = ticket
   showEditDialog.value = true
 }
 
 function editTicket(ticket) {
   modalMode.value = 'edit'
-  selectedTicket.value = ticket
+  selectedTicketForModal.value = ticket
   showEditDialog.value = true
+}
+
+// ── Export ──────────────────────────────────────────────────
+async function exportSelected() {
+  const selection = selectedTickets.value
+  if (!selection.length) {
+    $q.notify({ type: 'warning', message: 'Select one or more tickets first.' })
+    return
+  }
+  exportingSelected.value = true
+  try {
+    if (selection.length === 1) {
+      await exportTicketToPdf(selection[0])
+    } else {
+      await exportTicketsToPdf(selection, `selected-tickets-${selection.length}.pdf`)
+    }
+  } catch (err) {
+    console.error('Failed to export selected tickets', err)
+    $q.notify({ type: 'negative', message: 'Failed to export selected tickets.' })
+  } finally {
+    exportingSelected.value = false
+  }
+}
+
+async function handleExport(format) {
+  if (!tickets.value.length) {
+    $q.notify({ type: 'warning', message: 'No tickets to export.' })
+    return
+  }
+  exporting.value = true
+  try {
+    if (format === 'csv') exportTicketsToCSV(tickets.value)
+    else if (format === 'json') exportTicketsToJSON(tickets.value)
+    else if (format === 'pdf') await exportTicketsToPdf(tickets.value)
+  } catch (err) {
+    console.error('Failed to export tickets', err)
+    $q.notify({ type: 'negative', message: 'Failed to export tickets.' })
+  } finally {
+    exporting.value = false
+  }
 }
 </script>
 
 <style scoped>
-.border-radius-8 {
-  border-radius: 8px;
-}
-.border-radius-12 {
-  border-radius: 12px;
-}
-.uppercase-header th {
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.75rem;
-}
-
-.ticket-card {
-  border-radius: 14px;
-  border: 1px solid #dbe2ea;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  height: 210px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.ticket-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.03) !important;
-  border-color: #cbd5e1;
-}
-
-.dashed-top {
-  border-top: 1px dashed #e2e8f0;
-}
-
-.status-tag,
-.priority-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 6px;
-  border: 1px solid;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  line-height: 1.2;
-}
 </style>

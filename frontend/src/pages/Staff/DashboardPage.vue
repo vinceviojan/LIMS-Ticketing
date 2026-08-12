@@ -27,9 +27,23 @@
       </div>
     </div>
 
-    <!-- ── Open Ticket Queue ────────────────────────────────────── -->
-    <div class="staff-dash__section-title">Unassigned Tickets</div>
-    <q-table
+    <!-- ── Priority Overview and Queue ──────────────────────────── -->
+    <div class="row q-col-gutter-lg q-mt-sm">
+      <div class="col-12 col-md-4 col-lg-3">
+        <div class="staff-dash__section-title">Priority Overview</div>
+        <q-card flat bordered class="staff-priority-card q-mt-md">
+          <div class="staff-priority-pie" :style="{ background: priorityPieChart }"></div>
+          <div class="staff-priority-legend">
+            <div class="legend-item"><div class="legend-color bg-orange-8"></div>High ({{ priorityStats.high }})</div>
+            <div class="legend-item"><div class="legend-color bg-amber-8"></div>Normal ({{ priorityStats.normal }})</div>
+            <div class="legend-item"><div class="legend-color bg-green-5"></div>Low ({{ priorityStats.low }})</div>
+          </div>
+        </q-card>
+      </div>
+      
+      <div class="col-12 col-md-8 col-lg-9">
+        <div class="staff-dash__section-title">Unassigned Tickets</div>
+        <q-table
       :rows="tickets"
       :columns="ticketColumns"
       row-key="id"
@@ -89,12 +103,14 @@
         </div>
       </template>
     </q-table>
+      </div> <!-- End col -->
+    </div> <!-- End row -->
 
     <!-- ── Ticket Details Modal ─────────────────────────────────── -->
-    <GetTicketModal
+    <ViewTicketModal
       v-model="showTicketModal"
       :ticket="selectedTicket"
-      :priority-options="priority"
+      @refresh="fetchAssignedTickets(); fetchTickets();"
     />
 
     <!-- ── Category Browse ──────────────────────────────────────── -->
@@ -114,7 +130,7 @@
 import { ref, computed, inject, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from '../../boot/axios'
-import GetTicketModal from '@/components/GetTicketModal.vue'
+import ViewTicketModal from '@/components/ViewTicketModal.vue'
 
 const $q = useQuasar()
 const authStore = inject('authStore')
@@ -195,7 +211,28 @@ const categories = ref([
   { type: 'Account', items: ['Password Reset', 'Access Request', 'Account Lock'] },
 ])
 
-const priority = ref(['LOW', 'NORMAL', 'HIGH'])
+const priorityStats = computed(() => {
+  const all = tickets.value 
+  let high = 0, normal = 0, low = 0
+  
+  all.forEach(t => {
+    const u = (t.urgency || '').toUpperCase()
+    if (u === 'HIGH') high++
+    else if (u === 'NORMAL') normal++
+    else if (u === 'LOW') low++
+  })
+  
+  return { high, normal, low, total: all.length }
+})
+
+const priorityPieChart = computed(() => {
+  const { high, normal, total } = priorityStats.value
+  if (!total) return 'conic-gradient(#f3f4f6 0 100%)'
+  
+  const pHigh = (high / total) * 100
+  const pNormal = (normal / total) * 100
+  return `conic-gradient(#f97316 0 ${pHigh}%, #f59e0b ${pHigh}% ${pHigh + pNormal}%, #10b981 ${pHigh + pNormal}% 100%)`
+})
 
 const ticketColumns = [
   // { name: 'id', label: 'Ticket ID', field: 'ticket', align: 'left', sortable: true },
@@ -557,5 +594,49 @@ async function fetchTickets() {
   background: $min-surface;
   border: 1px solid $min-border;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+// ── Priority Pie Chart ─────────────────────────────────────────
+.staff-priority-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  height: calc(100% - 30px);
+}
+
+.staff-priority-pie {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.06), 0 4px 14px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  border: 4px solid #fff;
+  &:hover {
+    transform: scale(1.04);
+  }
+}
+
+.staff-priority-legend {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $min-text-soft;
+}
+
+.legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
 }
 </style>

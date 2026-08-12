@@ -12,8 +12,35 @@
         label="Submit a Ticket"
         icon="add_circle_outline"
         unelevated no-caps
+        :disable="Boolean(unratedTicket)"
         @click="openBlankDialog"
-      />
+      >
+        <q-tooltip v-if="unratedTicket" class="bg-amber-9">
+          Please rate your resolved ticket before submitting a new one.
+        </q-tooltip>
+      </q-btn>
+    </div>
+
+    <!-- ── Action Required: Unrated Ticket Banner ─────────────── -->
+    <div v-if="unratedTicket" class="q-mb-lg q-pa-md bg-amber-1 rounded-borders border-amber" style="border: 1px solid #fde68a; border-left: 5px solid #f59e0b;">
+      <div class="row items-center justify-between gap-sm">
+        <div class="row items-center gap-sm col">
+          <q-avatar size="40px" color="amber-3" text-color="amber-10" icon="rate_review" />
+          <div>
+            <div class="text-subtitle2 text-weight-bold text-amber-10">Action Required: Rate & Review Resolved Ticket</div>
+            <div class="text-caption text-grey-9">
+              Ticket <strong>{{ unratedTicket.ticket_no || '#' + unratedTicket.id }}</strong> ({{ unratedTicket.title }}) has been resolved. Please rate the service received to submit new tickets.
+            </div>
+          </div>
+        </div>
+        <q-btn
+          color="amber-9"
+          label="⭐ Rate Service Now"
+          unelevated no-caps
+          class="text-weight-bold"
+          @click="openRatingModal(unratedTicket)"
+        />
+      </div>
     </div>
 
     <!-- ── My Tickets ───────────────────────────────────────────── -->
@@ -23,8 +50,9 @@
       <div
         v-for="ticket in myTickets"
         :key="ticket.id"
-        class="user-ticket"
+        class="user-ticket cursor-pointer"
         :class="`user-ticket--${ticket.priority.toLowerCase()}`"
+        @click="openViewModal(ticket)"
       >
         <div class="user-ticket__left">
           <div class="user-ticket__id">#{{ ticket.id }}</div>
@@ -42,18 +70,40 @@
             {{ ticket.created }}
           </div>
         </div>
-        <q-icon
-          :name="ticket.status === 'RESOLVED' ? 'task_alt' : ticket.status === 'PENDING' ? 'pending_actions' : 'radio_button_unchecked'"
-          :color="ticket.status === 'RESOLVED' ? 'positive' : ticket.status === 'PENDING' ? 'warning' : 'primary'"
-          size="20px"
-        />
+        <div class="row items-center gap-xs">
+          <!-- Rated Star Pill -->
+          <q-chip v-if="ticket.rating" dense color="amber-1" text-color="amber-9" icon="star" class="text-weight-bold">
+            {{ ticket.rating }} / 5
+          </q-chip>
+          <!-- Unrated Action Badge -->
+          <q-chip v-else-if="['RESOLVED', 'CLOSE'].includes(ticket.status)" dense color="amber-9" text-color="white" icon="rate_review" class="text-weight-bold">
+            Rate Service
+          </q-chip>
+          <q-icon
+            v-else
+            :name="ticket.status === 'RESOLVED' ? 'task_alt' : ticket.status === 'PENDING' ? 'pending_actions' : 'radio_button_unchecked'"
+            :color="ticket.status === 'RESOLVED' ? 'positive' : ticket.status === 'PENDING' ? 'warning' : 'primary'"
+            size="20px"
+          />
+        </div>
       </div>
     </div>
 
     <div v-else class="user-dash__empty">
       <q-icon name="confirmation_number" size="52px" color="grey-5" />
       <p>You haven't submitted any tickets yet.</p>
-      <q-btn class="clay-btn clay-btn--primary" label="Submit First Ticket" icon="add" unelevated no-caps @click="openBlankDialog" />
+      <q-btn
+        class="clay-btn clay-btn--primary"
+        label="Submit First Ticket"
+        icon="add"
+        unelevated no-caps
+        :disable="Boolean(unratedTicket)"
+        @click="openBlankDialog"
+      >
+        <q-tooltip v-if="unratedTicket" class="bg-amber-9">
+          Please rate your resolved ticket before submitting a new one.
+        </q-tooltip>
+      </q-btn>
     </div>
 
     <!-- ── Help Topics ──────────────────────────────────────────── -->
@@ -70,12 +120,25 @@
     </div>
 
     <!-- ── Submit Ticket Dialog ─────────────────────────────────── -->
-    <AddTicketModal
+    <UserAddTicketModal
       v-model="showDialog"
       :category-options="categoryOptions"
-      :priority-options="priorityOptions"
       :prefill="dialogPrefill"
       @refresh="fetchTickets"
+    />
+
+    <!-- ── View Ticket Modal ────────────────────────────────────── -->
+    <ViewTicketModal
+      v-model="showViewModal"
+      :ticket="selectedTicket"
+      @refresh="fetchTickets"
+    />
+
+    <!-- ── Rating & Feedback Pop Up Modal ───────────────────────── -->
+    <RatingFeedbackModal
+      v-model="showRatingModal"
+      :ticket="ratingTicket"
+      @submitted="fetchTickets"
     />
 
   </q-page>
@@ -85,13 +148,21 @@
 import { ref, computed, onMounted, inject } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from '../../boot/axios'
-import AddTicketModal from '../../components/AddTicketModal.vue'
+import UserAddTicketModal from '../../components/UserAddTicketModal.vue'
+import ViewTicketModal from '../../components/ViewTicketModal.vue'
+import RatingFeedbackModal from '../../components/RatingFeedbackModal.vue'
 
 const $q = useQuasar()
 const authStore = inject('authStore')
 
 const showDialog = ref(false)
 const dialogPrefill = ref({})
+
+const showViewModal = ref(false)
+const selectedTicket = ref({})
+
+const showRatingModal = ref(false)
+const ratingTicket = ref({})
 
 const firstName = computed(() => {
   const name = authStore.userName ?? ''
@@ -105,15 +176,22 @@ const timeOfDay = computed(() => {
   return 'evening'
 })
 
-const priorityOptions = [
-  { label: 'Low',    value: 'LOW'    },
-  { label: 'Normal', value: 'NORMAL' },
-  { label: 'High',   value: 'HIGH'   },
-]
-
 const categoryOptions = ref([])
-
 const myTickets = ref([])
+
+const unratedTicket = computed(() => {
+  return myTickets.value.find(t => ['RESOLVED', 'CLOSE'].includes(t.status) && (!t.rating || !t.feedback))
+})
+
+function openViewModal(ticket) {
+  selectedTicket.value = ticket
+  showViewModal.value = true
+}
+
+function openRatingModal(ticket) {
+  ratingTicket.value = ticket
+  showRatingModal.value = true
+}
 
 onMounted(async () => {
   await Promise.all([fetchCategories(), fetchTickets()])
@@ -127,15 +205,30 @@ async function fetchCategories() {
 async function fetchTickets() {
   try {
     const { data } = await api.get('/tickets')
-    myTickets.value = (data.data || data || []).map(ticket => ({
+    const rawList = data.data || data || []
+    myTickets.value = rawList.map(ticket => ({
       id: ticket.id,
+      real_id: ticket.id,
       ticket_no: ticket.ticket_no,
       title: ticket.issue || 'Untitled ticket',
+      requester: ticket.user ? (ticket.user.first_name + ' ' + ticket.user.last_name) : 'User',
+      assignedStaff: ticket.assigned_staff ? (ticket.assigned_staff.name || `${ticket.assigned_staff.first_name} ${ticket.assigned_staff.last_name}`) : '',
       category: ticket.problem_category?.categories || 'Uncategorized',
       priority: ticket.urgency || 'NORMAL',
       status: ticket.status || 'OPEN',
+      description: ticket.description || '',
+      remarks: ticket.remarks || '',
+      rating: ticket.rating,
+      feedback: ticket.feedback,
+      attachments: ticket.attachments || [],
+      upload_intralab: ticket.upload_intralab,
+      upload_limsportal: ticket.upload_limsportal,
       created: new Date(ticket.date_submitted || ticket.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     }))
+
+    if (unratedTicket.value && !showRatingModal.value) {
+      openRatingModal(unratedTicket.value)
+    }
   } catch (error) {
     console.error('Failed to load tickets', error)
     $q.notify({ type: 'negative', message: 'Failed to load your tickets.' })
@@ -150,11 +243,29 @@ const helpTopics = [
 ]
 
 function openBlankDialog() {
+  if (unratedTicket.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Please rate your resolved ticket before creating a new ticket.',
+      icon: 'rate_review',
+    })
+    openRatingModal(unratedTicket.value)
+    return
+  }
   dialogPrefill.value = {}
   showDialog.value = true
 }
 
 function prefillTicket(topic) {
+  if (unratedTicket.value) {
+    $q.notify({
+      type: 'warning',
+      message: 'Please rate your resolved ticket before creating a new ticket.',
+      icon: 'rate_review',
+    })
+    openRatingModal(unratedTicket.value)
+    return
+  }
   const category = categoryOptions.value.find(option => option.label.toLowerCase().includes(topic.category.toLowerCase()))
   dialogPrefill.value = { title: topic.title, category: category?.value || null }
   showDialog.value = true

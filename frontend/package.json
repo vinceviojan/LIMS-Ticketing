@@ -21,8 +21,11 @@
     "@fortawesome/vue-fontawesome": "^3.3.3",
     "@quasar/extras": "^2.0.0",
     "axios": "^1.19.0",
+    "docxtemplater": "^3.69.3",
     "dotenv": "^17.4.2",
+    "pdf-lib": "^1.17.1",
     "pinia": "^4.0.2",
+    "pizzip": "^3.2.0",
     "quasar": "^2.23.3",
     "vue": "^3.5.22",
     "vue-router": "^5.0.6"

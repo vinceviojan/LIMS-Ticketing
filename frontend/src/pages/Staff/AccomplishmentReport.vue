@@ -26,8 +26,9 @@
     <!-- ── Table ───────────────────────────────────────────────── -->
     <div class="accomplishment-page__table-card">
       <q-table
-        v-if="filteredTickets.length"
+        v-if="filteredTickets.length || loading"
         flat
+        :loading="loading"
         :rows="filteredTickets"
         :columns="columns"
         row-key="id"
@@ -91,6 +92,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar, copyToClipboard } from 'quasar'
+import { api } from '../../boot/axios'
 import { useAuthStore } from '../../stores/auth'
 import './AccomplishmentReport.scss'
 
@@ -100,6 +102,7 @@ const authStore = useAuthStore()
 // State
 const dateStart = ref('')
 const dateEnd = ref('')
+const loading = ref(true)
 const selectedTickets = ref([])
 const tickets = ref([])
 const filteredTickets = ref([])
@@ -118,7 +121,7 @@ const columns = [
   { name: 'requester', label: 'Requester', field: 'requester', align: 'left' },
   { name: 'priority', label: 'Priority', field: 'priority', align: 'center', sortable: true },
   { name: 'status', label: 'Status', field: 'status', align: 'center' },
-  { name: 'date', label: 'Date Resolved', field: 'created', align: 'right', sortable: true } // Assuming 'created' acts as date for now, would be resolved_at
+  { name: 'date', label: 'Date Resolved', field: 'created', align: 'right', sortable: true }
 ]
 
 const formatOptions = [
@@ -127,7 +130,6 @@ const formatOptions = [
   { label: 'CSV / Table', value: 'csv' }
 ]
 
-// Mock data fetching, in a real app this would be an API call
 onMounted(() => {
   // Set default dates to current month
   const today = new Date()
@@ -138,19 +140,36 @@ onMounted(() => {
   fetchClosedTickets()
 })
 
-function fetchClosedTickets() {
-  // Mock closed tickets assigned to current staff
-  const staffName = authStore.userName || 'Staff Member'
-  
-  tickets.value = [
-    { id: 101, ticket_no: 'TKT-2026-0801', title: 'Network Connectivity Issue', category: 'Network', requester: 'John Doe', priority: 'HIGH', status: 'CLOSE', assignedStaff: staffName, created: '2026-08-01', description: 'User could not connect to the local network.' },
-    { id: 102, ticket_no: 'TKT-2026-0802', title: 'Printer Configuration', category: 'Hardware', requester: 'Jane Smith', priority: 'NORMAL', status: 'CLOSE', assignedStaff: staffName, created: '2026-08-02', description: 'Set up the new printer in the HR department.' },
-    { id: 105, ticket_no: 'TKT-2026-0804', title: 'Software License Renewal', category: 'Software', requester: 'Mark Lee', priority: 'LOW', status: 'CLOSE', assignedStaff: staffName, created: '2026-08-04', description: 'Renewed the antivirus license for the laboratory.' },
-    { id: 108, ticket_no: 'TKT-2026-0805', title: 'Password Reset', category: 'Access', requester: 'Sarah Connor', priority: 'NORMAL', status: 'CLOSE', assignedStaff: staffName, created: '2026-08-05', description: 'Reset password for LIMS system.' },
-    { id: 112, ticket_no: 'TKT-2026-0809', title: 'Database Backup Configuration', category: 'Database', requester: 'Admin', priority: 'CRITICAL', status: 'CLOSE', assignedStaff: staffName, created: '2026-08-09', description: 'Configured automated daily backups.' },
-  ]
-  
-  filterTickets()
+async function fetchClosedTickets() {
+  loading.value = true
+  try {
+    const res = await api.get('/getTickets')
+    const data = res.data?.data || res.data || []
+    
+    // Only keep closed/resolved tickets
+    const closed = data.filter(t => ['CLOSE', 'RESOLVED'].includes((t.status || '').toUpperCase()))
+    
+    tickets.value = closed.map(t => ({
+      id: t.id,
+      real_id: t.id,
+      ticket_no: t.ticket_no || `#${t.id}`,
+      title: t.issue || 'No Title',
+      category: t.problem_category ? t.problem_category.categories : 'Uncategorized',
+      requester: t.user ? (t.user.name || `${t.user.first_name} ${t.user.last_name}`) : 'Unknown',
+      priority: t.urgency || 'NORMAL',
+      status: t.status || 'CLOSE',
+      created: (t.date_submitted || t.created_at || '').split('T')[0],
+      description: t.description || '',
+      remarks: t.remarks || ''
+    }))
+
+    filterTickets()
+  } catch (err) {
+    console.error('Failed to fetch closed tickets', err)
+    $q.notify({ type: 'negative', message: 'Failed to load closed tickets.' })
+  } finally {
+    loading.value = false
+  }
 }
 
 function filterTickets() {
@@ -187,7 +206,7 @@ const generatedReportText = computed(() => {
       text += `${i + 1}. Ticket ${id}: ${t.title}\n`
       text += `   Category: ${t.category} | Priority: ${t.priority} | Requester: ${t.requester}\n`
       text += `   Date Resolved: ${t.created}\n`
-      text += `   Description: ${t.description}\n\n`
+      text += `   Remarks: ${t.remarks}\n\n`
     })
   }
   else if (reportFormat.value === 'csv') {

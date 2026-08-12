@@ -23,10 +23,10 @@ class TicketController extends Controller
         'user_id',
         'assigned_staff_id',
         'problem_category_id',
-        'upload_intralab',
-        'upload_limsportal',
         'date_submitted',
         'created_at',
+        'rating',
+        'feedback',
     ];
 
     /**
@@ -34,10 +34,13 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
+        $user = $request->user();
         $baseQuery = Ticket::query();
 
-        if ($request->user()->role === 'USER') {
-            $baseQuery->where('user_id', $request->user()->id);
+        if (strtoupper($user->role) === 'USER') {
+            $baseQuery->where('user_id', $user->id);
+        } elseif (strtoupper($user->role) === 'STAFF') {
+            $baseQuery->where('assigned_staff_id', $user->id);
         }
 
         return $this->paginateTickets($request, $baseQuery);
@@ -53,18 +56,6 @@ class TicketController extends Controller
         return $this->paginateTickets($request, $baseQuery);
     }
 
-    /**
-     * Shared list/filter/paginate logic for index() and getTickets().
-     *
-     * Perf notes vs. the old implementation:
-     * - 1 grouped query for status tab counts instead of 5x clone()->count()
-     * - only the columns the list UI needs are selected, on the ticket
-     *   and on each eager-loaded relation
-     * - real server-side pagination (capped per_page) instead of an
-     *   unbounded `all=true` ->get() escape hatch
-     * - ordered by created_at + id, which matches the composite index
-     *   added in the accompanying migration
-     */
     private function paginateTickets(Request $request, $baseQuery)
     {
         $counts = (clone $baseQuery)
@@ -86,6 +77,7 @@ class TicketController extends Controller
                 'user:id,first_name,last_name,name',
                 'assignedStaff:id,first_name,last_name,name',
                 'problemCategory:id,categories',
+                'attachments',
             ]);
 
         if ($request->filled('status') && strtoupper($request->status) !== 'ALL') {
@@ -101,7 +93,7 @@ class TicketController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('ticket_no', 'like', "{$search}%") // prefix match, index-friendly
+                $q->where('ticket_no', 'like', "{$search}%")
                     ->orWhere('issue', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
                     ->orWhereHas('user', function ($uq) use ($search) {
@@ -135,6 +127,46 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
+        $user = $request->user();
+
+        // For non-admin users, enforce creation guards
+        if ($user->role !== 'ADMIN') {
+            // Guard 1: Check if the user has an active ticket that is not closed or canceled
+            $activeTicket = Ticket::where('user_id', $user->id)
+                ->whereNotIn('status', ['CLOSE', 'CANCEL'])
+                ->first();
+
+            if ($activeTicket) {
+                return response()->json([
+                    'message' => "You cannot create a new ticket while you have an active ticket ({$activeTicket->ticket_no}) in progress.",
+                    'active_ticket' => [
+                        'id' => $activeTicket->id,
+                        'ticket_no' => $activeTicket->ticket_no,
+                        'status' => $activeTicket->status,
+                    ],
+                ], 422);
+            }
+
+            // Guard 2: Check if the user has a closed or resolved ticket missing rating or feedback
+            $unratedTicket = Ticket::where('user_id', $user->id)
+                ->whereIn('status', ['CLOSE', 'RESOLVED'])
+                ->where(function ($q) {
+                    $q->whereNull('rating')->orWhereNull('feedback');
+                })
+                ->first();
+
+            if ($unratedTicket) {
+                return response()->json([
+                    'message' => 'You cannot create a new ticket until you provide a star rating and feedback for your completed ticket(s).',
+                    'unrated_ticket' => [
+                        'id' => $unratedTicket->id,
+                        'ticket_no' => $unratedTicket->ticket_no,
+                        'issue' => $unratedTicket->issue,
+                    ],
+                ], 422);
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'issue' => ['required', 'string', 'max:255'],
             'problem_category_id' => ['nullable', 'exists:problem_categories,id'],
@@ -142,8 +174,9 @@ class TicketController extends Controller
             'assigned_staff_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'STAFF')],
             'description' => ['nullable', 'string'],
             'remarks' => ['nullable', 'string'],
-            'upload_intralab' => ['nullable', 'file', 'max:10240'],
-            'upload_limsportal' => ['nullable', 'file', 'max:10240'],
+            'attachments.*' => ['nullable', 'file', 'mimes:pdf,png,jpg,jpeg,doc,docx', 'max:10240'],
+            'gdrive_links' => ['nullable', 'array'],
+            'gdrive_links.*' => ['nullable', 'string', 'url'],
         ]);
 
         if ($validator->fails()) {
@@ -154,21 +187,18 @@ class TicketController extends Controller
         if ($request->user()->role !== 'ADMIN') {
             unset($data['urgency'], $data['assigned_staff_id']);
         }
-        $data['user_id'] = $request->user()->id ?? 1; // Fallback to 1 if not authenticating middleware correctly
+        $data['user_id'] = $user->id;
         $data['date_submitted'] = now();
         $data['status'] = 'OPEN';
         if (!isset($data['urgency'])) {
             $data['urgency'] = 'NORMAL';
         }
-        $data['upload_intralab'] = $this->storeAttachment($request, 'upload_intralab');
-        $data['upload_limsportal'] = $this->storeAttachment($request, 'upload_limsportal');
 
-        // Generate Ticket Number: STP-<YEAR>-0001
+        // Generate Ticket Number: STN-<YEAR>-0001
         $data['ticket_no'] = DB::transaction(function () {
             $year = date('Y');
             $prefix = "STN-{$year}-";
 
-            // Find the highest ticket number for this year
             $latest = Ticket::where('ticket_no', 'like', "{$prefix}%")
                 ->orderBy('id', 'desc')
                 ->lockForUpdate()
@@ -184,9 +214,141 @@ class TicketController extends Controller
         });
 
         $ticket = Ticket::create($data);
+
+        // Process uploaded multi-files
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                if ($file->isValid()) {
+                    $ext = strtolower($file->getClientOriginalExtension());
+                    $path = $file->store('ticket-attachments', 'local');
+
+                    $ticket->attachments()->create([
+                        'file_path' => $path,
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_type' => $ext,
+                        'file_size' => $file->getSize(),
+                    ]);
+                }
+            }
+        }
+
+        // Process Google Drive / external links
+        if ($request->filled('gdrive_links')) {
+            foreach ($request->input('gdrive_links') as $link) {
+                if (!empty($link)) {
+                    $ticket->attachments()->create([
+                        'file_name' => 'Google Drive Link',
+                        'file_type' => 'gdrive',
+                        'external_url' => $link,
+                    ]);
+                }
+            }
+        }
+
         $this->writeLog($request, $ticket, 'CREATE', "Ticket {$ticket->ticket_no} created: {$ticket->issue}.");
 
-        return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory']), 201);
+        return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory', 'attachments']), 201);
+    }
+
+    /**
+     * Submit star rating and review feedback for a ticket.
+     */
+    public function submitRating(Request $request, Ticket $ticket)
+    {
+        $this->ensureTicketAccess($request, $ticket);
+
+        if (!in_array($ticket->status, ['CLOSE', 'RESOLVED'])) {
+            return response()->json([
+                'message' => 'Ratings and feedback can only be submitted for resolved or closed tickets.',
+            ], 422);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'feedback' => ['required', 'string', 'max:1000'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $ticket->update($validator->validated());
+        $this->writeLog($request, $ticket, 'UPDATE', "Rating ({$ticket->rating} stars) and feedback submitted for Ticket {$ticket->ticket_no}.");
+
+        return response()->json([
+            'message' => 'Thank you for your rating and feedback!',
+            'ticket' => $ticket->fresh(['user', 'assignedStaff', 'problemCategory', 'attachments']),
+        ]);
+    }
+
+    /**
+     * Staff self-assign / claim an open ticket.
+     */
+    public function assignSelf(Request $request, Ticket $ticket)
+    {
+        $user = $request->user();
+
+        if (!in_array(strtoupper($user->role), ['STAFF', 'ADMIN'])) {
+            return response()->json(['message' => 'Only staff members or admins can claim tickets.'], 403);
+        }
+
+        $ticket->update([
+            'assigned_staff_id' => $user->id,
+            'status' => 'ON-GOING',
+        ]);
+
+        $this->writeLog(
+            $request,
+            $ticket,
+            'ASSIGN',
+            "Ticket {$ticket->ticket_no} claimed by staff {$user->first_name} {$user->last_name}."
+        );
+
+        return response()->json([
+            'message' => 'Ticket assigned successfully to you.',
+            'ticket' => $ticket->fresh(['user', 'assignedStaff', 'problemCategory', 'attachments']),
+        ]);
+    }
+
+    /**
+     * Resolve a ticket with remarks.
+     */
+    public function resolveTicket(Request $request, Ticket $ticket)
+    {
+        $user = $request->user();
+
+        if (strtoupper($user->role) === 'USER') {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        if ($ticket->assigned_staff_id !== $user->id && strtoupper($user->role) !== 'ADMIN') {
+            return response()->json(['message' => 'You are not assigned to this ticket.'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'remarks' => ['required', 'string', 'max:2000'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $ticket->update([
+            'status' => 'RESOLVED',
+            'remarks' => $request->remarks,
+        ]);
+
+        $this->writeLog(
+            $request,
+            $ticket,
+            'UPDATE',
+            "Ticket resolved by {$user->first_name} {$user->last_name} with remarks: '{$request->remarks}'."
+        );
+
+        return response()->json([
+            'message' => 'Ticket resolved successfully.',
+            'ticket' => $ticket->fresh(['user', 'assignedStaff', 'problemCategory', 'attachments']),
+        ]);
     }
 
     /**
@@ -195,10 +357,8 @@ class TicketController extends Controller
     public function show(Ticket $ticket)
     {
         $this->ensureTicketAccess(request(), $ticket);
-        return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory', 'logs']));
+        return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory', 'logs', 'attachments']));
     }
-
-
 
     public function getOpenTickets(Request $request)
     {
@@ -206,6 +366,7 @@ class TicketController extends Controller
             'user',
             'assignedStaff',
             'problemCategory',
+            'attachments',
         ])
             ->whereNull('assigned_staff_id')
             ->where('status', 'OPEN')
@@ -234,6 +395,8 @@ class TicketController extends Controller
             'description' => ['sometimes', 'nullable', 'string'],
             'remarks' => ['sometimes', 'nullable', 'string'],
             'issue' => ['sometimes', 'required', 'string', 'max:255'],
+            'rating' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:5'],
+            'feedback' => ['sometimes', 'nullable', 'string'],
             'upload_intralab' => ['sometimes', 'nullable', 'file', 'max:10240'],
             'upload_limsportal' => ['sometimes', 'nullable', 'file', 'max:10240'],
         ]);
@@ -268,7 +431,37 @@ class TicketController extends Controller
             }
         }
 
-        return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory']));
+        // Process uploaded multi-files in update
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                if ($file->isValid()) {
+                    $ext = strtolower($file->getClientOriginalExtension());
+                    $path = $file->store('ticket-attachments', 'local');
+
+                    $ticket->attachments()->create([
+                        'file_path' => $path,
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_type' => $ext,
+                        'file_size' => $file->getSize(),
+                    ]);
+                }
+            }
+        }
+
+        // Process Google Drive / external links in update
+        if ($request->filled('gdrive_links')) {
+            foreach ($request->input('gdrive_links') as $link) {
+                if (!empty($link)) {
+                    $ticket->attachments()->create([
+                        'file_name' => 'Google Drive Link',
+                        'file_type' => 'gdrive',
+                        'external_url' => $link,
+                    ]);
+                }
+            }
+        }
+
+        return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory', 'attachments']));
     }
 
     /**
@@ -279,7 +472,6 @@ class TicketController extends Controller
         $this->ensureTicketAccess($request, $ticket);
         $ticketNo = $ticket->ticket_no;
         $issue = $ticket->issue;
-        // Keep deletion visible in the audit trail by retaining a ticket-less log.
         Log::create([
             'user_id' => $request->user()->id,
             'action' => 'DELETE',
@@ -314,12 +506,9 @@ class TicketController extends Controller
             return null;
         }
 
-        return $request->file($field)->store('ticket-attachments', 'public');
+        return $request->file($field)->store('ticket-attachments', 'local');
     }
 
-    /**
-     * Download or view an attachment for the given ticket.
-     */
     public function attachment(Request $request, Ticket $ticket, $type)
     {
         $this->ensureTicketAccess($request, $ticket);
@@ -332,11 +521,71 @@ class TicketController extends Controller
 
         $path = $ticket->$field;
 
-        if (!$path || !Storage::disk('public')->exists($path)) {
+        if (!$path) {
             abort(404, 'Attachment not found.');
         }
 
-        $fullPath = storage_path('app/public/' . $path);
-        return response()->file($fullPath);
+        // Check local (private) disk first, then public disk for legacy files
+        if (Storage::disk('local')->exists($path)) {
+            return response()->file(Storage::disk('local')->path($path));
+        } elseif (Storage::disk('public')->exists($path)) {
+            return response()->file(Storage::disk('public')->path($path));
+        }
+
+        abort(404, 'Attachment file not found.');
+    }
+
+    public function viewAttachment(Request $request, $id)
+    {
+        $attachment = \App\Models\TicketAttachment::find($id);
+
+        if (!$attachment) {
+            return response()->json(['message' => 'Attachment record not found.', 'id' => $id], 404);
+        }
+
+        if ($attachment->external_url) {
+            return redirect()->away($attachment->external_url);
+        }
+
+        $path = $attachment->file_path;
+
+        if (!$path) {
+            return response()->json(['message' => 'Attachment file path is empty.', 'attachment' => $attachment], 404);
+        }
+
+        // Clean relative path (e.g. ticket-attachments/xyz.jpg)
+        $cleanPath = ltrim(str_replace('\\', '/', $path), '/');
+
+        // Target search locations
+        $candidatePaths = [
+            storage_path('app/private/' . $cleanPath),
+            storage_path('app/' . $cleanPath),
+            storage_path('app/public/' . $cleanPath),
+            storage_path($cleanPath),
+            base_path('storage/app/private/' . $cleanPath),
+            base_path('storage/app/' . $cleanPath),
+            base_path('storage/app/public/' . $cleanPath),
+        ];
+
+        foreach ($candidatePaths as $fullPath) {
+            if (file_exists($fullPath) && is_file($fullPath)) {
+                return response()->file($fullPath);
+            }
+        }
+
+        if (Storage::disk('local')->exists($cleanPath)) {
+            return response()->file(Storage::disk('local')->path($cleanPath));
+        }
+
+        if (Storage::disk('public')->exists($cleanPath)) {
+            return response()->file(Storage::disk('public')->path($cleanPath));
+        }
+
+        return response()->json([
+            'message' => 'File not found on server disk.',
+            'file_path_db' => $path,
+            'clean_path' => $cleanPath,
+            'checked_locations' => $candidatePaths,
+        ], 404);
     }
 }

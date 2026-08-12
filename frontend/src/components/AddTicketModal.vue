@@ -1,6 +1,6 @@
 <template>
   <q-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" persistent>
-    <q-card class="ticket-page__dialog">
+    <q-card class="ticket-page__dialog" style="max-width: 650px; width: 100%;">
       <q-card-section class="ticket-page__dialog-head">
         <q-icon name="edit_note" size="26px" color="primary" />
         <span class="ticket-page__dialog-title">New Ticket</span>
@@ -11,53 +11,131 @@
       <q-separator />
 
       <q-form @submit="submitTicket">
-      <q-card-section class="ticket-page__dialog-body">
-        <!-- ── Requester (auto-filled, read-only) ────────────── -->
-        <div class="ticket-page__form-row">
-          <q-input :model-value="requesterName" label="Requester" outlined dense readonly />
-          <q-input :model-value="requesterEmail" label="Email" outlined dense readonly />
-        </div>
-        <q-input :model-value="requesterOffice" label="Division / Office" outlined dense readonly class="q-mt-sm" />
+        <q-card-section class="ticket-page__dialog-body">
+          <!-- ── Requester (auto-filled, read-only) ────────────── -->
+          <div class="ticket-page__form-row">
+            <q-input :model-value="requesterName" label="Requester" outlined dense readonly />
+            <q-input :model-value="requesterEmail" label="Email" outlined dense readonly />
+          </div>
+          <div class="ticket-page__form-row q-mt-sm">
+            <q-input :model-value="requesterDivision" label="Division" outlined dense readonly />
+            <q-input :model-value="requesterSection" label="Section" outlined dense readonly />
+          </div>
 
-        <q-input v-model="form.title" label="Subject / Title *" outlined dense class="q-mt-sm q-mb-sm"
-          :rules="[val => !!val || 'Required']" />
-        <q-input v-model="form.description" label="Description *" outlined dense type="textarea" rows="3" class="q-mb-sm"
-          :rules="[val => !!val || 'Required']" />
-        <div class="ticket-page__form-row">
-          <q-select
-            v-model="form.priority"
-            :options="priorityOptions"
-            label="Priority"
-            outlined dense emit-value map-options
-            :disable="!isAdmin"
+          <q-input
+            v-model="form.title"
+            label="Subject / Title *"
+            outlined dense
+            class="q-mt-sm q-mb-sm"
+            :rules="[val => !!val || 'Required']"
           />
-          <q-select v-model="form.category" :options="categoryOptions" label="Category" outlined dense emit-value map-options />
-        </div>
-        <q-select
-          v-if="isAdmin"
-          v-model="form.assigned_staff_id"
-          :options="staffOptions"
-          label="Assign Staff"
-          outlined dense clearable emit-value map-options class="q-mt-sm"
-        />
-        <div class="q-mt-md">
-          <div class="row q-col-gutter-sm">
-            <div class="col-12 col-md-6">
-              <q-file v-model="form.upload_intralab" label="Upload Intralab Attachment" outlined dense clearable accept=".pdf, image/*" />
+          <q-input
+            v-model="form.description"
+            label="Description *"
+            outlined dense
+            type="textarea"
+            rows="3"
+            class="q-mb-sm"
+            :rules="[val => !!val || 'Required']"
+          />
+
+          <div class="ticket-page__form-row">
+            <q-select
+              v-model="form.priority"
+              :options="priorityOptions"
+              label="Priority"
+              outlined dense emit-value map-options
+              :disable="!isAdmin"
+            />
+            <q-select
+              v-model="form.category"
+              :options="categoryOptions"
+              label="Category"
+              outlined dense emit-value map-options
+            />
+          </div>
+
+          <q-select
+            v-if="isAdmin"
+            v-model="form.assigned_staff_id"
+            :options="staffOptions"
+            label="Assign Staff"
+            outlined dense clearable emit-value map-options class="q-mt-sm"
+          />
+
+          <!-- ── Attachments Section ───────────────────────────────────── -->
+          <div class="q-mt-md">
+            <div class="text-subtitle2 text-weight-bold q-mb-xs">Attachments</div>
+            <div class="text-caption text-grey-7 q-mb-sm">
+              Acceptable file types: <strong>PDF, PNG, JPEG, DOC, DOCX</strong> or <strong>Google Drive links</strong>.
             </div>
-            <div class="col-12 col-md-6">
-              <q-file v-model="form.upload_limsportal" label="Upload LIMS Portal Attachment" outlined dense clearable accept=".pdf, image/*" />
+
+            <!-- File Pickers -->
+            <q-file
+              v-model="fileList"
+              label="Select / Drag Files to Attach"
+              outlined dense multiple
+              append
+              use-chips
+              accept=".pdf, .png, .jpg, .jpeg, .doc, .docx"
+              @rejected="onFileRejected"
+            >
+              <template #prepend>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
+
+            <!-- Attachment Items Preview & Loading Status -->
+            <div v-if="fileList && fileList.length" class="q-mt-sm">
+              <q-list bordered separator rounded class="bg-grey-1">
+                <q-item v-for="(file, idx) in fileList" :key="file.name + idx" dense>
+                  <q-item-section avatar>
+                    <q-icon :name="getFileIcon(file.name)" color="primary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-weight-medium text-body2">{{ file.name }}</q-item-label>
+                    <q-item-label caption>{{ formatBytes(file.size) }}</q-item-label>
+                  </q-item-section>
+                  <q-item-section side>
+                    <q-btn flat round dense icon="cancel" color="negative" @click="removeFile(idx)" />
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </div>
+
+            <!-- Google Drive / External Link Fields -->
+            <div class="q-mt-md">
+              <div class="row items-center justify-between q-mb-xs">
+                <span class="text-caption text-weight-bold text-grey-8">Google Drive / External Links</span>
+                <q-btn flat dense no-caps icon="add" label="Add Link" color="primary" size="sm" @click="addDriveLink" />
+              </div>
+              <div v-for="(link, lIdx) in form.gdrive_links" :key="lIdx" class="row items-center q-mb-xs gap-sm">
+                <q-input
+                  v-model="form.gdrive_links[lIdx]"
+                  placeholder="https://drive.google.com/file/d/..."
+                  outlined dense class="col"
+                >
+                  <template #prepend>
+                    <q-icon name="add_link" color="primary" />
+                  </template>
+                </q-input>
+                <q-btn flat round dense icon="delete" color="negative" @click="removeDriveLink(lIdx)" />
+              </div>
             </div>
           </div>
-        </div>
-      </q-card-section>
+        </q-card-section>
 
-      <q-separator />
+        <q-separator />
 
-      <q-card-actions align="right" class="ticket-page__dialog-actions">
-        <q-btn flat no-caps label="Cancel" color="grey-7" @click="closeModal" />
-        <q-btn unelevated no-caps type="submit" label="Submit Ticket" class="clay-btn clay-btn--primary" :loading="saving" />
-      </q-card-actions>
+        <q-card-actions align="right" class="ticket-page__dialog-actions">
+          <q-btn flat no-caps label="Cancel" color="grey-7" @click="closeModal" />
+          <q-btn
+            unelevated no-caps type="submit"
+            label="Submit Ticket"
+            class="clay-btn clay-btn--primary"
+            :loading="saving"
+          />
+        </q-card-actions>
       </q-form>
     </q-card>
   </q-dialog>
@@ -80,19 +158,18 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'refresh'])
 
-const isAdmin = computed(() => authStore.userRole === 'admin')
+const isAdmin = computed(() => authStore?.userRole === 'admin')
 
-// ── Auto-filled requester info from the logged-in user ─────────
-// Adjust the property names below (authStore.user.*) to match your
-// actual auth store / user object shape if they differ.
 const requesterName = computed(() => {
-  const u = authStore.user || {}
+  const u = authStore?.user || {}
   return u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—'
 })
-const requesterEmail = computed(() => authStore.user?.email || '—')
-const requesterOffice = computed(() => authStore.user?.office || authStore.user?.division || '—')
+const requesterEmail = computed(() => authStore?.user?.email || '—')
+const requesterDivision = computed(() => authStore?.user?.division?.name || authStore?.userDivision || '—')
+const requesterSection = computed(() => authStore?.user?.section?.name || authStore?.userSection || '—')
 
 const saving = ref(false)
+const fileList = ref([])
 
 function emptyForm() {
   return {
@@ -101,8 +178,7 @@ function emptyForm() {
     priority: 'NORMAL',
     category: null,
     assigned_staff_id: null,
-    upload_intralab: null,
-    upload_limsportal: null,
+    gdrive_links: [],
   }
 }
 
@@ -111,11 +187,48 @@ const form = ref(emptyForm())
 watch(() => props.modelValue, (isOpen) => {
   if (isOpen) {
     form.value = emptyForm()
+    fileList.value = []
   }
 })
 
 function closeModal() {
   emit('update:modelValue', false)
+}
+
+function removeFile(index) {
+  fileList.value.splice(index, 1)
+}
+
+function addDriveLink() {
+  form.value.gdrive_links.push('')
+}
+
+function removeDriveLink(index) {
+  form.value.gdrive_links.splice(index, 1)
+}
+
+function onFileRejected(rejectedEntries) {
+  $q.notify({
+    type: 'warning',
+    message: `${rejectedEntries.length} file(s) were rejected. Only PDF, PNG, JPEG, DOC, and DOCX files are allowed.`,
+  })
+}
+
+function getFileIcon(name = '') {
+  const ext = name.split('.').pop().toLowerCase()
+  if (ext === 'pdf') return 'picture_as_pdf'
+  if (['png', 'jpg', 'jpeg'].includes(ext)) return 'image'
+  if (['doc', 'docx'].includes(ext)) return 'description'
+  return 'insert_drive_file'
+}
+
+function formatBytes(bytes, decimals = 2) {
+  if (!bytes) return '0 Bytes'
+  const k = 1024
+  const dm = decimals < 0 ? 0 : decimals
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
 async function submitTicket() {
@@ -131,10 +244,25 @@ async function submitTicket() {
       if (form.value.assigned_staff_id) payload.append('assigned_staff_id', form.value.assigned_staff_id)
     }
 
-    if (form.value.upload_intralab) payload.append('upload_intralab', form.value.upload_intralab)
-    if (form.value.upload_limsportal) payload.append('upload_limsportal', form.value.upload_limsportal)
+    // Append multiple files
+    if (fileList.value && fileList.value.length) {
+      fileList.value.forEach((f) => {
+        payload.append('attachments[]', f)
+      })
+    }
 
-    await api.post('/tickets', payload)
+    // Append Google Drive links
+    if (form.value.gdrive_links && form.value.gdrive_links.length) {
+      form.value.gdrive_links.forEach((link) => {
+        if (link && link.trim()) {
+          payload.append('gdrive_links[]', link.trim())
+        }
+      })
+    }
+
+    await api.post('/tickets', payload, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
 
     $q.notify({ type: 'positive', message: 'Ticket submitted successfully.', position: 'top-right', timeout: 2500 })
     closeModal()
@@ -146,7 +274,14 @@ async function submitTicket() {
     if (err.response?.data?.errors) {
       errs = Object.values(err.response.data.errors).flat().join(' ')
     }
-    $q.notify({ type: 'negative', message: msg + ' ' + errs })
+
+    $q.notify({
+      type: 'negative',
+      message: msg + (errs ? ' ' + errs : ''),
+      position: 'top',
+      timeout: 5000,
+      actions: [{ label: 'Dismiss', color: 'white' }]
+    })
   } finally {
     saving.value = false
   }

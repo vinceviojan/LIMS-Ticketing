@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\Division;
+use App\Models\Section;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -16,29 +18,6 @@ class UserFactory extends Factory
      * The current password being used by the factory.
      */
     protected static ?string $password;
-
-    // LIMS-specific lookup data
-    private static array $divisions = [
-        'Laboratory Division',
-        'ICT Division',
-        'Technical Support Division',
-        'Quality Assurance Division',
-        'Administrative Division',
-        'Research & Development Division',
-        'Environmental Monitoring Division',
-        'Food Safety Division',
-    ];
-
-    private static array $sectionsByDivision = [
-        'Laboratory Division' => ['Microbiology', 'Chemistry', 'Molecular Biology', 'Parasitology'],
-        'ICT Division' => ['System Administration', 'Network Operations', 'Software Development', 'Data Management'],
-        'Technical Support Division' => ['Helpdesk', 'Field Support', 'Equipment Maintenance'],
-        'Quality Assurance Division' => ['Documentation', 'Audit', 'Compliance'],
-        'Administrative Division' => ['Human Resources', 'Finance', 'Procurement', 'Records Management'],
-        'Research & Development Division' => ['Applied Research', 'Method Development', 'Innovation'],
-        'Environmental Monitoring Division' => ['Air Quality', 'Water Quality', 'Soil Analysis'],
-        'Food Safety Division' => ['Microbiological Testing', 'Chemical Testing', 'Allergen Testing'],
-    ];
 
     private static array $positionsByRole = [
         'ADMIN' => [
@@ -75,11 +54,12 @@ class UserFactory extends Factory
     public function definition(): array
     {
         $role = fake()->randomElement(['USER', 'USER', 'USER', 'STAFF', 'ADMIN']); // weighted toward USER
-        $division = fake()->randomElement(self::$divisions);
-        $sections = fake()->randomElement(self::$sectionsByDivision[$division]);
         $position = fake()->randomElement(self::$positionsByRole[$role]);
         $firstName = fake()->firstName();
         $lastName = fake()->lastName();
+
+        $division = Division::inRandomOrder()->first();
+        $section = $division ? Section::where('division_id', $division->id)->inRandomOrder()->first() : null;
 
         return [
             'first_name' => $firstName,
@@ -87,10 +67,10 @@ class UserFactory extends Factory
             'name' => "{$firstName} {$lastName}",
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => 'password',
             'remember_token' => Str::random(10),
-            'division' => $division,
-            'sections' => $sections,
+            'division_id' => $division?->id,
+            'section_id' => $section?->id,
             'status' => fake()->randomElement(['ACTIVE', 'ACTIVE', 'ACTIVE', 'INACTIVE', 'SUSPENDED']),
             'role' => $role,
             'position' => $position,

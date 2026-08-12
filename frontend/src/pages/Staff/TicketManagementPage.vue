@@ -124,6 +124,7 @@
     <ViewTicketModal
       v-model="showViewDialog"
       :ticket="selectedTicket"
+      @refresh="fetchTickets"
     />
 
   </q-page>
@@ -172,6 +173,8 @@ const tickets = ref([])
 const statusTabs = [
   { label: 'All',      value: 'ALL',      icon: 'list_alt'       },
   { label: 'Open',     value: 'OPEN',     icon: 'inbox'          },
+  { label: 'On-going', value: 'ON-GOING', icon: 'autorenew'      },
+  { label: 'Resolved', value: 'RESOLVED', icon: 'task'           },
   { label: 'Escalated',value: 'ESCALATED',icon: 'pending_actions'},
   { label: 'Closed',   value: 'CLOSE',    icon: 'check_box'      },
   { label: 'Canceled', value: 'CANCEL',   icon: 'cancel'         },
@@ -225,9 +228,13 @@ async function fetchTickets() {
       priority: t.urgency || 'NORMAL',
       status: t.status || 'OPEN',
       description: t.description || '',
+      remarks: t.remarks || '',
+      rating: t.rating,
+      feedback: t.feedback,
+      attachments: t.attachments || [],
       upload_intralab: t.upload_intralab,
       upload_limsportal: t.upload_limsportal,
-      hasAttachments: Boolean(t.upload_intralab || t.upload_limsportal),
+      hasAttachments: Boolean((t.attachments && t.attachments.length) || t.upload_intralab || t.upload_limsportal),
       created: new Date(t.date_submitted || t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     }))
   } catch (err) {
