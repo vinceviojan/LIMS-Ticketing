@@ -9,9 +9,20 @@ use Illuminate\Http\Request;
 
 class SectionController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $sections = Section::with('division')->get();
+        $validated = $request->validate([
+            'division_id' => 'sometimes|required|integer|exists:divisions,id',
+        ]);
+
+        $sections = Section::with('division')
+            ->when(
+                isset($validated['division_id']),
+                fn ($query) => $query->where('division_id', $validated['division_id'])
+            )
+            ->orderBy('name')
+            ->get();
+
         return response()->json($sections);
     }
 
