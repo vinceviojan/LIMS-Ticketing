@@ -1,135 +1,206 @@
 <template>
-  <q-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" persistent>
-    <q-card class="ticket-page__dialog" style="max-width: 650px; width: 100%;">
-      <q-card-section class="ticket-page__dialog-head">
-        <q-icon name="edit_note" size="26px" color="primary" />
-        <span class="ticket-page__dialog-title">New Ticket</span>
-        <q-space />
-        <q-btn flat round dense icon="close" @click="closeModal" />
+  <q-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" persistent transition-show="scale" transition-hide="scale">
+    <q-card class="ticket-page__dialog user-add-modal" style="width: 780px; max-width: 92vw; border-radius: 16px; overflow: hidden;">
+      
+      <!-- ── Header ─────────────────────────────────────────────── -->
+      <q-card-section class="user-add-modal__head bg-white q-pa-md row items-center justify-between border-bottom">
+        <div class="row items-center gap-sm">
+          <div class="user-add-modal__icon-bg">
+            <q-icon name="confirmation_number" size="22px" color="primary" />
+          </div>
+          <div>
+            <div class="text-subtitle1 text-weight-bold text-grey-10 line-height-tight">Submit New Ticket</div>
+            <div class="text-caption text-grey-6">Fill in the details below to request assistance</div>
+          </div>
+        </div>
+        <q-btn flat round dense icon="close" color="grey-6" @click="closeModal" />
       </q-card-section>
 
       <q-separator />
 
+      <!-- ── Form ────────────────────────────────────────────────── -->
       <q-form @submit="submitTicket">
-        <q-card-section class="ticket-page__dialog-body">
-          <!-- ── Division & Section (auto-filled, read-only) ────────────── -->
-          <div class="ticket-page__form-row">
-            <q-input :model-value="requesterDivision" label="Division" outlined dense readonly />
-            <q-input :model-value="requesterSection" label="Section" outlined dense readonly />
-          </div>
-
-          <q-input
-            v-model="form.title"
-            label="Subject / Title *"
-            outlined dense
-            class="q-mt-sm q-mb-sm"
-            :rules="[val => !!val || 'Required']"
-          />
-
-          <q-select
-            v-model="form.category"
-            :options="categoryOptions"
-            label="Category *"
-            outlined dense emit-value map-options
-            class="q-mb-sm"
-            :rules="[val => !!val || 'Category is required']"
-          />
-
-          <q-input
-            v-model="form.description"
-            label="Description *"
-            outlined dense
-            type="textarea"
-            rows="3"
-            class="q-mb-sm"
-            :rules="[val => !!val || 'Required']"
-          />
-
-          <!-- ── Attachments Section ───────────────────────────────────── -->
-          <div class="q-mt-md">
-            <div class="text-subtitle2 text-weight-bold q-mb-xs">Attachments</div>
-            <div class="text-caption text-grey-7 q-mb-sm">
-              Acceptable file types: <strong>PDF, PNG, JPEG, DOC, DOCX</strong> or <strong>Google Drive links</strong>.
+        <q-card-section class="user-add-modal__body q-pa-lg">
+          
+          <!-- Two Column Row: Subject & Category -->
+          <div class="row q-col-gutter-md q-mb-xs">
+            <!-- Subject / Title -->
+            <div class="col-12 col-sm-6">
+              <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">
+                Subject / Title <span class="text-negative">*</span>
+              </label>
+              <q-input
+                v-model="form.title"
+                placeholder="e.g., Cannot access server / Equipment reservation request"
+                outlined dense
+                bg-color="grey-1"
+                :rules="[val => !!val || 'Please enter a title for your ticket']"
+              >
+                <template #prepend>
+                  <q-icon name="subtitles" color="primary" size="20px" />
+                </template>
+              </q-input>
             </div>
 
-            <!-- File Pickers -->
+            <!-- Category Select -->
+            <div class="col-12 col-sm-6">
+              <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">
+                Category <span class="text-negative">*</span>
+              </label>
+              <q-select
+                v-model="form.category"
+                :options="categoryOptions"
+                label="Select a category"
+                outlined dense emit-value map-options
+                bg-color="grey-1"
+                :rules="[val => !!val || 'Please select a problem category']"
+              >
+                <template #prepend>
+                  <q-icon name="category" color="primary" size="20px" />
+                </template>
+              </q-select>
+            </div>
+          </div>
+
+          <!-- Description Textarea -->
+          <div class="q-mb-md">
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">
+              Description <span class="text-negative">*</span>
+            </label>
+            <q-input
+              v-model="form.description"
+              placeholder="Provide details about your issue, error message, or scheduling request..."
+              outlined dense
+              type="textarea"
+              rows="4"
+              bg-color="grey-1"
+              :rules="[val => !!val || 'Please describe your concern']"
+            >
+              <template #prepend>
+                <q-icon name="notes" color="primary" size="20px" />
+              </template>
+            </q-input>
+          </div>
+
+          <!-- Attachments Dropzone -->
+          <div class="q-mt-lg">
+            <div class="row items-center justify-between q-mb-xs">
+              <label class="form-label text-weight-bold text-grey-8">File Attachments</label>
+              <span class="text-caption text-grey-6">PDF, PNG, JPG, DOC, DOCX</span>
+            </div>
+
+            <!-- Custom Styled File Select -->
             <q-file
               v-model="fileList"
-              label="Select / Drag Files to Attach"
               outlined dense multiple
               append
               use-chips
               accept=".pdf, .png, .jpg, .jpeg, .doc, .docx"
+              bg-color="grey-1"
+              class="attachment-picker"
               @rejected="onFileRejected"
             >
               <template #prepend>
-                <q-icon name="attach_file" />
+                <q-icon name="cloud_upload" color="primary" size="20px" />
+              </template>
+              <template #hint>
+                Click or drag files here to attach (Max 10MB per file)
               </template>
             </q-file>
 
-            <!-- Attachment Items Preview & Loading Status -->
-            <div v-if="fileList && fileList.length" class="q-mt-sm">
-              <q-list bordered separator rounded class="bg-grey-1">
-                <q-item v-for="(file, idx) in fileList" :key="file.name + idx" dense>
-                  <q-item-section avatar>
-                    <q-icon :name="getFileIcon(file.name)" color="primary" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label class="text-weight-medium text-body2">{{ file.name }}</q-item-label>
-                    <q-item-label caption>{{ formatBytes(file.size) }}</q-item-label>
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-btn flat round dense icon="cancel" color="negative" @click="removeFile(idx)" />
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </div>
-
-            <!-- Google Drive / External Link Fields -->
-            <div class="q-mt-md">
-              <div class="row items-center justify-between q-mb-xs">
-                <span class="text-caption text-weight-bold text-grey-8">Google Drive / External Links</span>
-                <q-btn flat dense no-caps icon="add" label="Add Link" color="primary" size="sm" @click="addDriveLink" />
-              </div>
-              <div v-for="(link, lIdx) in form.gdrive_links" :key="lIdx" class="row items-center q-mb-xs gap-sm">
-                <q-input
-                  v-model="form.gdrive_links[lIdx]"
-                  placeholder="https://drive.google.com/file/d/..."
-                  outlined dense class="col"
-                >
-                  <template #prepend>
-                    <q-icon name="add_link" color="primary" />
-                  </template>
-                </q-input>
-                <q-btn flat round dense icon="delete" color="negative" @click="removeDriveLink(lIdx)" />
+            <!-- Uploaded Files Preview Cards -->
+            <div v-if="fileList && fileList.length" class="q-mt-sm file-list-container">
+              <div
+                v-for="(file, idx) in fileList"
+                :key="file.name + idx"
+                class="file-item row items-center justify-between q-pa-sm q-mb-xs bg-grey-2 rounded-borders"
+              >
+                <div class="row items-center gap-sm col">
+                  <q-avatar size="32px" color="primary" text-color="white" :icon="getFileIcon(file.name)" />
+                  <div class="col ellipsis">
+                    <div class="text-weight-medium text-body2 ellipsis">{{ file.name }}</div>
+                    <div class="text-caption text-grey-7">{{ formatBytes(file.size) }}</div>
+                  </div>
+                </div>
+                <q-btn flat round dense icon="close" color="grey-7" size="sm" @click="removeFile(idx)" />
               </div>
             </div>
           </div>
+
+          <!-- Google Drive / External Links Section -->
+          <div class="q-mt-lg">
+            <div class="row items-center justify-between q-mb-xs">
+              <label class="form-label text-weight-bold text-grey-8">Google Drive / External Links</label>
+              <q-btn
+                flat dense no-caps
+                icon="add_link"
+                label="Add Link"
+                color="primary"
+                size="sm"
+                class="text-weight-bold"
+                @click="addDriveLink"
+              />
+            </div>
+            
+            <div v-if="!form.gdrive_links.length" class="text-caption text-grey-5 italic q-mb-xs">
+              No external links added. Click "Add Link" to include Google Drive or cloud storage URLs.
+            </div>
+
+            <div
+              v-for="(link, lIdx) in form.gdrive_links"
+              :key="lIdx"
+              class="row items-center q-mb-xs gap-sm"
+            >
+              <q-input
+                v-model="form.gdrive_links[lIdx]"
+                placeholder="https://drive.google.com/file/d/..."
+                outlined dense
+                bg-color="grey-1"
+                class="col"
+              >
+                <template #prepend>
+                  <q-icon name="link" color="primary" size="20px" />
+                </template>
+              </q-input>
+              <q-btn flat round dense icon="delete_outline" color="negative" size="md" @click="removeDriveLink(lIdx)" />
+            </div>
+          </div>
+
         </q-card-section>
 
         <q-separator />
 
-        <q-card-actions align="right" class="ticket-page__dialog-actions">
-          <q-btn flat no-caps label="Cancel" color="grey-7" @click="closeModal" />
+        <!-- ── Modal Actions Footer ───────────────────────────── -->
+        <q-card-actions align="right" class="q-pa-md bg-grey-1 gap-sm">
           <q-btn
-            unelevated no-caps type="submit"
+            flat no-caps
+            label="Cancel"
+            color="grey-8"
+            class="text-weight-medium"
+            @click="closeModal"
+          />
+          <q-btn
+            unelevated no-caps
+            type="submit"
             label="Submit Ticket"
-            class="clay-btn clay-btn--primary"
+            icon-right="send"
+            color="primary"
+            class="submit-btn text-weight-bold"
             :loading="saving"
           />
         </q-card-actions>
+
       </q-form>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
-import { ref, computed, watch, inject } from 'vue'
+import { ref, watch } from 'vue'
 import { api } from '../boot/axios'
 import { useQuasar } from 'quasar'
 
 const $q = useQuasar()
-const authStore = inject('authStore')
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -138,9 +209,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue', 'refresh'])
-
-const requesterDivision = computed(() => authStore?.user?.division?.name || authStore?.userDivision || '—')
-const requesterSection = computed(() => authStore?.user?.section?.name || authStore?.userSection || '—')
 
 const saving = ref(false)
 const fileList = ref([])
@@ -260,6 +328,41 @@ async function submitTicket() {
 }
 </script>
 
-<style lang="scss">
-@import './TicketModal.scss';
+<style lang="scss" scoped>
+.user-add-modal {
+  width: 780px !important;
+  max-width: 92vw !important;
+
+  &__icon-bg {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #e6f4ea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.line-height-tight {
+  line-height: 1.2;
+}
+
+.form-label {
+  font-size: 0.85rem;
+}
+
+.file-item {
+  border: 1px solid #e5e7eb;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f3f4f6;
+  }
+}
+
+.submit-btn {
+  border-radius: 8px;
+  padding: 6px 20px;
+}
 </style>
