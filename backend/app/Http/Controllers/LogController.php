@@ -13,12 +13,16 @@ class LogController extends Controller
     public function index(Request $request)
     {
         $query = Log::with([
-            'user:id,first_name,last_name,name,email',
+            'user:id,first_name,last_name,name,email,role',
             'ticket:id,ticket_no,issue',
         ])->latest();
 
         if ($action = $request->query('action')) {
             $query->where('action', strtoupper($action));
+        }
+
+        if ($role = $request->query('role')) {
+            $query->whereHas('user', fn ($userQuery) => $userQuery->where('role', strtoupper($role)));
         }
 
         return response()->json($query->get());

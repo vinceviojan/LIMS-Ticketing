@@ -162,7 +162,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from '../stores/auth'
 import { api } from '../boot/axios'
@@ -278,8 +278,43 @@ async function savePassword() {
   }
 }
 
-function saveSystem() {
-  notify('positive', 'System configuration saved.')
+onMounted(async () => {
+  if (authStore.user?.role !== 'ADMIN') return
+  try {
+    const { data } = await api.get('/admin/settings')
+    systemConfig.value = {
+      maintenance: data.maintenance,
+      emailNotifs: data.email_notifs,
+      autoClose: data.auto_close,
+      auditLog: data.audit_log,
+    }
+    slaConfig.value = {
+      critical: data.sla_critical,
+      high: data.sla_high,
+      medium: data.sla_medium,
+      low: data.sla_low,
+    }
+  } catch {
+    notify('negative', 'Failed to load system configuration.')
+  }
+})
+
+async function saveSystem() {
+  try {
+    await api.put('/admin/settings', {
+      maintenance: systemConfig.value.maintenance,
+      email_notifs: systemConfig.value.emailNotifs,
+      auto_close: systemConfig.value.autoClose,
+      audit_log: systemConfig.value.auditLog,
+      sla_critical: slaConfig.value.critical,
+      sla_high: slaConfig.value.high,
+      sla_medium: slaConfig.value.medium,
+      sla_low: slaConfig.value.low,
+    })
+    notify('positive', 'System configuration saved.')
+  } catch {
+    notify('negative', 'Failed to save system configuration.')
+  }
 }
 </script>
 

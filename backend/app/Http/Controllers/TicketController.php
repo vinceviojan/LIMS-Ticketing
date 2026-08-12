@@ -18,6 +18,7 @@ class TicketController extends Controller
         'ticket_no',
         'issue',
         'description',
+        'remarks',
         'urgency',
         'status',
         'user_id',
