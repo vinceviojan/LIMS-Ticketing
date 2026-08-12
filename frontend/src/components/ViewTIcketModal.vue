@@ -1,74 +1,216 @@
 <template>
-  <q-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)">
-    <q-card class="ticket-page__dialog" style="max-width: 650px; width: 100%;">
-      <q-card-section class="ticket-page__dialog-head">
-        <q-icon name="visibility" size="26px" color="primary" />
-        <span class="ticket-page__dialog-title">Ticket Details</span>
-        <q-space />
-        <q-btn flat round dense icon="close" @click="closeModal" />
+  <q-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" persistent transition-show="scale" transition-hide="scale">
+    <q-card class="ticket-page__dialog user-view-modal" style="width: 820px; max-width: 95vw; border-radius: 16px;">
+      
+      <!-- ── Header ─────────────────────────────────────────────── -->
+      <q-card-section class="user-view-modal__head bg-white q-pa-md row items-center justify-between border-bottom">
+        <div class="row items-center gap-sm">
+          <div class="user-view-modal__icon-bg">
+            <q-icon name="confirmation_number" size="22px" color="primary" />
+          </div>
+          <div>
+            <div class="text-subtitle1 text-weight-bold text-grey-10 line-height-tight">Ticket Details</div>
+            <div class="text-caption text-grey-6">View ticket information and history</div>
+          </div>
+        </div>
+        <q-btn flat round dense icon="close" color="grey-6" @click="closeModal" />
       </q-card-section>
 
       <q-separator />
 
-      <q-card-section class="ticket-page__dialog-body">
-        <div class="ticket-page__form-row">
-          <q-input :model-value="ticket?.ticket_no || (ticket?.id ? '#' + ticket.id : '')" label="Ticket #" outlined dense readonly />
-          <q-input :model-value="ticket?.created" label="Date Submitted" outlined dense readonly />
+      <!-- ── Body ────────────────────────────────────────────────── -->
+      <q-card-section class="user-view-modal__body q-pa-lg" style="max-height: 65vh; overflow-y: auto;">
+        
+        <!-- 1st Row: Ticket # -->
+        <div class="q-mb-md">
+          <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Ticket #</label>
+          <q-input
+            :model-value="ticket?.ticket_no || (ticket?.id ? '#' + ticket.id : '—')"
+            outlined dense readonly
+            bg-color="grey-1"
+            input-class="text-weight-bold text-grey-9"
+          >
+            <template #prepend>
+              <q-icon name="tag" color="primary" size="20px" />
+            </template>
+          </q-input>
         </div>
 
-        <q-input :model-value="ticket?.requester" label="Requester" outlined dense readonly class="q-mt-sm" />
+        <!-- 2nd Row: Status & Priority (Color-coded text) -->
+        <div class="row q-col-gutter-md q-mb-md">
+          <!-- Status -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Status</label>
+            <q-input
+              :model-value="statusLabel"
+              outlined dense readonly
+              bg-color="grey-1"
+              :input-style="{ color: statusColor, fontWeight: '700' }"
+            >
+              <template #prepend>
+                <q-icon name="info" :style="{ color: statusColor }" size="20px" />
+              </template>
+            </q-input>
+          </div>
 
-        <q-input :model-value="ticket?.title" label="Subject / Title" outlined dense readonly class="q-mt-sm" />
-
-        <q-input
-          :model-value="ticket?.description || 'No description provided.'"
-          label="Description"
-          outlined dense readonly
-          type="textarea" rows="3"
-          class="q-mt-sm"
-        />
-
-        <div class="ticket-page__form-row q-mt-sm">
-          <q-input :model-value="ticket?.priority" label="Priority" outlined dense readonly />
-          <q-input :model-value="ticket?.category" label="Category" outlined dense readonly />
+          <!-- Priority -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Priority</label>
+            <q-input
+              :model-value="displayPriority"
+              outlined dense readonly
+              bg-color="grey-1"
+              :input-style="{ color: priorityColor, fontWeight: '700' }"
+            >
+              <template #prepend>
+                <q-icon name="flag" :style="{ color: priorityColor }" size="20px" />
+              </template>
+            </q-input>
+          </div>
         </div>
 
-        <div class="ticket-page__form-row q-mt-sm">
-          <q-input :model-value="statusLabel" label="Status" outlined dense readonly />
-          <q-input :model-value="ticket?.assignedStaff || 'Unassigned'" label="Assigned Staff" outlined dense readonly />
+        <!-- 3rd Row: Requester & Date Submitted -->
+        <div class="row q-col-gutter-md q-mb-md">
+          <!-- Requester -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Requester</label>
+            <q-input :model-value="displayRequester" outlined dense readonly bg-color="grey-1">
+              <template #prepend>
+                <q-icon name="person" color="primary" size="20px" />
+              </template>
+            </q-input>
+          </div>
+
+          <!-- Date Submitted -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Date Submitted / Target Date</label>
+            <div class="row items-center gap-sm">
+              <q-input :model-value="displayCreated" outlined dense readonly bg-color="grey-1" class="col">
+                <template #prepend>
+                  <q-icon name="event" color="primary" size="20px" />
+                </template>
+              </q-input>
+              <q-input v-if="ticket?.target_resolution_date" :model-value="displayTargetDate" outlined dense readonly bg-color="orange-1" class="col" :input-style="{ color: '#c2410c', fontWeight: '700' }">
+                <template #prepend>
+                  <q-icon name="event_available" color="orange-9" size="20px" />
+                </template>
+              </q-input>
+            </div>
+          </div>
         </div>
 
-        <q-input
-          v-if="ticket?.remarks"
-          :model-value="ticket.remarks"
-          label="Resolution Remarks"
-          outlined dense readonly
-          type="textarea" rows="2"
-          class="q-mt-md bg-green-50 rounded-borders"
-          input-class="text-positive text-weight-medium"
-          label-color="positive"
-        />
+        <!-- 4th Row: Subject / Title & Category -->
+        <div class="row q-col-gutter-md q-mb-md">
+          <!-- Subject / Title -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Subject / Title</label>
+            <q-input :model-value="displayTitle" outlined dense readonly bg-color="grey-1">
+              <template #prepend>
+                <q-icon name="subtitles" color="primary" size="20px" />
+              </template>
+            </q-input>
+          </div>
 
-        <!-- ── Attachments List Section ──────────────────────────── -->
-        <div class="q-mt-md">
-          <div class="text-subtitle2 text-weight-bold q-mb-xs">Attachments</div>
+          <!-- Category -->
+          <div class="col-12 col-sm-6">
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Category</label>
+            <q-input :model-value="displayCategory" outlined dense readonly bg-color="grey-1">
+              <template #prepend>
+                <q-icon name="category" color="primary" size="20px" />
+              </template>
+            </q-input>
+          </div>
+        </div>
+
+        <!-- 5th Row: Description -->
+        <div class="q-mb-md">
+          <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Description</label>
+          <q-input
+            :model-value="displayDescription"
+            outlined dense readonly
+            type="textarea" rows="4"
+            bg-color="grey-1"
+          >
+            <template #prepend>
+              <q-icon name="notes" color="primary" size="20px" />
+            </template>
+          </q-input>
+        </div>
+
+        <!-- Resolution & Remarks (if resolved) -->
+        <div v-if="ticket?.status === 'RESOLVED' || ticket?.status === 'CLOSE'" class="q-mb-md">
+          <label class="form-label text-weight-bold text-positive block q-mb-xs">Resolution</label>
+          <q-input
+            :model-value="displayResolution"
+            outlined dense readonly
+            type="textarea" rows="2"
+            bg-color="green-1"
+            input-class="text-positive text-weight-medium"
+          >
+            <template #prepend>
+              <q-icon name="task_alt" color="positive" size="20px" />
+            </template>
+          </q-input>
           
-          <div v-if="ticket?.attachments && ticket.attachments.length" class="q-gutter-y-xs q-mb-md">
-            <q-list bordered separator rounded class="bg-grey-1">
-              <q-item v-for="att in ticket.attachments" :key="att.id" dense clickable @click="openAttachment(att)">
-                <q-item-section avatar>
-                  <q-icon :name="getAttIcon(att)" color="primary" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label class="text-weight-medium text-body2">{{ att.file_name }}</q-item-label>
-                  <q-item-label caption v-if="att.file_size">{{ formatBytes(att.file_size) }}</q-item-label>
-                  <q-item-label caption v-else-if="att.external_url" class="text-primary">{{ att.external_url }}</q-item-label>
-                </q-item-section>
-                <q-item-section side>
-                  <q-icon name="open_in_new" size="18px" color="primary" />
-                </q-item-section>
-              </q-item>
-            </q-list>
+          <div class="row q-mt-xs text-caption text-grey-8 justify-between">
+            <div v-if="displayApprovedBy" class="q-mb-xs">
+              <q-icon name="verified_user" color="grey-6" size="16px" class="q-mr-xs"/>
+              Approved/Closed By: <span class="text-weight-bold">{{ displayApprovedBy }}</span>
+            </div>
+            <div v-if="ticket?.date_action" class="q-mb-xs">
+              <q-icon name="history" color="grey-6" size="16px" class="q-mr-xs"/>
+              Date of Action: <span class="text-weight-bold">{{ displayDateAction }}</span>
+            </div>
+            <div v-if="ticket?.date_closed" class="q-mb-xs">
+              <q-icon name="event_available" color="grey-6" size="16px" class="q-mr-xs"/>
+              Date Closed: <span class="text-weight-bold">{{ displayDateClosed }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Final Remarks -->
+        <div v-if="ticket?.final_remarks" class="q-mb-md">
+          <label class="form-label text-weight-bold text-grey-9 block q-mb-xs">Final Remarks (Admin)</label>
+          <q-input
+            :model-value="ticket.final_remarks"
+            outlined dense readonly
+            type="textarea" rows="2"
+            bg-color="grey-3"
+            input-class="text-grey-9 text-weight-medium"
+          >
+            <template #prepend>
+              <q-icon name="admin_panel_settings" color="grey-7" size="20px" />
+            </template>
+          </q-input>
+        </div>
+
+        <!-- 6th / Last Row: Attachments -->
+        <div class="q-mt-lg">
+          <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Attachments</label>
+
+          <div v-if="ticket?.attachments && ticket.attachments.length" class="q-mb-md">
+            <div class="row q-col-gutter-sm">
+              <div
+                v-for="att in ticket.attachments"
+                :key="att.id"
+                class="col-12 col-sm-6"
+              >
+                <div
+                  class="file-item row items-center justify-between q-pa-sm bg-grey-2 rounded-borders cursor-pointer"
+                  @click="openAttachment(att)"
+                >
+                  <div class="row items-center gap-sm col ellipsis">
+                    <q-avatar size="32px" color="primary" text-color="white" :icon="getAttIcon(att)" />
+                    <div class="col ellipsis">
+                      <div class="text-weight-medium text-body2 ellipsis">{{ att.file_name }}</div>
+                      <div class="text-caption text-grey-7" v-if="att.file_size">{{ formatBytes(att.file_size) }}</div>
+                      <div class="text-caption text-primary ellipsis" v-else-if="att.external_url">{{ att.external_url }}</div>
+                    </div>
+                  </div>
+                  <q-btn flat round dense icon="open_in_new" color="primary" size="sm" />
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Legacy single file attachments fallback -->
@@ -81,48 +223,20 @@
             </div>
           </div>
           
-          <div v-else class="text-grey-6 text-caption text-italic q-py-xs q-mb-md">
+          <div v-else class="text-grey-6 text-caption italic q-py-xs q-mb-md">
             No attachments provided.
-          </div>
-
-          <!-- Attachment Upload Area -->
-          <div class="row q-col-gutter-sm items-center q-pt-sm" style="border-top: 1px dashed #e2e8f0;" v-if="canAddAttachment()">
-            <div class="col">
-              <q-file
-                v-model="fileToUpload"
-                label="Add new attachment (Max 10MB)"
-                outlined dense
-                accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="attach_file" />
-                </template>
-              </q-file>
-            </div>
-            <div class="col-auto">
-              <q-btn
-                color="primary"
-                icon="upload"
-                unelevated
-                :loading="uploadingAttachment"
-                :disable="!fileToUpload"
-                @click="uploadAttachment"
-              >
-                <q-tooltip>Upload Attachment</q-tooltip>
-              </q-btn>
-            </div>
           </div>
         </div>
 
         <!-- ── Rating & Feedback Section (For RESOLVED & CLOSED tickets) ── -->
         <div
           v-if="['CLOSE', 'RESOLVED'].includes(ticket?.status) || ticket?.rating || ticket?.feedback"
-          class="q-mt-lg q-pa-md border-radius-8 transition-all"
-          :class="!hasExistingRating && isEndUser ? 'bg-amber-1 border-amber-strong shadow-2' : 'bg-amber-1'"
+          class="q-mt-lg q-pa-md rounded-borders"
+          :class="!hasExistingRating && isEndUser ? 'bg-amber-1 border-amber' : 'bg-amber-1'"
           :style="{ border: !hasExistingRating && isEndUser ? '2px solid #f59e0b' : '1px solid #fef3c7' }"
         >
           <div class="text-subtitle1 text-weight-bolder text-amber-10 q-mb-xs flex items-center justify-between">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-xs">
               <q-icon name="rate_review" size="22px" color="amber-9" />
               <span>Service Rating & Feedback</span>
             </div>
@@ -173,30 +287,35 @@
               />
             </div>
           </div>
-          <div v-else class="text-caption text-grey-6 text-italic q-mt-xs">
+          <div v-else class="text-caption text-grey-6 italic q-mt-xs">
             No rating or feedback provided yet.
           </div>
         </div>
+
       </q-card-section>
 
-      <q-separator />
+      <!-- ── Footer Actions (Only show for Resolve / Claim actions if applicable) ── -->
+      <template v-if="canResolve || canClaim">
+        <q-separator />
+        <q-card-actions align="right" class="q-pa-md bg-grey-1 gap-sm">
+          <q-btn
+            v-if="canResolve"
+            unelevated no-caps
+            color="positive" outline icon="task_alt" label="Resolve Ticket"
+            class="text-weight-medium"
+            @click="showResolveDialog = true"
+          />
+          <q-btn
+            v-if="canClaim"
+            unelevated no-caps
+            color="primary" icon="front_hand" label="Claim / Assign to Me"
+            class="text-weight-medium"
+            :loading="claiming"
+            @click="claimTicket"
+          />
+        </q-card-actions>
+      </template>
 
-      <q-card-actions align="right" class="ticket-page__dialog-actions">
-        <q-btn
-          v-if="canResolve"
-          unelevated no-caps
-          color="positive" outline icon="task_alt" label="Resolve Ticket"
-          @click="showResolveDialog = true"
-        />
-        <q-btn
-          v-if="canClaim"
-          unelevated no-caps
-          color="primary" icon="front_hand" label="Claim / Assign to Me"
-          :loading="claiming"
-          @click="claimTicket"
-        />
-        <q-btn flat no-caps label="Close" color="grey-7" @click="closeModal" />
-      </q-card-actions>
     </q-card>
   </q-dialog>
 
@@ -218,14 +337,15 @@
       </q-card-section>
       
       <q-card-section class="q-pt-sm">
-        <div class="text-body2 text-grey-8 q-mb-md">Please provide remarks or details regarding the resolution.</div>
+        <div class="text-body2 text-grey-8 q-mb-md">Please provide remarks/resolution details regarding the resolution.</div>
+        <label class="text-caption text-weight-bold text-grey-7 q-mb-xs block">Resolution / Remarks <span class="text-negative">*</span></label>
         <q-input
-          v-model="resolveRemarks"
+          v-model="resolveResolution"
           type="textarea"
           outlined dense
           autofocus
           placeholder="E.g. Fixed router settings and restarted..."
-          :rules="[val => !!val || 'Remarks are required']"
+          :rules="[val => !!val || 'Resolution is required']"
           bg-color="white"
         />
       </q-card-section>
@@ -239,10 +359,12 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, inject } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { api } from '../boot/axios'
 import { useQuasar } from 'quasar'
 import AttachmentPreviewDrawer from './AttachmentPreviewDrawer.vue'
+
+import { useAuthStore } from '../stores/auth'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -252,7 +374,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'refresh'])
 
 const $q = useQuasar()
-const authStore = inject('authStore', null)
+const authStore = useAuthStore()
 
 const rating = ref(5)
 const feedback = ref('')
@@ -262,24 +384,31 @@ const showDrawer = ref(false)
 const selectedAttachment = ref(null)
 
 const showResolveDialog = ref(false)
-const resolveRemarks = ref('')
+const resolveResolution = ref('')
 const resolving = ref(false)
 
-const fileToUpload = ref(null)
-const uploadingAttachment = ref(false)
+const isEndUser = computed(() => {
+  const role = authStore?.userRole ? authStore.userRole.toLowerCase() : ''
+  return role === 'user'
+})
 
 const canClaim = computed(() => {
-  if (!props.ticket || props.ticket.assigned_staff_id) return false
-  const role = authStore?.userRole ? authStore.userRole.toLowerCase() : ''
+  const ticket = props.ticket
+  if (!ticket) return false
+  // For unassigned tickets, assigned_staff_id should be null
+  if (ticket.assigned_staff_id !== null && ticket.assigned_staff_id !== undefined) return false
+  const role = (authStore.userRole || '').toLowerCase()
+  console.log('[ViewTicketModal] canClaim check → role:', role, '| assigned_staff_id:', ticket.assigned_staff_id, '| ticket:', ticket)
   return ['staff', 'admin'].includes(role)
 })
 
 const canResolve = computed(() => {
-  if (!props.ticket || !props.ticket.id) return false
-  if (['RESOLVED', 'CLOSE', 'CANCEL'].includes(props.ticket.status)) return false
-  const role = authStore?.userRole ? authStore.userRole.toLowerCase() : ''
+  const ticket = props.ticket
+  if (!ticket || !ticket.id) return false
+  if (['RESOLVED', 'CLOSE', 'CANCEL'].includes(ticket.status)) return false
+  const role = (authStore.userRole || '').toLowerCase()
   if (role === 'admin') return true
-  if (role === 'staff' && props.ticket.assigned_staff_id === authStore?.user?.id) return true
+  if (role === 'staff' && ticket.assigned_staff_id === authStore.user?.id) return true
   return false
 })
 
@@ -293,6 +422,41 @@ const statusLabels = {
 }
 
 const statusLabel = computed(() => statusLabels[props.ticket?.status] || props.ticket?.status || '—')
+
+const displayPriority = computed(() => props.ticket?.priority || props.ticket?.urgency || 'NORMAL')
+const displayRequester = computed(() => props.ticket?.requester || props.ticket?.user?.name || '—')
+const displayCreated = computed(() => props.ticket?.created || props.ticket?.created_at || '—')
+const displayTitle = computed(() => props.ticket?.title || props.ticket?.issue || '—')
+const displayCategory = computed(() => props.ticket?.category || props.ticket?.problem_category?.categories || 'Uncategorized')
+const displayDescription = computed(() => props.ticket?.description || props.ticket?.details || 'No description provided.')
+const displayResolution = computed(() => props.ticket?.resolution || props.ticket?.remarks || 'No resolution recorded.')
+const displayApprovedBy = computed(() => props.ticket?.approved_by || (props.ticket?.approvedBy?.first_name ? `${props.ticket.approvedBy.first_name} ${props.ticket.approvedBy.last_name}` : ''))
+const displayDateAction = computed(() => props.ticket?.date_action || '—')
+const displayDateClosed = computed(() => props.ticket?.date_closed || '—')
+const displayTargetDate = computed(() => props.ticket?.target_resolution_date || '—')
+
+// Color-coded text for status
+const statusColor = computed(() => {
+  const s = props.ticket?.status?.toUpperCase() || ''
+  if (s === 'OPEN') return '#c2410c'
+  if (s === 'ON-GOING') return '#1d4ed8'
+  if (s === 'PENDING') return '#ca8a04'
+  if (s === 'ESCALATED') return '#9333ea'
+  if (s === 'RESOLVED') return '#16a34a'
+  if (s === 'CLOSE' || s === 'CLOSED') return '#475569'
+  if (s === 'CANCEL' || s === 'CANCELED') return '#dc2626'
+  return '#475569'
+})
+
+// Color-coded text for priority
+const priorityColor = computed(() => {
+  const p = displayPriority.value.toUpperCase()
+  if (p === 'CRITICAL' || p === 'HIGH') return '#dc2626'
+  if (p === 'NORMAL' || p === 'MEDIUM') return '#2563eb'
+  if (p === 'LOW') return '#16a34a'
+  return '#475569'
+})
+
 const hasExistingRating = computed(() => Boolean(props.ticket?.rating && props.ticket?.feedback))
 
 const ratingTextMap = {
@@ -333,38 +497,6 @@ function formatBytes(bytes, decimals = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
-async function uploadAttachment() {
-  if (!fileToUpload.value) return
-
-  uploadingAttachment.value = true
-  const formData = new FormData()
-  formData.append('_method', 'PUT')
-  formData.append('attachments[0]', fileToUpload.value)
-
-  try {
-    const id = props.ticket.real_id || props.ticket.id
-    await api.post(`/tickets/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-    $q.notify({ type: 'positive', message: 'Attachment uploaded successfully!' })
-    fileToUpload.value = null
-    emit('refresh')
-  } catch (err) {
-    console.error('Failed to upload attachment', err)
-    $q.notify({ type: 'negative', message: 'Failed to upload attachment.' })
-  } finally {
-    uploadingAttachment.value = false
-  }
-}
-
-function canAddAttachment() {
-  if (!props.ticket || !props.ticket.id) return false
-  if (['RESOLVED', 'CLOSE', 'CANCEL'].includes(props.ticket.status)) return false
-  
-  const role = authStore?.userRole ? authStore.userRole.toLowerCase() : ''
-  return role === 'user'
-}
-
 function openAttachment(att) {
   selectedAttachment.value = att
   showDrawer.value = true
@@ -390,6 +522,8 @@ async function submitRating() {
       rating: rating.value,
       feedback: feedback.value.trim(),
     })
+    $q.notify({ type: 'positive', message: 'Feedback submitted successfully.' })
+    emit('refresh')
   } catch (err) {
     console.error('Failed to submit rating', err)
     $q.notify({ type: 'negative', message: err.response?.data?.message || 'Failed to submit rating.' })
@@ -424,13 +558,14 @@ async function claimTicket() {
 }
 
 async function resolveTicket() {
-  if (!resolveRemarks.value || !resolveRemarks.value.trim()) return
+  if (!resolveResolution.value || !resolveResolution.value.trim()) return
   const id = props.ticket.real_id || props.ticket.id
   
   resolving.value = true
   try {
     const res = await api.post(`/tickets/${id}/resolve`, {
-      remarks: resolveRemarks.value.trim()
+      remarks: resolveResolution.value.trim(),
+      resolution: resolveResolution.value.trim(),
     })
     $q.notify({
       type: 'positive',
@@ -450,3 +585,38 @@ async function resolveTicket() {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.user-view-modal {
+  width: 820px !important;
+  max-width: 95vw !important;
+
+  &__icon-bg {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #e6f4ea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.line-height-tight {
+  line-height: 1.2;
+}
+
+.form-label {
+  font-size: 0.85rem;
+}
+
+.file-item {
+  border: 1px solid #e5e7eb;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    border-color: #cbd5e1;
+  }
+}
+</style>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Ticket;
+use App\Models\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -337,6 +338,45 @@ class AdminController extends Controller
     {
         $user = $request->user();
         $user->update($request->all());
+        $user->load(['division', 'section']);
+        $validated = $request->validate([
+            'first_name' => 'sometimes|required|string|max:255',
+            'last_name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
+            'position' => 'nullable|string|max:255',
+        ]);
+        $original = $user->only(array_keys($validated));
+        if (isset($validated['first_name']) || isset($validated['last_name'])) {
+            $validated['name'] = trim(($validated['first_name'] ?? $user->first_name) . ' ' . ($validated['last_name'] ?? $user->last_name));
+        }
+        $user->update($validated);
+
+        $changes = collect($user->getChanges())
+            ->except(['updated_at', 'name'])
+            ->map(fn ($value, $field) => "{$field} changed from '" . ($original[$field] ?? '') . "' to '" . ($value ?? '') . "'")
+            ->values()->all();
+        if ($changes) {
+            Log::create([
+                'user_id' => $user->id,
+                'action' => 'UPDATE',
+                'message' => "Settings profile updated: " . implode(', ', $changes) . '.',
+                'address' => $request->ip(),
+            ]);
+        }
         return response()->json($user);
     }
+
+    public function getDivisionAndSection(Request $request)
+    {
+        $user = $request->user();
+        $user->load(['division', 'section']);
+        return response()->json([
+            'message' => 'Successful',
+            'division' => $user->division,
+            'section' => $user->section,
+        ]);
+    }
+    
+
+    
 }

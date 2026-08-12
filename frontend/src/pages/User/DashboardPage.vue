@@ -8,10 +8,11 @@
         <div class="user-dash__sub">How can we help you today?</div>
       </div>
       <q-btn
-        class="clay-btn clay-btn--primary"
+        color="primary"
         label="Submit a Ticket"
         icon="add_circle_outline"
         unelevated no-caps
+        class="submit-btn text-weight-bold"
         :disable="Boolean(unratedTicket)"
         @click="openBlankDialog"
       >
@@ -21,105 +22,164 @@
       </q-btn>
     </div>
 
-    <!-- ── Action Required: Unrated Ticket Banner ─────────────── -->
-    <div v-if="unratedTicket" class="q-mb-lg q-pa-md bg-amber-1 rounded-borders border-amber" style="border: 1px solid #fde68a; border-left: 5px solid #f59e0b;">
-      <div class="row items-center justify-between gap-sm">
-        <div class="row items-center gap-sm col">
-          <q-avatar size="40px" color="amber-3" text-color="amber-10" icon="rate_review" />
-          <div>
-            <div class="text-subtitle2 text-weight-bold text-amber-10">Action Required: Rate & Review Resolved Ticket</div>
-            <div class="text-caption text-grey-9">
-              Ticket <strong>{{ unratedTicket.ticket_no || '#' + unratedTicket.id }}</strong> ({{ unratedTicket.title }}) has been resolved. Please rate the service received to submit new tickets.
-            </div>
-          </div>
-        </div>
+    <!-- ── Action Required Banner ─────────────────────────────── -->
+    <q-banner
+      v-if="unratedTicket"
+      rounded
+      class="q-mb-lg bg-amber-1 text-amber-10"
+      style="border: 1px solid #fde68a; border-left: 5px solid #f59e0b;"
+    >
+      <template #avatar>
+        <q-avatar color="amber-3" text-color="amber-10" icon="rate_review" />
+      </template>
+      <div class="text-subtitle2 text-weight-bold">Action Required: Rate &amp; Review Resolved Ticket</div>
+      <div class="text-caption">
+        Ticket <strong>{{ unratedTicket.ticket_no || '#' + unratedTicket.id }}</strong>
+        ({{ unratedTicket.title }}) has been resolved. Please rate the service to submit new tickets.
+      </div>
+      <template #action>
         <q-btn
+          flat unelevated no-caps
           color="amber-9"
-          label="⭐ Rate Service Now"
-          unelevated no-caps
+          label="Rate Now"
+          icon="star"
           class="text-weight-bold"
           @click="openRatingModal(unratedTicket)"
         />
-      </div>
-    </div>
+      </template>
+    </q-banner>
 
     <!-- ── My Tickets ───────────────────────────────────────────── -->
-    <div class="user-dash__section-title">My Tickets</div>
+    <div class="section-header q-mb-md">
+      <div class="section-title">My Tickets</div>
+      <q-btn
+        flat no-caps dense
+        color="primary"
+        label="View All"
+        icon-right="arrow_forward"
+        size="sm"
+        to="/user/ticket-management"
+      />
+    </div>
 
-    <div v-if="myTickets.length" class="user-dash__tickets">
-      <div
-        v-for="ticket in myTickets"
-        :key="ticket.id"
-        class="user-ticket cursor-pointer"
-        :class="`user-ticket--${ticket.priority.toLowerCase()}`"
-        @click="openViewModal(ticket)"
-      >
-        <div class="user-ticket__left">
-          <div class="user-ticket__id">#{{ ticket.id }}</div>
-          <span :class="['user-ticket__status', `user-ticket__status--${ticket.status.toLowerCase()}`]">
-            {{ ticket.status }}
-          </span>
-        </div>
-        <div class="user-ticket__body">
-          <div class="user-ticket__title">{{ ticket.title }}</div>
-          <div class="user-ticket__meta">
-            <q-icon name="category" size="13px" />
-            {{ ticket.category }} &nbsp;·&nbsp;
-            <q-icon name="flag" size="13px" />
-            {{ ticket.priority }} &nbsp;·&nbsp;
-            {{ ticket.created }}
-          </div>
-        </div>
-        <div class="row items-center gap-xs">
-          <!-- Rated Star Pill -->
-          <q-chip v-if="ticket.rating" dense color="amber-1" text-color="amber-9" icon="star" class="text-weight-bold">
-            {{ ticket.rating }} / 5
-          </q-chip>
-          <!-- Unrated Action Badge -->
-          <q-chip v-else-if="['RESOLVED', 'CLOSE'].includes(ticket.status)" dense color="amber-9" text-color="white" icon="rate_review" class="text-weight-bold">
-            Rate Service
-          </q-chip>
-          <q-icon
-            v-else
-            :name="ticket.status === 'RESOLVED' ? 'task_alt' : ticket.status === 'PENDING' ? 'pending_actions' : 'radio_button_unchecked'"
-            :color="ticket.status === 'RESOLVED' ? 'positive' : ticket.status === 'PENDING' ? 'warning' : 'primary'"
-            size="20px"
+    <!-- Fixed Height Ticket Container -->
+    <div class="ticket-container-wrapper q-mb-xl">
+      <!-- Tickets List -->
+      <q-card v-if="latestTickets.length" flat bordered class="rounded-lg ticket-list-card full-height">
+        <q-scroll-area class="full-height">
+          <q-list separator>
+            <q-item
+              v-for="ticket in latestTickets"
+              :key="ticket.id"
+              clickable
+              v-ripple
+              class="ticket-item"
+              @click="openViewModal(ticket)"
+            >
+              <q-item-section avatar>
+                <q-avatar
+                  size="42px"
+                  :color="getStatusBg(ticket.status)"
+                  :text-color="getStatusColor(ticket.status)"
+                  :icon="getStatusIcon(ticket.status)"
+                />
+              </q-item-section>
+
+              <q-item-section>
+                <q-item-label class="text-weight-semibold text-grey-9 ellipsis">
+                  {{ ticket.title }}
+                </q-item-label>
+                <q-item-label caption class="row items-center gap-sm q-mt-xs">
+                  <span class="text-grey-6">{{ ticket.ticket_no || '#' + ticket.id }}</span>
+                  <q-separator vertical inset />
+                  <q-icon name="category" size="12px" color="grey-5" />
+                  <span class="text-grey-6">{{ ticket.category }}</span>
+                  <q-separator vertical inset />
+                  <q-icon name="schedule" size="12px" color="grey-5" />
+                  <span class="text-grey-6">{{ ticket.created }}</span>
+                </q-item-label>
+              </q-item-section>
+
+              <q-item-section side>
+                <div class="column items-end gap-xs">
+                  <!-- Status -->
+                  <span
+                    class="status-text text-weight-bold text-caption"
+                    :style="{ color: getStatusHex(ticket.status) }"
+                  >
+                    <q-icon :name="getStatusIcon(ticket.status)" size="13px" />
+                    {{ statusLabel(ticket.status) }}
+                  </span>
+                  <!-- Priority -->
+                  <span
+                    class="priority-text text-caption"
+                    :style="{ color: getPriorityHex(ticket.priority) }"
+                  >
+                    <q-icon name="flag" size="12px" />
+                    {{ ticket.priority }}
+                  </span>
+                  <!-- Rating chip -->
+                  <q-chip v-if="ticket.rating" dense size="sm" color="amber-1" text-color="amber-9" icon="star">
+                    {{ ticket.rating }}/5
+                  </q-chip>
+                  <q-chip
+                    v-else-if="['CLOSE'].includes(ticket.status)"
+                    dense size="sm" color="amber-9" text-color="white" icon="rate_review"
+                    clickable @click.stop="openRatingModal(ticket)"
+                  >
+                    Rate
+                  </q-chip>
+                </div>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-scroll-area>
+      </q-card>
+
+      <!-- Empty State -->
+      <q-card v-else flat bordered class="rounded-lg empty-ticket-card flex flex-center full-height">
+        <div class="column items-center text-center q-pa-lg">
+          <q-icon name="confirmation_number" size="52px" color="grey-4" />
+          <div class="text-h6 text-grey-6 q-mt-sm">No tickets yet</div>
+          <div class="text-caption text-grey-5 q-mt-xs q-mb-md">You haven't submitted any support tickets.</div>
+          <q-btn
+            color="primary" label="Submit First Ticket" icon="add"
+            unelevated no-caps class="text-weight-bold"
+            :disable="Boolean(unratedTicket)"
+            @click="openBlankDialog"
           />
         </div>
-      </div>
+      </q-card>
     </div>
 
-    <div v-else class="user-dash__empty">
-      <q-icon name="confirmation_number" size="52px" color="grey-5" />
-      <p>You haven't submitted any tickets yet.</p>
-      <q-btn
-        class="clay-btn clay-btn--primary"
-        label="Submit First Ticket"
-        icon="add"
-        unelevated no-caps
-        :disable="Boolean(unratedTicket)"
-        @click="openBlankDialog"
+    <!-- ── Common Issues ─────────────────────────────────────────── -->
+    <div class="section-header q-mb-md">
+      <div class="section-title">Common Issues</div>
+      <div class="text-caption text-grey-5">Click to file a ticket</div>
+    </div>
+
+    <div class="help-grid q-mb-xl">
+      <q-card
+        v-for="topic in helpTopics"
+        :key="topic.title"
+        flat bordered
+        class="help-card cursor-pointer"
+        @click="prefillTicket(topic)"
       >
-        <q-tooltip v-if="unratedTicket" class="bg-amber-9">
-          Please rate your resolved ticket before submitting a new one.
-        </q-tooltip>
-      </q-btn>
+        <q-card-section class="q-pa-lg">
+          <div class="help-card__icon-wrap q-mb-md">
+            <q-icon :name="topic.icon" size="26px" color="primary" />
+          </div>
+          <div class="text-subtitle2 text-weight-bold text-grey-9 q-mb-xs">{{ topic.title }}</div>
+          <div class="text-caption text-grey-6 q-mb-md" style="line-height: 1.5;">{{ topic.desc }}</div>
+          <div class="row items-center text-primary" style="font-size: 0.75rem; font-weight: 700;">
+            File a ticket <q-icon name="arrow_forward" size="13px" class="q-ml-xs" />
+          </div>
+        </q-card-section>
+      </q-card>
     </div>
 
-    <!-- ── Help Topics ──────────────────────────────────────────── -->
-    <div class="user-dash__section-title">Common Issues</div>
-    <div class="user-dash__help">
-      <div v-for="topic in helpTopics" :key="topic.title" class="help-card" @click="prefillTicket(topic)">
-        <q-icon :name="topic.icon" size="28px" class="help-card__icon" />
-        <div class="help-card__title">{{ topic.title }}</div>
-        <div class="help-card__desc">{{ topic.desc }}</div>
-        <div class="help-card__action">
-          Click to file <q-icon name="arrow_forward" size="13px" />
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Submit Ticket Dialog ─────────────────────────────────── -->
+    <!-- ── Modals ─────────────────────────────────────────────────── -->
     <UserAddTicketModal
       v-model="showDialog"
       :category-options="categoryOptions"
@@ -127,14 +187,12 @@
       @refresh="fetchTickets"
     />
 
-    <!-- ── View Ticket Modal ────────────────────────────────────── -->
     <ViewTicketModal
       v-model="showViewModal"
       :ticket="selectedTicket"
       @refresh="fetchTickets"
     />
 
-    <!-- ── Rating & Feedback Pop Up Modal ───────────────────────── -->
     <RatingFeedbackModal
       v-model="showRatingModal"
       :ticket="ratingTicket"
@@ -157,10 +215,8 @@ const authStore = inject('authStore')
 
 const showDialog = ref(false)
 const dialogPrefill = ref({})
-
 const showViewModal = ref(false)
 const selectedTicket = ref({})
-
 const showRatingModal = ref(false)
 const ratingTicket = ref({})
 
@@ -179,9 +235,12 @@ const timeOfDay = computed(() => {
 const categoryOptions = ref([])
 const myTickets = ref([])
 
-const unratedTicket = computed(() => {
-  return myTickets.value.find(t => ['RESOLVED', 'CLOSE'].includes(t.status) && (!t.rating || !t.feedback))
-})
+// Latest 5 tickets
+const latestTickets = computed(() => myTickets.value.slice(0, 5))
+
+const unratedTicket = computed(() =>
+  myTickets.value.find((t) => ['CLOSE'].includes(t.status) && (!t.rating || !t.feedback)),
+)
 
 function openViewModal(ticket) {
   selectedTicket.value = ticket
@@ -199,7 +258,7 @@ onMounted(async () => {
 
 async function fetchCategories() {
   const { data } = await api.get('/problem-categories')
-  categoryOptions.value = (data.data || data || []).map(category => ({ label: category.categories, value: category.id }))
+  categoryOptions.value = (data.data || data || []).map(c => ({ label: c.categories, value: c.id }))
 }
 
 async function fetchTickets() {
@@ -211,8 +270,10 @@ async function fetchTickets() {
       real_id: ticket.id,
       ticket_no: ticket.ticket_no,
       title: ticket.issue || 'Untitled ticket',
-      requester: ticket.user ? (ticket.user.first_name + ' ' + ticket.user.last_name) : 'User',
-      assignedStaff: ticket.assigned_staff ? (ticket.assigned_staff.name || `${ticket.assigned_staff.first_name} ${ticket.assigned_staff.last_name}`) : '',
+      requester: ticket.user ? `${ticket.user.first_name} ${ticket.user.last_name}` : 'User',
+      assignedStaff: ticket.assigned_staff
+        ? ticket.assigned_staff.name || `${ticket.assigned_staff.first_name} ${ticket.assigned_staff.last_name}`
+        : '',
       category: ticket.problem_category?.categories || 'Uncategorized',
       priority: ticket.urgency || 'NORMAL',
       status: ticket.status || 'OPEN',
@@ -223,7 +284,9 @@ async function fetchTickets() {
       attachments: ticket.attachments || [],
       upload_intralab: ticket.upload_intralab,
       upload_limsportal: ticket.upload_limsportal,
-      created: new Date(ticket.date_submitted || ticket.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      created: new Date(ticket.date_submitted || ticket.created_at).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric'
+      }),
     }))
 
     if (unratedTicket.value && !showRatingModal.value) {
@@ -235,20 +298,95 @@ async function fetchTickets() {
   }
 }
 
+// ── Status Helpers ───────────────────────────────────────────────
+function getStatusHex(status) {
+  const map = {
+    'OPEN': '#c2410c',
+    'ON-GOING': '#1d4ed8',
+    'PENDING': '#ca8a04',
+    'ESCALATED': '#9333ea',
+    'RESOLVED': '#16a34a',
+    'CLOSE': '#475569',
+    'CANCEL': '#dc2626',
+  }
+  return map[(status || '').toUpperCase()] || '#475569'
+}
+
+function getStatusBg(status) {
+  const map = {
+    'OPEN': 'orange-1',
+    'ON-GOING': 'blue-1',
+    'PENDING': 'amber-1',
+    'ESCALATED': 'purple-1',
+    'RESOLVED': 'green-1',
+    'CLOSE': 'grey-3',
+    'CANCEL': 'red-1',
+  }
+  return map[(status || '').toUpperCase()] || 'grey-3'
+}
+
+function getStatusColor(status) {
+  const map = {
+    'OPEN': 'orange-8',
+    'ON-GOING': 'blue-8',
+    'PENDING': 'amber-9',
+    'ESCALATED': 'purple-8',
+    'RESOLVED': 'green-8',
+    'CLOSE': 'grey-6',
+    'CANCEL': 'red-8',
+  }
+  return map[(status || '').toUpperCase()] || 'grey-6'
+}
+
+function getStatusIcon(status) {
+  const map = {
+    'OPEN': 'inbox',
+    'ON-GOING': 'autorenew',
+    'PENDING': 'pending_actions',
+    'ESCALATED': 'trending_up',
+    'RESOLVED': 'task_alt',
+    'CLOSE': 'check_box',
+    'CANCEL': 'cancel',
+  }
+  return map[(status || '').toUpperCase()] || 'help_outline'
+}
+
+function statusLabel(status) {
+  const map = {
+    'OPEN': 'Open',
+    'ON-GOING': 'On-going',
+    'PENDING': 'Pending',
+    'ESCALATED': 'Escalated',
+    'RESOLVED': 'Resolved',
+    'CLOSE': 'Closed',
+    'CANCEL': 'Canceled',
+  }
+  return map[(status || '').toUpperCase()] || status
+}
+
+function getPriorityHex(priority) {
+  const map = {
+    'HIGH': '#dc2626',
+    'CRITICAL': '#7c3aed',
+    'NORMAL': '#2563eb',
+    'MEDIUM': '#2563eb',
+    'LOW': '#16a34a',
+  }
+  return map[(priority || '').toUpperCase()] || '#475569'
+}
+
+// ── Help Topics ──────────────────────────────────────────────────
 const helpTopics = [
-  { title: 'Laptop / Hardware',   icon: 'laptop',      desc: 'Device not powering on, broken peripherals, screen issues.', category: 'Hardware' },
-  { title: 'Software / App Error',icon: 'bug_report',  desc: 'Application crashes, errors, or software won\'t respond.', category: 'Software' },
-  { title: 'Network / Internet',  icon: 'wifi',        desc: 'Slow or no connection, VPN issues, Wi-Fi problems.', category: 'Network' },
-  { title: 'Account Access',      icon: 'manage_accounts', desc: 'Password reset, account locked or permission issues.', category: 'Account' },
+  { title: 'Laptop / Hardware',       icon: 'laptop',          desc: 'Device not powering on, broken peripherals, screen issues.', category: 'Hardware' },
+  { title: 'Software / App Error',    icon: 'bug_report',      desc: 'Application crashes, errors, or software won\'t respond.', category: 'Software' },
+  { title: 'Network / Internet',      icon: 'wifi',            desc: 'Slow or no connection, VPN issues, Wi-Fi problems.', category: 'Network' },
+  { title: 'Account Access',          icon: 'manage_accounts', desc: 'Password reset, account locked or permission issues.', category: 'Account' },
+  { title: 'Scheduling / Requesting', icon: 'event_note',      desc: 'Book facility/equipment reservation, request lab slot, or schedule support.', category: 'Scheduling Request' },
 ]
 
 function openBlankDialog() {
   if (unratedTicket.value) {
-    $q.notify({
-      type: 'warning',
-      message: 'Please rate your resolved ticket before creating a new ticket.',
-      icon: 'rate_review',
-    })
+    $q.notify({ type: 'warning', message: 'Please rate your resolved ticket first.', icon: 'rate_review' })
     openRatingModal(unratedTicket.value)
     return
   }
@@ -258,16 +396,11 @@ function openBlankDialog() {
 
 function prefillTicket(topic) {
   if (unratedTicket.value) {
-    $q.notify({
-      type: 'warning',
-      message: 'Please rate your resolved ticket before creating a new ticket.',
-      icon: 'rate_review',
-    })
+    $q.notify({ type: 'warning', message: 'Please rate your resolved ticket first.', icon: 'rate_review' })
     openRatingModal(unratedTicket.value)
     return
   }
-  const category = categoryOptions.value.find(option => option.label.toLowerCase().includes(topic.category.toLowerCase()))
-  dialogPrefill.value = { title: topic.title, category: category?.value || null }
+  dialogPrefill.value = { title: topic.title, category: null }
   showDialog.value = true
 }
 </script>
@@ -301,146 +434,97 @@ function prefillTicket(topic) {
     font-size: 0.86rem;
     margin-top: 4px;
   }
-
-  &__section-title {
-    font-size: 0.76rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: $min-text-soft;
-    margin-bottom: 12px;
-  }
-
-  &__tickets {
-    @include min-card();
-    margin-bottom: 32px;
-    overflow: hidden;
-  }
-
-  &__help {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-  }
-
-  &__empty {
-    @include min-card();
-    padding: 48px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    color: $min-text-soft;
-    margin-bottom: 32px;
-  }
 }
 
-// ── Ticket Row ────────────────────────────────────────────────
-.user-ticket {
+.section-header {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $min-text-soft;
+}
+
+.submit-btn {
+  border-radius: 10px;
+  padding: 8px 20px;
+}
+
+// ── Fixed Position Ticket Container ────────────────────────────
+.ticket-container-wrapper {
+  height: 270px;
+}
+
+.full-height {
+  height: 100%;
+}
+
+.ticket-list-card {
+  border-radius: 14px !important;
+}
+
+.empty-ticket-card {
+  border-radius: 14px !important;
+}
+
+// ── Clean Ticket Item (No accent left border) ─────────────────
+.ticket-item {
   padding: 14px 20px;
-  border-bottom: 1px solid $min-border;
-  border-left: 4px solid transparent;
   transition: background 0.15s ease;
 
-  &:last-child { border-bottom: none; }
-  &:hover { background: $min-bg; }
-
-  &--low      { border-left-color: $min-text-soft; }
-  &--medium   { border-left-color: #f59e0b; }
-  &--high     { border-left-color: $accent-login; }
-  &--critical { border-left-color: #ef4444; }
-
-  &__left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-    width: 60px;
-  }
-
-  &__id {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: $min-text-soft;
-  }
-
-  &__status {
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #fff;
-
-    &--open     { background: $accent-login; }
-    &--pending  { background: #f59e0b; }
-    &--resolved { background: $positive; }
-    &--closed   { background: $min-text-soft; }
-  }
-
-  &__body { flex: 1; }
-
-  &__title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: $min-text;
-  }
-
-  &__meta {
-    font-size: 0.74rem;
-    color: $min-text-soft;
-    margin-top: 3px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  &:hover {
+    background: rgba(0, 0, 0, 0.02);
   }
 }
 
-// ── Help Card ─────────────────────────────────────────────────
+.status-text {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+}
+
+.priority-text {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.74rem;
+}
+
+// ── Help Grid ─────────────────────────────────────────────────
+.help-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
 .help-card {
-  @include min-card();
-  padding: 20px;
-  cursor: pointer;
-  transition: transform 0.18s ease;
+  border-radius: 14px !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 
-  &:hover { transform: translateY(-3px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-
-  &__icon {
-    color: $accent-login;
-    margin-bottom: 10px;
-    display: block;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+    border-color: var(--q-primary) !important;
   }
 
-  &__title {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: $min-text;
-    margin-bottom: 5px;
-  }
-
-  &__desc {
-    font-size: 0.76rem;
-    color: $min-text-soft;
-    line-height: 1.45;
-    margin-bottom: 12px;
-  }
-
-  &__action {
+  &__icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(var(--q-primary-rgb, 25, 118, 210), 0.08);
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: $accent-login;
+    justify-content: center;
   }
 }
 
-// ── Buttons ───────────────────────────────────────────────────
-.clay-btn {
-  &--primary { @include min-button($accent-login); }
-}
+.gap-xs { gap: 4px; }
+.gap-sm { gap: 8px; }
+.rounded-lg { border-radius: 14px !important; }
 </style>
