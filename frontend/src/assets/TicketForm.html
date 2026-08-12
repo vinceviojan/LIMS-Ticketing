@@ -8,9 +8,12 @@
     <style>
         :root {
             --navy: #002060;
+            --navy-dark: #001640;
+            --blue-light: #eaf2fb;
+            --blue-soft: #f5f8fc;
             --white: #ffffff;
             --black: #141414;
-            --border: #262626;
+            --border: #7f8c9a;
         }
 
         * {
@@ -119,6 +122,14 @@
             overflow: hidden;
         }
 
+        table.form-table .value-cell {
+            background: var(--white);
+        }
+
+        table.form-table tr:nth-child(even) .value-cell {
+            background: var(--blue-soft);
+        }
+
         /* =========================================================
            LABEL CELL
         ========================================================= */
@@ -139,6 +150,12 @@
             white-space: nowrap;
 
             vertical-align: middle;
+        }
+
+        /* Colored label cells used on the white detail tables */
+        table.form-table .label-cell[style*="background:none"] {
+            background: var(--blue-light) !important;
+            color: var(--navy-dark) !important;
         }
 
         /* =========================================================
@@ -163,6 +180,10 @@
 
         .value-cell[contenteditable="true"]:focus {
             background: #fffbdd;
+        }
+
+        table.form-table .value-cell {
+            color: #1f2937;
         }
 
         /* =========================================================
@@ -268,7 +289,7 @@
         }
 
         .header-table td {
-            border: 1px solid #000;
+            border: 1px solid var(--border);
 
             padding: 0;
 
@@ -277,6 +298,20 @@
             overflow: hidden;
 
             white-space: nowrap;
+        }
+
+        .header-table .title-agency,
+        .header-table .title-form {
+            background: var(--blue-soft);
+        }
+
+        .header-table .ref-label {
+            background: var(--blue-light);
+            color: var(--navy-dark);
+        }
+
+        .header-table .ref-value {
+            background: var(--white);
         }
 
         /* =========================================================
@@ -521,6 +556,8 @@
             font-family: Calibri, Arial, sans-serif;
 
             font-size: 10pt;
+
+            background: var(--blue-soft);
         }
 
         .approval-col.left {
@@ -533,6 +570,8 @@
             font-weight: bold;
 
             margin-bottom: 20pt;
+
+            color: var(--navy-dark);
         }
 
         .approval-name {
@@ -578,6 +617,10 @@
             font-weight: bold;
 
             outline: none;
+
+            background: var(--blue-light);
+
+            color: var(--navy-dark);
         }
 
         .footer-cell.left {
