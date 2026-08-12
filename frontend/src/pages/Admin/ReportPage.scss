@@ -36,9 +36,9 @@
 
     &__kpis {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 18px;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
     }
 
     &__grid {
@@ -76,10 +76,10 @@
 // ── KPI Card ──────────────────────────────────────────────────
 .kpi-card {
     @include min-card();
-    padding: 20px;
+    padding: 18px 20px;
     display: flex;
-    align-items: center;
-    gap: 16px;
+    flex-direction: column;
+    gap: 6px;
     transition: transform 0.18s;
 
     &:hover {
@@ -87,39 +87,54 @@
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
-    &__icon-wrap {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
+    &__header {
         display: flex;
         align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    &__value {
-        font-size: 1.55rem;
-        font-weight: 800;
-        color: $min-text;
-        font-family: 'Nunito', sans-serif;
-        line-height: 1;
+        justify-content: space-between;
     }
 
     &__label {
-        font-size: 0.75rem;
+        font-size: 0.78rem;
+        font-weight: 700;
         color: $min-text-soft;
-        font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        margin: 3px 0;
+    }
+
+    &__icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__value {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: $min-text;
+        font-family: 'Nunito', sans-serif;
+        line-height: 1.1;
+        min-height: 34px;
+        display: flex;
+        align-items: center;
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+        position: relative;
     }
 
     &__trend {
         display: flex;
         align-items: center;
-        gap: 4px;
-        font-size: 0.72rem;
-        font-weight: 600;
+        gap: 2px;
+        font-size: 0.78rem;
+        font-weight: 700;
 
         &--up {
             color: $positive;
@@ -130,25 +145,25 @@
         }
     }
 
-    &--blue .kpi-card__icon-wrap {
+    &--blue .kpi-card__icon {
         background: #eff6ff;
         color: #3b82f6;
         border: 1px solid #bfdbfe;
     }
 
-    &--orange .kpi-card__icon-wrap {
+    &--orange .kpi-card__icon {
         background: #fff7ed;
         color: #f97316;
         border: 1px solid #fed7aa;
     }
 
-    &--green .kpi-card__icon-wrap {
+    &--green .kpi-card__icon {
         background: #f0fdf4;
         color: $positive;
         border: 1px solid #bbf7d0;
     }
 
-    &--purple .kpi-card__icon-wrap {
+    &--purple .kpi-card__icon {
         background: #f5f3ff;
         color: #8b5cf6;
         border: 1px solid #ddd6fe;
@@ -210,9 +225,11 @@
 .status-chart-container {
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    gap: 20px;
+    justify-content: center;
+    gap: 24px;
     padding: 10px 0;
+    flex: 1;
+    margin: auto 0;
 
     @media (max-width: 500px) {
         flex-direction: column;
@@ -274,7 +291,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    flex: 1;
 }
 
 .legend-row {
@@ -309,7 +325,6 @@
     &__label {
         font-weight: 600;
         color: $min-text;
-        flex: 1;
     }
 
     &__count {
@@ -331,11 +346,14 @@
     gap: 10px;
 
     &__label {
-        width: 76px;
-        font-size: 0.8rem;
+        width: 80px;
+        font-size: 0.74rem;
         font-weight: 600;
         color: $min-text;
         flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     &__track {
