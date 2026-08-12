@@ -8,10 +8,10 @@
   >
     <q-card class="edit-ticket-modal" style="width: 820px; max-width: 95vw; border-radius: 16px;">
 
-      <!-- ── Header ─────────────────────────────────────────────── -->
+      <!-- ── Header fet─────────────────────────────────────────────── -->
       <q-card-section class="edit-ticket-modal__head bg-white q-pa-md row items-center justify-between">
         <div class="row items-center gap-sm">
-          <div class="edit-ticket-modal__icon-bg">
+          <div class="edit-ticket-modal__icon-bg"> 
             <q-icon name="edit_note" size="22px" color="primary" />
           </div>
           <div>
@@ -142,21 +142,39 @@
             </div>
           </div>
 
-          <!-- 4th Row: Assign Staff (admin only) -->
-          <div v-if="isAdmin" class="q-mb-md">
-            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Assigned Staff</label>
-            <q-select
-              v-model="form.assigned_staff_id"
-              :options="staffOptions"
-              outlined dense emit-value map-options
-              clearable
-              placeholder="Select staff member"
-              bg-color="white"
-            >
-              <template #prepend>
-                <q-icon name="person_pin" color="grey-5" size="20px" />
-              </template>
-            </q-select>
+          <!-- 4th Row: Target Resolution & Assign Staff (admin only) -->
+          <div v-if="isAdmin" class="row q-col-gutter-md q-mb-md">
+            <!-- Target Resolution Date -->
+            <div class="col-12 col-sm-6">
+              <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Resolution Date Target</label>
+              <q-input
+                v-model="form.target_resolution_date"
+                outlined dense type="date"
+                bg-color="white"
+                clearable
+              >
+                <template #prepend>
+                  <q-icon name="event" color="grey-5" size="20px" />
+                </template>
+              </q-input>
+            </div>
+
+            <!-- Assigned Staff -->
+            <div class="col-12 col-sm-6">
+              <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Assigned Staff</label>
+              <q-select
+                v-model="form.assigned_staff_id"
+                :options="staffOptions"
+                outlined dense emit-value map-options
+                clearable
+                placeholder="Select staff member"
+                bg-color="white"
+              >
+                <template #prepend>
+                  <q-icon name="person_pin" color="grey-5" size="20px" />
+                </template>
+              </q-select>
+            </div>
           </div>
 
           <!-- 5th Row: Description -->
@@ -172,6 +190,38 @@
             >
               <template #prepend>
                 <q-icon name="notes" color="grey-5" size="20px" />
+              </template>
+            </q-input>
+          </div>
+
+          <!-- 6th Row: Resolution -->
+          <div v-if="isAdmin || form.status === 'RESOLVED' || form.status === 'CLOSE'" class="q-mb-md">
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Resolution</label>
+            <q-input
+              v-model="form.resolution"
+              outlined dense
+              type="textarea" rows="3"
+              placeholder="Resolution details..."
+              bg-color="white"
+            >
+              <template #prepend>
+                <q-icon name="task_alt" color="grey-5" size="20px" />
+              </template>
+            </q-input>
+          </div>
+
+          <!-- 7th Row: Final Remarks (Admin only) -->
+          <div v-if="isAdmin" class="q-mb-md">
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Final Remarks (Admin Only)</label>
+            <q-input
+              v-model="form.final_remarks"
+              outlined dense
+              type="textarea" rows="3"
+              placeholder="Admin final remarks/notes..."
+              bg-color="grey-1"
+            >
+              <template #prepend>
+                <q-icon name="admin_panel_settings" color="primary" size="20px" />
               </template>
             </q-input>
           </div>
@@ -362,6 +412,9 @@ function emptyForm() {
   return {
     title: '',
     description: '',
+    resolution: '',
+    final_remarks: '',
+    target_resolution_date: null,
     priority: 'NORMAL',
     status: 'OPEN',
     category: null,
@@ -377,6 +430,9 @@ watch(() => props.modelValue, (isOpen) => {
     form.value = {
       title:             props.ticket.title || props.ticket.issue || '',
       description:       props.ticket.description || '',
+      resolution:        props.ticket.resolution || '',
+      final_remarks:     props.ticket.final_remarks || '',
+      target_resolution_date: props.ticket.target_resolution_date ? new Date(props.ticket.target_resolution_date).toISOString().split('T')[0] : null,
       priority:          props.ticket.priority || props.ticket.urgency || 'NORMAL',
       status:            props.ticket.status || 'OPEN',
       category:          props.ticket.problem_category_id || null,
@@ -444,6 +500,11 @@ async function submitTicket() {
     payload.append('_method', 'PUT')
     payload.append('issue',       form.value.title)
     payload.append('description', form.value.description || '')
+    
+    if (form.value.resolution) {
+      payload.append('resolution', form.value.resolution)
+      payload.append('remarks', form.value.resolution)
+    }
 
     if (form.value.category) payload.append('problem_category_id', form.value.category)
 
@@ -451,6 +512,16 @@ async function submitTicket() {
       payload.append('urgency', form.value.priority)
       if (form.value.status) payload.append('status', form.value.status)
       if (form.value.assigned_staff_id) payload.append('assigned_staff_id', form.value.assigned_staff_id)
+      
+      if (form.value.target_resolution_date) {
+        payload.append('target_resolution_date', form.value.target_resolution_date)
+      } else {
+        payload.append('target_resolution_date', '')  
+      }
+
+      if (form.value.final_remarks !== undefined && form.value.final_remarks !== null) {
+        payload.append('final_remarks', form.value.final_remarks)
+      }
     }
 
     if (fileList.value && fileList.value.length) {
@@ -465,7 +536,6 @@ async function submitTicket() {
 
     const id = props.ticket?.real_id || props.ticket?.id
     await api.post(`/tickets/${id}`, payload, { headers: { 'Content-Type': 'multipart/form-data' } })
-
     $q.notify({ type: 'positive', message: 'Ticket updated successfully.', position: 'top-right', timeout: 2500 })
     closeModal()
     emit('refresh')

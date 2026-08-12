@@ -6,15 +6,52 @@
         <div class="text-h5 text-weight-bolder text-dark">Ticket Management</div>
         <div class="text-caption text-grey-7 q-mt-xs">Review, assign and resolve support tickets</div>
       </div>
-      <q-btn
-        color="primary"
-        label="New Ticket"
-        icon="add_circle_outline"
-        unelevated
-        no-caps
-        class="border-radius-8 text-weight-bold"
-        @click="openCreateDialog"
-      />
+      <div class="row q-gutter-sm">
+        <q-btn
+          class="clay-btn"
+          :label="selectedTickets.length ? `Export Selected (${selectedTickets.length})` : 'Export Selected'"
+          icon="picture_as_pdf"
+          unelevated
+          no-caps
+          :disable="!selectedTickets.length"
+          :loading="exportingSelected"
+          @click="exportSelected"
+        >
+          <q-tooltip v-if="!selectedTickets.length">Select one or more tickets first</q-tooltip>
+        </q-btn>
+        <q-btn-dropdown
+          class="clay-btn"
+          label="Export"
+          icon="file_download"
+          unelevated
+          no-caps
+          :loading="exporting"
+        >
+          <q-list>
+            <q-item clickable v-close-popup @click="handleExport('csv')">
+              <q-item-section avatar><q-icon name="grid_on" /></q-item-section>
+              <q-item-section>Export CSV</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click="handleExport('json')">
+              <q-item-section avatar><q-icon name="data_object" /></q-item-section>
+              <q-item-section>Export JSON</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click="handleExport('pdf')">
+              <q-item-section avatar><q-icon name="picture_as_pdf" /></q-item-section>
+              <q-item-section>Export PDF (all tickets)</q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+        <q-btn
+          color="primary"
+          label="New Ticket"
+          icon="add_circle_outline"
+          unelevated
+          no-caps
+          class="border-radius-8 text-weight-bold"
+          @click="openCreateDialog"
+        />
+      </div>
     </div>
 
     <!-- ── Status Tabs ─────────────────────────────────────────── -->
@@ -108,7 +145,9 @@
       :displayMode="displayMode"
       :loading="loading"
       :readonly="true"
+      :selectable="true"
       @view-ticket="viewTicket"
+      @update:selected="ticket => selectedTickets = ticket ? [ticket] : []"
     />
 
     <!-- ── Create Dialog ───────────────────────────────────────── -->
@@ -137,6 +176,7 @@ import { api } from '../../boot/axios'
 import AddTicketModal from '../../components/AddTicketModal.vue'
 import ViewTicketModal from '../../components/ViewTicketModal.vue'
 import TicketListView from '../../components/TicketListView.vue'
+import { exportTicketToPdf, exportTicketsToPdf, exportTicketsToCSV, exportTicketsToJSON } from '../../assets/TicketExport.js'
 import './TicketManagementPage.scss'
 const $q = useQuasar()
 
@@ -151,6 +191,9 @@ const displayMode = ref('table')
 const showAddDialog = ref(false)
 const showViewDialog = ref(false)
 const selectedTicket = ref(null)
+const selectedTickets = ref([])
+const exporting = ref(false)
+const exportingSelected = ref(false)
 
 const sortOptions = [
   { label: 'Newest First', value: 'newest' },
@@ -213,7 +256,7 @@ async function fetchTickets() {
   try {
     const res = await api.get('/tickets')
     const data = res.data?.data || res.data || []
-
+    console.log(res.data)
     // Map backend array to UI properties internally
     tickets.value = data.map(t => ({
       id: t.id,
@@ -221,16 +264,23 @@ async function fetchTickets() {
       ticket_no: t.ticket_no,
       title: t.issue || 'No Title',
       requester: t.user ? (t.user.first_name + ' ' + t.user.last_name) : 'Unknown',
+      email: t.user ? t.user.email : '',
       assignedStaff: t.assigned_staff ? (t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`) : '',
       assigned_staff_id: t.assigned_staff_id,
+      approved_by: t.approved_by ? (t.approved_by.name || `${t.approved_by.first_name} ${t.approved_by.last_name}`) : '',
       category: t.problem_category ? t.problem_category.categories : 'Uncategorized',
       problem_category_id: t.problem_category_id,
       priority: t.urgency || 'NORMAL',
       status: t.status || 'OPEN',
       description: t.description || '',
       remarks: t.remarks || '',
+      resolution: t.resolution || '',
+      final_remarks: t.final_remarks || '',
       rating: t.rating,
       feedback: t.feedback,
+      date_action: t.date_action ? new Date(t.date_action).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+      date_closed: t.date_closed ? new Date(t.date_closed).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+      target_resolution_date: t.target_resolution_date ? new Date(t.target_resolution_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
       attachments: t.attachments || [],
       upload_intralab: t.upload_intralab,
       upload_limsportal: t.upload_limsportal,
@@ -297,5 +347,45 @@ function openCreateDialog() {
 function viewTicket(ticket) {
   selectedTicket.value = ticket
   showViewDialog.value = true
+}
+
+// ── Export ──────────────────────────────────────────────────
+async function exportSelected() {
+  const selection = selectedTickets.value
+  if (!selection.length) {
+    $q.notify({ type: 'warning', message: 'Select one or more tickets first.' })
+    return
+  }
+  exportingSelected.value = true
+  try {
+    if (selection.length === 1) {
+      await exportTicketToPdf(selection[0])
+    } else {
+      await exportTicketsToPdf(selection)
+    }
+  } catch (err) {
+    console.error('Failed to export selected tickets', err)
+    $q.notify({ type: 'negative', message: 'Failed to export selected tickets.' })
+  } finally {
+    exportingSelected.value = false
+  }
+}
+
+async function handleExport(format) {
+  if (!tickets.value.length) {
+    $q.notify({ type: 'warning', message: 'No tickets to export.' })
+    return
+  }
+  exporting.value = true
+  try {
+    if (format === 'csv') exportTicketsToCSV(tickets.value)
+    else if (format === 'json') exportTicketsToJSON(tickets.value)
+    else if (format === 'pdf') await exportTicketsToPdf(tickets.value)
+  } catch (err) {
+    console.error('Failed to export tickets', err)
+    $q.notify({ type: 'negative', message: 'Failed to export tickets.' })
+  } finally {
+    exporting.value = false
+  }
 }
 </script>

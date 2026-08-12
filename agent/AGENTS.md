@@ -10,7 +10,7 @@ This application allows internal staff and lab users to submit, manage, assign, 
     
 
 
-    
+    g
 ### Frontend
 - **Framework**: Vue 3 (Composition API `<script setup>`) + Quasar 2 Framework
 - **State Management**: Pinia (`src/stores/auth.js`)
