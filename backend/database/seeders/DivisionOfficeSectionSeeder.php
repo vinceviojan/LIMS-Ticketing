@@ -16,23 +16,21 @@ class DivisionOfficeSectionSeeder extends Seeder
         );
 
         $sections = [
-            'Soil Chemistry',
-            'Soil Physics',
-            'Water Chemistry',
-            'Rapid Soil Test',
-            'TEIM',
-            'Customer Center',
+            ['name' => 'Office of the Chief / Admin Staff', 'code' => 'OCS'],
+            ['name' => 'LIMS',                              'code' => 'LIMS'],
+            ['name' => 'Soil Chemistry Section',            'code' => 'SCS'],
+            ['name' => 'Rapid Soil Test Section',           'code' => 'RSTS'],
+            ['name' => 'Soil Microbiology Section',         'code' => 'SMS'],
+            ['name' => 'Soil Physics Section',              'code' => 'SPS'],
+            ['name' => 'Water Chemistry Section',           'code' => 'WCS'],
+            ['name' => 'Technical Equipment Instrumentation and Maintenance', 'code' => 'TEIM'],
+            ['name' => 'Customer Center',                   'code' => 'CC-LEG'],
         ];
 
-        foreach ($sections as $index => $secName) {
+        foreach ($sections as $sec) {
             Section::firstOrCreate(
-                [
-                    'division_id' => $division->id,
-                    'name' => $secName,
-                ],
-                [
-                    'code' => 'SEC-' . ($index + 1),
-                ]
+                ['division_id' => $division->id, 'name' => $sec['name']],
+                ['code' => $sec['code']]
             );
         }
     }
