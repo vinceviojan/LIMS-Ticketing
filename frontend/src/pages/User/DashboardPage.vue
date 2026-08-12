@@ -123,7 +123,7 @@
                     {{ ticket.rating }}/5
                   </q-chip>
                   <q-chip
-                    v-else-if="['RESOLVED', 'CLOSE'].includes(ticket.status)"
+                    v-else-if="['CLOSE'].includes(ticket.status)"
                     dense size="sm" color="amber-9" text-color="white" icon="rate_review"
                     clickable @click.stop="openRatingModal(ticket)"
                   >
@@ -239,7 +239,7 @@ const myTickets = ref([])
 const latestTickets = computed(() => myTickets.value.slice(0, 5))
 
 const unratedTicket = computed(() =>
-  myTickets.value.find(t => ['RESOLVED', 'CLOSE'].includes(t.status) && (!t.rating || !t.feedback))
+  myTickets.value.find((t) => ['CLOSE'].includes(t.status) && (!t.rating || !t.feedback)),
 )
 
 function openViewModal(ticket) {
