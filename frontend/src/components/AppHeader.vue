@@ -2,6 +2,9 @@
   <q-header class="app-header" elevated>
     <q-toolbar class="app-header__toolbar">
 
+      <!-- ── Drawer Toggle ────────────────────────────── -->
+      <q-btn flat dense round icon="menu" @click="$emit('toggle-drawer')" class="q-mr-sm" />
+
       <!-- ── Brand / Logo ─────────────────────────────── -->
       <div class="app-header__brand">
         <span class="app-header__title">LIMS Helpdesk</span>
@@ -102,6 +105,8 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const authStore = inject('authStore') // Using injected auth store
+
+defineEmits(['toggle-drawer'])
 
 const showConfirm = ref(false)
 const loggingOut = ref(false)
