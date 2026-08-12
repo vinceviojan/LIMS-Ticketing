@@ -337,6 +337,21 @@ class AdminController extends Controller
     {
         $user = $request->user();
         $user->update($request->all());
+        $user->load(['division', 'section']);
         return response()->json($user);
     }
+
+    public function getDivisionAndSection(Request $request)
+    {
+        $user = $request->user();
+        $user->load(['division', 'section']);
+        return response()->json([
+            'message' => 'Successful',
+            'division' => $user->division,
+            'section' => $user->section,
+        ]);
+    }
+    
+
+    
 }
