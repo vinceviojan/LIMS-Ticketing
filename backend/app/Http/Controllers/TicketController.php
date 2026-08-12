@@ -198,6 +198,8 @@ class TicketController extends Controller
         return response()->json($ticket->load(['user', 'assignedStaff', 'problemCategory', 'logs']));
     }
 
+
+
     public function getOpenTickets(Request $request)
     {
         $tickets = Ticket::with([
