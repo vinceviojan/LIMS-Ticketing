@@ -1,10 +1,10 @@
 @import '@/css/themes.scss';
 
 /* =========================================================
-   ADMIN SIDEBAR — Light Gray Theme with Nav Background Font Color
+   USER SIDEBAR — Light Gray Theme with Nav Background Font Color
    ========================================================= */
 
-.admin-sidebar {
+.user-sidebar {
     background: #f8fafc !important;
     border-right: 1px solid #e2e8f0 !important;
 
@@ -95,7 +95,7 @@
 /* =========================================================
    SEPARATOR
    ========================================================= */
-.admin-sidebar .q-separator {
+.user-sidebar .q-separator {
     background: #cbd5e1 !important;
 }
 
@@ -103,7 +103,7 @@
    RESPONSIVE
    ========================================================= */
 @media (max-width: 768px) {
-    .admin-sidebar {
+    .user-sidebar {
         &__logos {
             gap: 8px;
             padding-top: 15px;
@@ -131,7 +131,7 @@
 }
 
 @media (max-width: 480px) {
-    .admin-sidebar {
+    .user-sidebar {
         &__logos {
             gap: 6px;
             padding-top: 12px;

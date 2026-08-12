@@ -1,7 +1,10 @@
 <template>
   <q-layout view="hHh Lpr lFf">
+
+    <!-- ── Header ───────────────────────────────────────── -->
     <AppHeader />
 
+    <!-- ── Sidebar ──────────────────────────────────────── -->
     <q-drawer
       v-model="drawerOpen"
       show-if-above
@@ -10,107 +13,135 @@
       class="user-sidebar"
     >
       <q-scroll-area class="fit">
-        <div class="user-sidebar__logo">
-          <q-icon name="person_outline" size="20px" class="user-sidebar__logo-icon" />
-          <span>My Portal</span>
+
+        <!-- ── Sidebar Logos ───────────────────────────── -->
+        <div class="user-sidebar__logos">
+
+          <!-- BSWM Logo -->
+          <img
+            src="../assets/bswm-logo.png"
+            alt="BSWM Logo"
+            class="user-sidebar__logo-image"
+          />
+
+          <!-- LIMS Logo -->
+          <img
+            src="../assets/bswm-logo-sidebar.png"
+            alt="LSD Logo"
+            class="user-sidebar__logo-image"
+          />
+
         </div>
 
+        <!-- ── Sidebar Title ─────────────────────────────
+        <div class="user-sidebar__title">
+
+          <q-icon
+            name="person_outline"
+            size="22px"
+            class="user-sidebar__logo-icon"
+          />
+
+          <span>User Portal</span>
+
+        </div> -->
+
+        <!-- ── Divider ─────────────────────────────────── -->
         <q-separator class="q-my-sm" />
 
-        <q-list padding class="user-sidebar__nav">
+        <!-- ── Navigation ──────────────────────────────── -->
+        <q-list
+          padding
+          class="user-sidebar__nav"
+        >
+
           <q-item
             v-for="item in navItems"
-            :key="item.name"
+            :key="item.label"
             clickable
             v-ripple
             :to="item.to"
-            active-class="user-sidebar__item--active"
             class="user-sidebar__item"
+            active-class="user-sidebar__item--active"
             exact-active-class="user-sidebar__item--active"
           >
+
+            <!-- Icon -->
             <q-item-section avatar>
-              <q-icon :name="item.icon" size="20px" />
+              <q-icon
+                :name="item.icon"
+                size="20px"
+              />
             </q-item-section>
-            <q-item-section>{{ item.label }}</q-item-section>
+
+            <!-- Label -->
+            <q-item-section>
+              {{ item.label }}
+            </q-item-section>
+
           </q-item>
+
         </q-list>
+
       </q-scroll-area>
     </q-drawer>
 
+    <!-- ── Page Content ─────────────────────────────────── -->
     <q-page-container>
       <router-view />
     </q-page-container>
+
   </q-layout>
 </template>
+
 
 <script setup>
 import { ref, provide } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import AppHeader from '../components/AppHeader.vue'
 
+
+// ─────────────────────────────────────────────────────────
+// Authentication Store
+// ─────────────────────────────────────────────────────────
+
 const authStore = useAuthStore()
+
 provide('authStore', authStore)
 
 
+// ─────────────────────────────────────────────────────────
+// Sidebar State
+// ─────────────────────────────────────────────────────────
+
 const drawerOpen = ref(true)
 
+
+// ─────────────────────────────────────────────────────────
+// Sidebar Navigation
+// ─────────────────────────────────────────────────────────
+
 const navItems = [
-  { label: 'Dashboard',    icon: 'home',                 to: '/user/dashboard' },
-  { label: 'My Tickets',   icon: 'confirmation_number',  to: '/user/ticket-management'   },
-  { label: 'Settings',     icon: 'settings',             to: '/user/settings'   },
+  {
+    label: 'Dashboard',
+    icon: 'home',
+    to: '/user/dashboard'
+  },
+
+  {
+    label: 'My Tickets',
+    icon: 'confirmation_number',
+    to: '/user/ticket-management'
+  },
+
+  {
+    label: 'Settings',
+    icon: 'settings',
+    to: '/user/settings'
+  }
 ]
 </script>
 
-<style lang="scss" scoped>
-@import '../css/themes.scss';
-
-.user-sidebar {
-  background: $min-surface !important;
-  border-right: 1px solid $min-border !important;
-
-  &__logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 20px 20px 12px;
-    font-family: 'Nunito', 'Quicksand', sans-serif;
-    font-weight: 800;
-    font-size: 0.95rem;
-    color: $min-text;
-  }
-
-  &__logo-icon {
-    color: #7c6bbf;
-  }
-
-  &__nav {
-    padding: 4px 8px;
-  }
-
-  &__item {
-    border-radius: 8px;
-    margin-bottom: 2px;
-    color: $min-text-soft;
-    font-size: 0.88rem;
-    font-weight: 500;
-    transition: background 0.15s ease, color 0.15s ease;
-
-    &:hover {
-      background: $min-bg;
-      color: $min-text;
-    }
-
-    &--active {
-      background: #faf5ff !important;
-      color: #7c6bbf !important;
-      font-weight: 600;
-      border-left: 3px solid #7c6bbf;
-      border-radius: 0 8px 8px 0;
-
-      :deep(.q-icon) {
-        color: #7c6bbf !important;
-      }
-    }
-  }
-}
+<style lang="scss">
+@import './UserLayout.scss';
 </style>
