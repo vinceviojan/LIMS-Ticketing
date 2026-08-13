@@ -1,5 +1,6 @@
 <template>
   <q-page class="report-page">
+
     <!-- ── Header ──────────────────────────────────────────────── -->
     <div class="report-page__header">
       <div>
@@ -25,12 +26,7 @@
 
     <!-- ── KPI Cards ────────────────────────────────────────────── -->
     <div class="report-page__kpis">
-      <div
-        v-for="kpi in kpiCards"
-        :key="kpi.label"
-        class="kpi-card"
-        :class="`kpi-card--${kpi.color}`"
-      >
+      <div v-for="kpi in kpiCards" :key="kpi.label" class="kpi-card" :class="`kpi-card--${kpi.color}`">
         <div class="kpi-card__header">
           <span class="kpi-card__label">{{ kpi.label }}</span>
           <div class="kpi-card__icon">
@@ -39,10 +35,7 @@
         </div>
         <div class="kpi-card__value">{{ kpi.value }}</div>
         <div class="kpi-card__footer">
-          <span
-            class="kpi-card__trend"
-            :class="kpi.up ? 'kpi-card__trend--up' : 'kpi-card__trend--down'"
-          >
+          <span class="kpi-card__trend" :class="kpi.up ? 'kpi-card__trend--up' : 'kpi-card__trend--down'">
             <q-icon :name="kpi.up ? 'trending_up' : 'trending_down'" size="14px" />
             {{ kpi.trend }}
           </span>
@@ -81,7 +74,9 @@
         <div>
           <div class="row items-center justify-between q-mb-sm">
             <div class="report-card__title">Tickets by Category</div>
-            <div class="text-caption text-grey-7">{{ ticketsByCategory.length }} categories</div>
+            <div class="text-caption text-grey-7">
+              {{ ticketsByCategory.length }} categories
+            </div>
           </div>
           <div class="report-card__bars">
             <div v-for="item in paginatedCategories" :key="item.label" class="bar-row">
@@ -94,10 +89,7 @@
               </div>
               <span class="bar-row__count">{{ item.count }}</span>
             </div>
-            <div
-              v-if="!ticketsByCategory.length"
-              class="text-grey-6 text-caption text-center q-py-md"
-            >
+            <div v-if="!ticketsByCategory.length" class="text-grey-6 text-caption text-center q-py-md">
               No categories found
             </div>
           </div>
@@ -125,17 +117,12 @@
         <div class="report-card__title">Avg. Resolution Time</div>
         <div class="report-card__resolution">
           <div v-for="item in resolutionTimes" :key="item.priority" class="res-row">
-            <span
-              :class="['res-row__priority', `res-row__priority--${item.priority.toLowerCase()}`]"
-            >
+            <span :class="['res-row__priority', `res-row__priority--${item.priority.toLowerCase()}`]">
               {{ item.priority }}
             </span>
             <div class="res-row__time">{{ item.hours }}h avg</div>
             <div class="res-row__track">
-              <div
-                class="res-row__fill"
-                :style="{ width: item.pct + '%', background: item.color }"
-              />
+              <div class="res-row__fill" :style="{ width: item.pct + '%', background: item.color }" />
             </div>
           </div>
         </div>
@@ -180,9 +167,7 @@
       <div class="row items-center justify-between q-mb-md">
         <div>
           <div class="report-card__title">Staff Resolution & Rating Leaderboard</div>
-          <div class="text-caption text-grey-7">
-            Staff members with resolved tickets and average user satisfaction ratings
-          </div>
+          <div class="text-caption text-grey-7">Staff members with resolved tickets and average user satisfaction ratings</div>
         </div>
       </div>
 
@@ -199,15 +184,7 @@
         <template #body-cell-rank="props">
           <q-td :props="props">
             <q-badge
-              :color="
-                props.rowIndex === 0
-                  ? 'amber-9'
-                  : props.rowIndex === 1
-                    ? 'grey-7'
-                    : props.rowIndex === 2
-                      ? 'deep-orange-7'
-                      : 'blue-grey-5'
-              "
+              :color="props.rowIndex === 0 ? 'amber-9' : props.rowIndex === 1 ? 'grey-7' : props.rowIndex === 2 ? 'deep-orange-7' : 'blue-grey-5'"
               rounded
               class="q-px-sm text-weight-bold"
             >
@@ -232,13 +209,7 @@
 
         <template #body-cell-resolved_count="props">
           <q-td :props="props">
-            <q-chip
-              dense
-              color="green-1"
-              text-color="green-9"
-              icon="task_alt"
-              class="text-weight-bold"
-            >
+            <q-chip dense color="green-1" text-color="green-9" icon="task_alt" class="text-weight-bold">
               {{ props.row.resolved_count }} tickets
             </q-chip>
           </q-td>
@@ -264,6 +235,7 @@
         </template>
       </q-table>
     </div>
+
   </q-page>
 </template>
 
@@ -278,9 +250,9 @@ const loading = ref(true)
 const activePeriod = ref('today')
 const periods = [
   { label: 'Today', value: 'today' },
-  { label: 'Week', value: 'week' },
+  { label: 'Week',  value: 'week'  },
   { label: 'Month', value: 'month' },
-  { label: 'Year', value: 'year' },
+  { label: 'Year',  value: 'year'  },
 ]
 
 const kpiCards = ref([])
@@ -295,13 +267,7 @@ const staffColumns = [
   { name: 'rank', label: 'Rank', align: 'center', style: 'width: 70px' },
   { name: 'staff', label: 'Staff Member', align: 'left', field: 'name', sortable: true },
   { name: 'dept', label: 'Department / Section', align: 'left', field: 'dept', sortable: true },
-  {
-    name: 'resolved_count',
-    label: 'Resolved Tickets',
-    align: 'center',
-    field: 'resolved_count',
-    sortable: true,
-  },
+  { name: 'resolved_count', label: 'Resolved Tickets', align: 'center', field: 'resolved_count', sortable: true },
   { name: 'rating', label: 'Average Rating', align: 'left', field: 'avg_rating', sortable: true },
 ]
 
@@ -321,8 +287,8 @@ function getStatusPercentage(count) {
 const colorMap = {
   orange: '#f97316',
   yellow: '#eab308',
-  green: '#006836',
-  grey: '#9ca3af',
+  green:  '#006836',
+  grey:   '#9ca3af',
 }
 
 const pieChartStyle = computed(() => {
@@ -335,7 +301,7 @@ const pieChartStyle = computed(() => {
   const stops = []
 
   const list = ticketsByStatus.value || []
-  list.forEach((item) => {
+  list.forEach(item => {
     const hex = colorMap[item.color] || '#9ca3af'
     const pct = item.count / total
     const deg = pct * 360
@@ -361,7 +327,7 @@ async function fetchAnalytics() {
   loading.value = true
   try {
     const res = await api.get('/reports/analytics', {
-      params: { period: activePeriod.value },
+      params: { period: activePeriod.value }
     })
     const data = res.data
     kpiCards.value = data.kpis || []
@@ -388,4 +354,5 @@ function changePeriod(val) {
 onMounted(fetchAnalytics)
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+</style>

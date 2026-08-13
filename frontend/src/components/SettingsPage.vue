@@ -11,10 +11,7 @@
         <button
           v-for="tab in settingsTabs"
           :key="tab.value"
-          :class="[
-            'settings-nav__item',
-            activeTab === tab.value ? 'settings-nav__item--active' : '',
-          ]"
+          :class="['settings-nav__item', activeTab === tab.value ? 'settings-nav__item--active' : '']"
           @click="activeTab = tab.value"
         >
           <q-icon :name="tab.icon" size="18px" />
@@ -41,51 +38,17 @@
           <div class="settings-panel__card">
             <div class="settings-form">
               <div class="settings-form__row">
-                <q-input
-                  v-model="profileForm.first_name"
-                  label="First Name"
-                  outlined
-                  dense
-                  :disable="authStore.user?.role !== 'ADMIN'"
-                />
-                <q-input
-                  v-model="profileForm.last_name"
-                  label="Last Name"
-                  outlined
-                  dense
-                  :disable="authStore.user?.role !== 'ADMIN'"
-                />
+                <q-input v-model="profileForm.first_name" label="First Name" outlined dense :disable="authStore.user?.role !== 'ADMIN'" />
+                <q-input v-model="profileForm.last_name"  label="Last Name"  outlined dense :disable="authStore.user?.role !== 'ADMIN'" />
               </div>
-              <q-input
-                v-model="profileForm.email"
-                label="Email Address"
-                outlined
-                dense
-                type="email"
-                class="q-mt-sm"
-                :disable="authStore.user?.role !== 'ADMIN'"
-              />
+              <q-input v-model="profileForm.email" label="Email Address" outlined dense type="email" class="q-mt-sm" :disable="authStore.user?.role !== 'ADMIN'" />
               <div class="settings-form__row q-mt-sm">
-                <q-input v-model="profileForm.division" label="Division" outlined dense disable />
-                <q-input v-model="profileForm.sections" label="Sections" outlined dense disable />
+                <q-input v-model="profileForm.division"  label="Division"  outlined dense disable />
+                <q-input v-model="profileForm.sections"  label="Sections"  outlined dense disable />
               </div>
-              <q-input
-                v-model="profileForm.position"
-                label="Position"
-                outlined
-                dense
-                class="q-mt-sm"
-                :disable="authStore.user?.role !== 'ADMIN'"
-              />
+              <q-input v-model="profileForm.position" label="Position" outlined dense class="q-mt-sm" :disable="authStore.user?.role !== 'ADMIN'" />
               <div class="settings-form__actions" v-if="authStore.user?.role === 'ADMIN'">
-                <q-btn
-                  class="clay-btn clay-btn--primary"
-                  label="Save Profile"
-                  icon="save"
-                  unelevated
-                  no-caps
-                  @click="saveProfile"
-                />
+                <q-btn class="clay-btn clay-btn--primary" label="Save Profile" icon="save" unelevated no-caps @click="saveProfile" />
               </div>
             </div>
           </div>
@@ -96,58 +59,23 @@
           <div class="settings-panel__section-title">Change Password</div>
           <div class="settings-panel__card">
             <div class="settings-form">
-              <q-input
-                v-model="passwordForm.current"
-                label="Current Password"
-                outlined
-                dense
-                type="password"
-              />
-              <q-input
-                v-model="passwordForm.new"
-                label="New Password"
-                outlined
-                dense
-                type="password"
-                class="q-mt-sm"
-              />
-              <q-input
-                v-model="passwordForm.confirm"
-                label="Confirm New Password"
-                outlined
-                dense
-                type="password"
-                class="q-mt-sm"
-              />
+              <q-input v-model="passwordForm.current" label="Current Password" outlined dense type="password" />
+              <q-input v-model="passwordForm.new"     label="New Password"     outlined dense type="password" class="q-mt-sm" />
+              <q-input v-model="passwordForm.confirm" label="Confirm New Password" outlined dense type="password" class="q-mt-sm" />
               <div class="settings-form__actions">
-                <q-btn
-                  class="clay-btn clay-btn--primary"
-                  label="Update Password"
-                  icon="lock"
-                  unelevated
-                  no-caps
-                  @click="savePassword"
-                />
+                <q-btn class="clay-btn clay-btn--primary" label="Update Password" icon="lock" unelevated no-caps @click="savePassword" />
               </div>
             </div>
           </div>
 
           <div class="settings-panel__section-title">Sessions</div>
           <div class="settings-panel__card">
-            <div v-if="sessions.length === 0" class="session-row__empty">
-              No session logs found.
-            </div>
-            <div
-              v-for="(session, index) in paginatedSessions"
-              :key="session.id"
-              class="session-row"
-            >
+            <div v-if="sessions.length === 0" class="session-row__empty">No session logs found.</div>
+            <div v-for="(session, index) in paginatedSessions" :key="session.id" class="session-row">
               <q-icon name="history" size="20px" color="primary" />
               <div class="session-row__info">
                 <div class="session-row__device">{{ session.action }}</div>
-                <div class="session-row__meta">
-                  {{ session.address }} · {{ formatLogTime(session.created_at) }}
-                </div>
+                <div class="session-row__meta">{{ session.address }} · {{ formatLogTime(session.created_at) }}</div>
               </div>
               <q-badge v-if="sessionPage === 1 && index === 0" color="positive" label="Latest" />
             </div>
@@ -188,9 +116,7 @@
             <div class="settings-toggle-row">
               <div>
                 <div class="settings-toggle-row__label">Auto-close Resolved Tickets</div>
-                <div class="settings-toggle-row__desc">
-                  Automatically close tickets after 7 days of resolution
-                </div>
+                <div class="settings-toggle-row__desc">Automatically close tickets after 7 days of resolution</div>
               </div>
               <q-toggle v-model="systemConfig.autoClose" color="primary" />
             </div>
@@ -208,46 +134,15 @@
           <div class="settings-panel__card">
             <div class="settings-form">
               <div class="settings-form__row">
-                <q-input
-                  v-model.number="slaConfig.critical"
-                  label="Critical SLA (hours)"
-                  outlined
-                  dense
-                  type="number"
-                />
-                <q-input
-                  v-model.number="slaConfig.high"
-                  label="High SLA (hours)"
-                  outlined
-                  dense
-                  type="number"
-                />
+                <q-input v-model.number="slaConfig.critical" label="Critical SLA (hours)" outlined dense type="number" />
+                <q-input v-model.number="slaConfig.high"     label="High SLA (hours)"     outlined dense type="number" />
               </div>
               <div class="settings-form__row q-mt-sm">
-                <q-input
-                  v-model.number="slaConfig.medium"
-                  label="Medium SLA (hours)"
-                  outlined
-                  dense
-                  type="number"
-                />
-                <q-input
-                  v-model.number="slaConfig.low"
-                  label="Low SLA (hours)"
-                  outlined
-                  dense
-                  type="number"
-                />
+                <q-input v-model.number="slaConfig.medium" label="Medium SLA (hours)" outlined dense type="number" />
+                <q-input v-model.number="slaConfig.low"    label="Low SLA (hours)"    outlined dense type="number" />
               </div>
               <div class="settings-form__actions">
-                <q-btn
-                  class="clay-btn clay-btn--primary"
-                  label="Save Configuration"
-                  icon="settings"
-                  unelevated
-                  no-caps
-                  @click="saveSystem"
-                />
+                <q-btn class="clay-btn clay-btn--primary" label="Save Configuration" icon="settings" unelevated no-caps @click="saveSystem" />
               </div>
             </div>
           </div>
@@ -261,7 +156,7 @@
             <div class="settings-about__name">LIMS Support Ticketing System</div>
             <div class="settings-about__org">Bureau of Soils and Water Management – LSD</div>
             <div class="settings-about__version">Version 1.0.0 — August 2026</div>
-            <q-separator class="q-my-md" style="width: 100%" />
+            <q-separator class="q-my-md" style="width:100%" />
             <div class="settings-about__tech">
               <span>Laravel 12</span>
               <span>Quasar 2 (Vue 3)</span>
@@ -270,8 +165,10 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
+
   </q-page>
 </template>
 
@@ -290,38 +187,34 @@ const division = ref([])
 const section = ref([])
 const settingsTabs = computed(() => {
   const tabs = [
-    { label: 'Profile', value: 'profile', icon: 'person' },
-    { label: 'Security', value: 'security', icon: 'lock' },
+    { label: 'Profile',  value: 'profile',  icon: 'person'       },
+    { label: 'Security', value: 'security', icon: 'lock'          }
   ]
-
+  
   // if (authStore.user?.role === 'ADMIN') {
   //   tabs.push({ label: 'System',   value: 'system',   icon: 'settings'      })
   // }
-
-  tabs.push({ label: 'About', value: 'about', icon: 'info_outline' })
-
+  
+  tabs.push({ label: 'About',    value: 'about',    icon: 'info_outline'  })
+  
   return tabs
 })
 
 const initials = computed(() => {
   const name = authStore.userName ?? ''
-  return name
-    .split(' ')
-    .map((n) => n[0]?.toUpperCase())
-    .slice(0, 2)
-    .join('')
+  return name.split(' ').map(n => n[0]?.toUpperCase()).slice(0, 2).join('')
 })
 
 // const divSec = await loadDivisionAndSection();
-console.log(division.value)
+console.log(division.value);
 
 const profileForm = ref({
   first_name: authStore.user?.first_name ?? '',
-  last_name: authStore.user?.last_name ?? '',
-  email: authStore.user?.email ?? '',
-  division: division.value?.name ?? '',
-  sections: section.value?.name ?? '',
-  position: authStore.user?.position ?? '',
+  last_name:  authStore.user?.last_name  ?? '',
+  email:      authStore.user?.email      ?? '',
+  division:   division.value?.name ?? '',
+  sections:   section.value?.name  ?? '',
+  position:   authStore.user?.position   ?? '',
 })
 
 const passwordForm = ref({ current: '', new: '', confirm: '' })
@@ -359,10 +252,10 @@ function notify(type, message) {
 async function saveProfile() {
   try {
     const { data } = await api.put('/admin/update-admin-info', profileForm.value)
-
+    
     authStore.user = data
     localStorage.setItem('user', JSON.stringify(data))
-
+    
     notify('positive', 'Profile saved successfully.')
   } catch (error) {
     let errorMsg = 'Failed to save profile.'
@@ -381,14 +274,14 @@ async function savePassword() {
     notify('negative', 'Passwords do not match.')
     return
   }
-
+  
   try {
     await api.post('/update-password', {
       old_password: passwordForm.value.current,
       password: passwordForm.value.new,
-      confirm_password: passwordForm.value.confirm,
+      confirm_password: passwordForm.value.confirm
     })
-
+    
     notify('positive', 'Password updated successfully.')
     passwordForm.value = { current: '', new: '', confirm: '' }
   } catch (error) {
@@ -452,7 +345,7 @@ async function saveSystem() {
 async function loadDivisionAndSection() {
   try {
     const res = await api.get('/getDivisionAndSection')
-    console.log(res.data)
+    console.log(res.data);
     division.value = res.data?.division ?? null
     section.value = res.data?.section ?? null
 
@@ -461,7 +354,7 @@ async function loadDivisionAndSection() {
 
     return {
       division: division.value,
-      section: section.value,
+      section: section.value
     }
   } catch (error) {
     console.error('Failed to load division and section:', error)
@@ -474,7 +367,7 @@ async function loadDivisionAndSection() {
 
     return {
       division: null,
-      section: null,
+      section: null
     }
   }
 }
@@ -489,6 +382,8 @@ onMounted(async () => {
     console.error('Failed to load session logs:', error)
   }
 })
+
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+</style>

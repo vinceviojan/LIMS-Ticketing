@@ -4,18 +4,12 @@
     <div class="row items-center justify-between q-mb-lg">
       <div>
         <div class="text-h5 text-weight-bolder text-dark">Ticket Management</div>
-        <div class="text-caption text-grey-7 q-mt-xs">
-          Review, assign and resolve support tickets
-        </div>
+        <div class="text-caption text-grey-7 q-mt-xs">Review, assign and resolve support tickets</div>
       </div>
       <div class="row q-gutter-sm">
         <q-btn
           class="clay-btn"
-          :label="
-            selectedTickets.length
-              ? `Export Selected (${selectedTickets.length})`
-              : 'Export Selected'
-          "
+          :label="selectedTickets.length ? `Export Selected (${selectedTickets.length})` : 'Export Selected'"
           icon="picture_as_pdf"
           unelevated
           no-caps
@@ -70,16 +64,12 @@
         :unelevated="activeTab === tab.value"
         no-caps
         class="border-radius-8 text-weight-bold"
-        style="padding: 4px 16px"
+        style="padding: 4px 16px;"
         @click="activeTab = tab.value"
       >
         <q-icon :name="tab.icon" size="18px" class="q-mr-sm" />
         {{ tab.label }}
-        <q-badge
-          :color="activeTab === tab.value ? 'white' : 'grey-3'"
-          :text-color="activeTab === tab.value ? 'primary' : 'grey-8'"
-          class="q-ml-sm text-weight-bolder"
-        >
+        <q-badge :color="activeTab === tab.value ? 'white' : 'grey-3'" :text-color="activeTab === tab.value ? 'primary' : 'grey-8'" class="q-ml-sm text-weight-bolder">
           {{ tabCount(tab.value) }}
         </q-badge>
       </q-btn>
@@ -89,13 +79,11 @@
     <div class="row items-center q-gutter-md q-mb-lg flex-wrap">
       <q-input
         v-model="search"
-        dense
-        outlined
-        clearable
+        dense outlined clearable
         placeholder="Search tickets..."
         bg-color="white"
         class="col-12 col-sm-auto border-radius-8"
-        style="min-width: 240px"
+        style="min-width: 240px;"
       >
         <template #prepend><q-icon name="search" /></template>
       </q-input>
@@ -104,48 +92,38 @@
         v-model="filterPriority"
         :options="priorityOptions"
         label="Priority"
-        dense
-        outlined
-        clearable
-        emit-value
-        map-options
+        dense outlined clearable
+        emit-value map-options
         bg-color="white"
         class="col-12 col-sm-auto border-radius-8"
-        style="min-width: 150px"
+        style="min-width: 150px;"
       />
 
       <q-select
         v-model="filterCategory"
         :options="categoryOptions"
         label="Category"
-        dense
-        outlined
-        clearable
-        emit-value
-        map-options
+        dense outlined clearable
+        emit-value map-options
         bg-color="white"
         class="col-12 col-sm-auto border-radius-8"
-        style="min-width: 170px"
+        style="min-width: 170px;"
       />
 
       <q-select
         v-model="sortBy"
         :options="sortOptions"
         label="Sort By"
-        dense
-        outlined
-        emit-value
-        map-options
+        dense outlined
+        emit-value map-options
         bg-color="white"
         class="col-12 col-sm-auto border-radius-8"
-        style="min-width: 190px"
+        style="min-width: 190px;"
       />
 
       <q-btn
         v-if="search || filterPriority || filterCategory || sortBy !== 'newest'"
-        flat
-        dense
-        no-caps
+        flat dense no-caps
         color="negative"
         icon="restart_alt"
         label="Reset"
@@ -156,20 +134,8 @@
       <q-space />
 
       <q-btn-group outline class="bg-white border-radius-8">
-        <q-btn
-          :color="displayMode === 'card' ? 'primary' : 'grey-7'"
-          :flat="displayMode !== 'card'"
-          unelevated
-          icon="grid_view"
-          @click="displayMode = 'card'"
-        />
-        <q-btn
-          :color="displayMode === 'table' ? 'primary' : 'grey-7'"
-          :flat="displayMode !== 'table'"
-          unelevated
-          icon="list"
-          @click="displayMode = 'table'"
-        />
+        <q-btn :color="displayMode === 'card' ? 'primary' : 'grey-7'" :flat="displayMode !== 'card'" unelevated icon="grid_view" @click="displayMode = 'card'" />
+        <q-btn :color="displayMode === 'table' ? 'primary' : 'grey-7'" :flat="displayMode !== 'table'" unelevated icon="list" @click="displayMode = 'table'" />
       </q-btn-group>
     </div>
 
@@ -181,7 +147,7 @@
       :readonly="true"
       :selectable="true"
       @view-ticket="viewTicket"
-      @update:selected="(ticket) => (selectedTickets = ticket ? [ticket] : [])"
+      @update:selected="ticket => selectedTickets = ticket ? [ticket] : []"
     />
 
     <!-- ── Create Dialog ───────────────────────────────────────── -->
@@ -194,7 +160,12 @@
     />
 
     <!-- ── View Dialog (read-only) ─────────────────────────────── -->
-    <ViewTicketModal v-model="showViewDialog" :ticket="selectedTicket" @refresh="fetchTickets" />
+    <ViewTicketModal
+      v-model="showViewDialog"
+      :ticket="selectedTicket"
+      @refresh="fetchTickets"
+    />
+
   </q-page>
 </template>
 
@@ -205,18 +176,13 @@ import { api } from '../../boot/axios'
 import AddTicketModal from '../../components/AddTicketModal.vue'
 import ViewTicketModal from '../../components/ViewTicketModal.vue'
 import TicketListView from '../../components/TicketListView.vue'
-import {
-  exportTicketToPdf,
-  exportTicketsToPdf,
-  exportTicketsToCSV,
-  exportTicketsToJSON,
-} from '../../assets/TicketExport.js'
+import { exportTicketToPdf, exportTicketsToPdf, exportTicketsToCSV, exportTicketsToJSON } from '../../assets/TicketExport.js'
 import './TicketManagementPage.scss'
 const $q = useQuasar()
 
 // ── State ────────────────────────────────────────────────────
 const loading = ref(true)
-const search = ref('')
+const search  = ref('')
 const filterPriority = ref(null)
 const filterCategory = ref(null)
 const sortBy = ref('newest')
@@ -234,13 +200,13 @@ const sortOptions = [
   { label: 'Oldest First', value: 'oldest' },
   { label: 'Ticket # (A-Z)', value: 'ticket_asc' },
   { label: 'Title (A-Z)', value: 'title_asc' },
-  { label: 'Priority (High to Low)', value: 'priority_desc' },
+  { label: 'Priority (High to Low)', value: 'priority_desc' }
 ]
 
 const priorityOptions = [
-  { label: 'Low', value: 'LOW' },
-  { label: 'Normal', value: 'NORMAL' },
-  { label: 'High', value: 'HIGH' },
+  { label: 'Low',      value: 'LOW'      },
+  { label: 'Normal',   value: 'NORMAL'   },
+  { label: 'High',     value: 'HIGH'     },
 ]
 
 const categoryOptions = ref([])
@@ -248,13 +214,13 @@ const staffOptions = ref([])
 const tickets = ref([])
 
 const statusTabs = [
-  { label: 'All', value: 'ALL', icon: 'list_alt' },
-  { label: 'Open', value: 'OPEN', icon: 'inbox' },
-  { label: 'On-going', value: 'ON-GOING', icon: 'autorenew' },
-  { label: 'Resolved', value: 'RESOLVED', icon: 'task' },
-  { label: 'Escalated', value: 'ESCALATED', icon: 'pending_actions' },
-  { label: 'Closed', value: 'CLOSE', icon: 'check_box' },
-  { label: 'Canceled', value: 'CANCEL', icon: 'cancel' },
+  { label: 'All',      value: 'ALL',      icon: 'list_alt'       },
+  { label: 'Open',     value: 'OPEN',     icon: 'inbox'          },
+  { label: 'On-going', value: 'ON-GOING', icon: 'autorenew'      },
+  { label: 'Resolved', value: 'RESOLVED', icon: 'task'           },
+  { label: 'Escalated',value: 'ESCALATED',icon: 'pending_actions'},
+  { label: 'Closed',   value: 'CLOSE',    icon: 'check_box'      },
+  { label: 'Canceled', value: 'CANCEL',   icon: 'cancel'         },
 ]
 
 // ── Lifecycle ────────────────────────────────────────────────
@@ -268,7 +234,7 @@ async function fetchCategories() {
   try {
     const res = await api.get('/problem-categories')
     const cats = res.data?.data || res.data || []
-    categoryOptions.value = cats.map((c) => ({ label: c.categories, value: c.id }))
+    categoryOptions.value = cats.map(c => ({ label: c.categories, value: c.id }))
   } catch (err) {
     console.error('Failed to load categories', err)
   }
@@ -278,11 +244,8 @@ async function fetchStaff() {
   try {
     const { data } = await api.get('/users')
     staffOptions.value = (data.data || data || [])
-      .filter((user) => user.role === 'STAFF')
-      .map((user) => ({
-        label: user.name || `${user.first_name} ${user.last_name}`,
-        value: user.id,
-      }))
+      .filter(user => user.role === 'STAFF')
+      .map(user => ({ label: user.name || `${user.first_name} ${user.last_name}`, value: user.id }))
   } catch (err) {
     console.error('Failed to load staff', err)
   }
@@ -295,20 +258,16 @@ async function fetchTickets() {
     const data = res.data?.data || res.data || []
     console.log(res.data)
     // Map backend array to UI properties internally
-    tickets.value = data.map((t) => ({
+    tickets.value = data.map(t => ({
       id: t.id,
       real_id: t.id,
       ticket_no: t.ticket_no,
       title: t.issue || 'No Title',
-      requester: t.user ? t.user.first_name + ' ' + t.user.last_name : 'Unknown',
+      requester: t.user ? (t.user.first_name + ' ' + t.user.last_name) : 'Unknown',
       email: t.user ? t.user.email : '',
-      assignedStaff: t.assigned_staff
-        ? t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`
-        : '',
+      assignedStaff: t.assigned_staff ? (t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`) : '',
       assigned_staff_id: t.assigned_staff_id,
-      approved_by: t.approved_by
-        ? t.approved_by.name || `${t.approved_by.first_name} ${t.approved_by.last_name}`
-        : '',
+      approved_by: t.approved_by ? (t.approved_by.name || `${t.approved_by.first_name} ${t.approved_by.last_name}`) : '',
       category: t.problem_category ? t.problem_category.categories : 'Uncategorized',
       problem_category_id: t.problem_category_id,
       priority: t.urgency || 'NORMAL',
@@ -319,38 +278,14 @@ async function fetchTickets() {
       final_remarks: t.final_remarks || '',
       rating: t.rating,
       feedback: t.feedback,
-      date_action: t.date_action
-        ? new Date(t.date_action).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })
-        : '',
-      date_closed: t.date_closed
-        ? new Date(t.date_closed).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })
-        : '',
-      target_resolution_date: t.target_resolution_date
-        ? new Date(t.target_resolution_date).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })
-        : '',
+      date_action: t.date_action ? new Date(t.date_action).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+      date_closed: t.date_closed ? new Date(t.date_closed).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+      target_resolution_date: t.target_resolution_date ? new Date(t.target_resolution_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
       attachments: t.attachments || [],
       upload_intralab: t.upload_intralab,
       upload_limsportal: t.upload_limsportal,
-      hasAttachments: Boolean(
-        (t.attachments && t.attachments.length) || t.upload_intralab || t.upload_limsportal,
-      ),
-      created: new Date(t.date_submitted || t.created_at).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      }),
+      hasAttachments: Boolean((t.attachments && t.attachments.length) || t.upload_intralab || t.upload_limsportal),
+      created: new Date(t.date_submitted || t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     }))
   } catch (err) {
     console.error('Failed to load tickets', err)
@@ -363,17 +298,16 @@ async function fetchTickets() {
 // ── Computed ─────────────────────────────────────────────────
 const filteredTickets = computed(() => {
   let data = tickets.value
-  if (activeTab.value !== 'ALL') data = data.filter((t) => t.status === activeTab.value)
-  if (filterPriority.value) data = data.filter((t) => t.priority === filterPriority.value)
-  if (filterCategory.value) data = data.filter((t) => t.category === filterCategory.value)
+  if (activeTab.value !== 'ALL') data = data.filter(t => t.status === activeTab.value)
+  if (filterPriority.value) data = data.filter(t => t.priority === filterPriority.value)
+  if (filterCategory.value) data = data.filter(t => t.category === filterCategory.value)
   if (search.value) {
     const q = search.value.toLowerCase()
-    data = data.filter(
-      (t) =>
-        t.title?.toLowerCase().includes(q) ||
-        t.ticket_no?.toLowerCase().includes(q) ||
-        t.requester?.toLowerCase().includes(q) ||
-        t.category?.toLowerCase().includes(q),
+    data = data.filter(t =>
+      t.title?.toLowerCase().includes(q) ||
+      t.ticket_no?.toLowerCase().includes(q) ||
+      t.requester?.toLowerCase().includes(q) ||
+      t.category?.toLowerCase().includes(q)
     )
   }
 
@@ -395,7 +329,7 @@ const filteredTickets = computed(() => {
 
 function tabCount(status) {
   if (status === 'ALL') return tickets.value.length
-  return tickets.value.filter((t) => t.status === status).length
+  return tickets.value.filter(t => t.status === status).length
 }
 
 // ── Actions ─────────────────────────────────────────────────

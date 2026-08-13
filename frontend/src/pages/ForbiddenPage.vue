@@ -1,22 +1,25 @@
 <template>
   <div class="error-page">
     <div class="error-page__content">
+
       <span class="error-page__code">403</span>
 
       <div class="error-page__rule" />
 
       <h1 class="error-page__title">Access forbidden</h1>
       <p class="error-page__text">
-        You don't have permission to view this page. If you think this is a mistake, contact your
-        administrator.
+        You don't have permission to view this page. If you think this is a mistake, contact your administrator.
       </p>
 
       <div class="error-page__actions">
         <button class="error-page__btn error-page__btn--ghost" @click="$router.back()">
           Go back
         </button>
-        <button class="error-page__btn error-page__btn--solid" @click="goHome">Return home</button>
+        <button class="error-page__btn error-page__btn--solid" @click="goHome">
+          Return home
+        </button>
       </div>
+
     </div>
   </div>
 </template>
@@ -29,9 +32,7 @@ const router = useRouter()
 const authStore = inject('authStore', null)
 
 const goHome = () => {
-  const role =
-    authStore?.userRole ||
-    (JSON.parse(localStorage.getItem('user') || '{}')?.role || '').toLowerCase()
+  const role = authStore?.userRole || (JSON.parse(localStorage.getItem('user') || '{}')?.role || '').toLowerCase()
   if (role === 'admin') return router.push('/admin/dashboard')
   if (role === 'staff') return router.push('/staff/dashboard')
   if (role === 'user') return router.push('/user/dashboard')
@@ -100,10 +101,7 @@ const goHome = () => {
   padding: 9px 20px;
   border-radius: 6px;
   cursor: pointer;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .error-page__btn--ghost {

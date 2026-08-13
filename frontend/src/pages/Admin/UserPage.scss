@@ -1,246 +1,246 @@
 @import '@/css/themes.scss';
 
 .user-page {
-  padding: 32px;
-  background: $min-bg;
-  min-height: 100vh;
+    padding: 32px;
+    background: $min-bg;
+    min-height: 100vh;
 
-  &__header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 24px;
-  }
-
-  &__title {
-    color: $min-text;
-    font-weight: 800;
-    font-family: 'Nunito', sans-serif;
-  }
-
-  &__subtitle {
-    color: $min-text-soft;
-    font-size: 0.85rem;
-    margin-top: 2px;
-  }
-
-  &__toolbar {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-
-  &__search {
-    min-width: 280px;
-    flex: 1;
-    max-width: 380px;
-
-    :deep(.q-field__control) {
-      border-radius: 8px;
-      background: $min-surface;
-    }
-  }
-
-  &__stats {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  &__stat-chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: $min-text-soft;
-    background: $min-surface;
-    border: 1px solid $min-border;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-
-    &--active {
-      color: $accent-signup;
-      border-color: rgba($accent-signup, 0.3);
-      background: #fff7ed;
+    &__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 24px;
     }
 
-    &--pending {
-      color: $accent-login;
-      border-color: rgba($accent-login, 0.3);
-      background: #f0fdf4;
+    &__title {
+        color: $min-text;
+        font-weight: 800;
+        font-family: 'Nunito', sans-serif;
     }
-  }
 
-  &__user-cell {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  &__avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #ecfdf5;
-    border: 1px solid #d1fae5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: $accent-login;
-    flex-shrink: 0;
-  }
-
-  &__user-name {
-    font-weight: 600;
-    color: $min-text;
-    font-size: 0.9rem;
-  }
-
-  &__user-division {
-    font-size: 0.75rem;
-    color: $min-text-soft;
-  }
-
-  &__empty {
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    color: $min-text-soft;
-    font-size: 0.9rem;
-  }
-
-  // ── Dialog ──────────────────────────────────────────────────
-  &__dialog {
-    @include min-card();
-    width: 560px;
-    max-width: 95vw;
-    padding: 0;
-
-    &--danger {
-      max-width: 400px;
+    &__subtitle {
+        color: $min-text-soft;
+        font-size: 0.85rem;
+        margin-top: 2px;
     }
-  }
 
-  &__dialog-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 20px 20px 12px;
-  }
-
-  &__dialog-title {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: $min-text;
-    font-family: 'Nunito', sans-serif;
-  }
-
-  &__dialog-body {
-    padding: 12px 20px 16px;
-
-    p {
-      margin: 0 0 8px;
-      color: $min-text;
-      font-size: 0.9rem;
+    &__toolbar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
     }
-  }
 
-  &__dialog-actions {
-    padding: 8px 16px 16px;
-    gap: 10px;
-  }
+    &__search {
+        min-width: 280px;
+        flex: 1;
+        max-width: 380px;
 
-  &__form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
+        :deep(.q-field__control) {
+            border-radius: 8px;
+            background: $min-surface;
+        }
+    }
 
-  &__delete-warn {
-    color: #ef4444 !important;
-    font-size: 0.82rem !important;
-    font-weight: 600;
-  }
+    &__stats {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    &__stat-chip {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: $min-text-soft;
+        background: $min-surface;
+        border: 1px solid $min-border;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+        &--active {
+            color: $accent-signup;
+            border-color: rgba($accent-signup, 0.3);
+            background: #fff7ed;
+        }
+
+        &--pending {
+            color: $accent-login;
+            border-color: rgba($accent-login, 0.3);
+            background: #f0fdf4;
+        }
+    }
+
+    &__user-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    &__avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #ecfdf5;
+        border: 1px solid #d1fae5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: $accent-login;
+        flex-shrink: 0;
+    }
+
+    &__user-name {
+        font-weight: 600;
+        color: $min-text;
+        font-size: 0.9rem;
+    }
+
+    &__user-division {
+        font-size: 0.75rem;
+        color: $min-text-soft;
+    }
+
+    &__empty {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: $min-text-soft;
+        font-size: 0.9rem;
+    }
+
+    // ── Dialog ──────────────────────────────────────────────────
+    &__dialog {
+        @include min-card();
+        width: 560px;
+        max-width: 95vw;
+        padding: 0;
+
+        &--danger {
+            max-width: 400px;
+        }
+    }
+
+    &__dialog-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 20px 20px 12px;
+    }
+
+    &__dialog-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: $min-text;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    &__dialog-body {
+        padding: 12px 20px 16px;
+
+        p {
+            margin: 0 0 8px;
+            color: $min-text;
+            font-size: 0.9rem;
+        }
+    }
+
+    &__dialog-actions {
+        padding: 8px 16px 16px;
+        gap: 10px;
+    }
+
+    &__form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    &__delete-warn {
+        color: #ef4444 !important;
+        font-size: 0.82rem !important;
+        font-weight: 600;
+    }
 }
 
 // ── Table ───────────────────────────────────────────────────
 .clay-table {
-  @include min-card();
-  padding: 8px;
-  color: $min-text;
-
-  :deep(thead tr) {
-    background: transparent;
-  }
-
-  :deep(th) {
-    color: $min-text-soft;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 0.03em;
-    border-bottom: 1px solid $min-border;
-  }
-
-  :deep(td) {
+    @include min-card();
+    padding: 8px;
     color: $min-text;
-    border-bottom: 1px solid $min-border-strong;
-  }
 
-  :deep(tbody tr) {
-    transition: background 0.15s ease;
-
-    &:hover {
-      background: $min-bg;
+    :deep(thead tr) {
+        background: transparent;
     }
 
-    &:last-child td {
-      border-bottom: none;
+    :deep(th) {
+        color: $min-text-soft;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.03em;
+        border-bottom: 1px solid $min-border;
     }
-  }
 
-  :deep(.q-table__bottom) {
-    color: $min-text-soft;
-    border-top: 1px solid $min-border;
-  }
+    :deep(td) {
+        color: $min-text;
+        border-bottom: 1px solid $min-border-strong;
+    }
+
+    :deep(tbody tr) {
+        transition: background 0.15s ease;
+
+        &:hover {
+            background: $min-bg;
+        }
+
+        &:last-child td {
+            border-bottom: none;
+        }
+    }
+
+    :deep(.q-table__bottom) {
+        color: $min-text-soft;
+        border-top: 1px solid $min-border;
+    }
 }
 
 // ── Buttons ─────────────────────────────────────────────────
 .clay-btn {
-  &--primary {
-    @include min-button($accent-login);
-  }
+    &--primary {
+        @include min-button($accent-login);
+    }
 }
 
 // ── Status Badges ────────────────────────────────────────────
 .status-badge {
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-weight: 600;
-  text-transform: capitalize;
-  color: #fff;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: #fff;
 
-  &--active {
-    background: $positive;
-  }
+    &--active {
+        background: $positive;
+    }
 
-  &--inactive {
-    background: $min-text-soft;
-  }
+    &--inactive {
+        background: $min-text-soft;
+    }
 
-  &--suspended {
-    background: #d97706;
-  }
+    &--suspended {
+        background: #d97706;
+    }
 
-  &--archived {
-    background: #ef4444;
-  }
+    &--archived {
+        background: #ef4444;
+    }
 }

@@ -110,9 +110,7 @@
     color: $accent-login;
     text-decoration: none;
 
-    &:hover {
-      text-decoration: underline;
-    }
+    &:hover { text-decoration: underline; }
   }
 }
 
@@ -127,24 +125,12 @@
   text-transform: uppercase;
   color: #fff;
 
-  &--open {
-    background: $accent-login;
-  }
-  &--escalated {
-    background: #f59e0b;
-  }
-  &--close {
-    background: $positive;
-  }
-  &--cancel {
-    background: $min-text-soft;
-  }
-  &--pending {
-    background: #f59e0b;
-  }
-  &--resolved {
-    background: $positive;
-  }
+  &--open      { background: $accent-login; }
+  &--escalated { background: #f59e0b; }
+  &--close     { background: $positive; }
+  &--cancel    { background: $min-text-soft; }
+  &--pending   { background: #f59e0b; }
+  &--resolved  { background: $positive; }
 }
 
 .ticket-card__priority {
@@ -161,7 +147,5 @@
 
 // ── Buttons used inside the modal actions ───────────────────────
 .clay-btn {
-  &--primary {
-    @include min-button($accent-login);
-  }
+  &--primary { @include min-button($accent-login); }
 }

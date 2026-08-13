@@ -86,26 +86,10 @@
 
       <template #body-cell-actions="props">
         <q-td :props="props" class="text-center">
-          <q-btn
-            round
-            flat
-            dense
-            icon="edit"
-            size="sm"
-            color="primary"
-            @click="openEditDialog(props.row)"
-          >
+          <q-btn round flat dense icon="edit" size="sm" color="primary" @click="openEditDialog(props.row)">
             <q-tooltip>Edit</q-tooltip>
           </q-btn>
-          <q-btn
-            round
-            flat
-            dense
-            icon="delete_outline"
-            size="sm"
-            color="negative"
-            @click="confirmDelete(props.row)"
-          >
+          <q-btn round flat dense icon="delete_outline" size="sm" color="negative" @click="confirmDelete(props.row)">
             <q-tooltip>Delete</q-tooltip>
           </q-btn>
         </q-td>
@@ -123,14 +107,8 @@
     <q-dialog v-model="showDialog" persistent>
       <q-card class="org-page__dialog">
         <q-card-section class="org-page__dialog-head">
-          <q-icon
-            :name="isEditing ? 'edit_note' : 'add_circle_outline'"
-            size="26px"
-            color="primary"
-          />
-          <span class="org-page__dialog-title">{{
-            isEditing ? `Edit ${activeTabLabel}` : `New ${activeTabLabel}`
-          }}</span>
+          <q-icon :name="isEditing ? 'edit_note' : 'add_circle_outline'" size="26px" color="primary" />
+          <span class="org-page__dialog-title">{{ isEditing ? `Edit ${activeTabLabel}` : `New ${activeTabLabel}` }}</span>
           <q-space />
           <q-btn flat round dense icon="close" v-close-popup />
         </q-card-section>
@@ -141,17 +119,15 @@
           <q-input
             v-model="form.name"
             :label="`${activeTabLabel} Name *`"
-            outlined
-            dense
-            :rules="[(val) => !!val || 'Required']"
+            outlined dense
+            :rules="[val => !!val || 'Required']"
             class="q-mb-md"
           />
 
           <q-input
             v-model="form.code"
             label="Code / Acronym"
-            outlined
-            dense
+            outlined dense
             hint="e.g. LSD, CHEM, PHYS"
             class="q-mb-md"
           />
@@ -162,8 +138,7 @@
             v-model="form.division_id"
             :options="divisionOptions"
             label="Division"
-            outlined
-            dense
+            outlined dense
             emit-value
             map-options
             clearable
@@ -173,8 +148,7 @@
           <q-input
             v-model="form.description"
             label="Description"
-            outlined
-            dense
+            outlined dense
             type="textarea"
             rows="3"
           />
@@ -185,8 +159,7 @@
         <q-card-actions align="right" class="org-page__dialog-actions">
           <q-btn flat no-caps label="Cancel" color="grey-7" v-close-popup />
           <q-btn
-            unelevated
-            no-caps
+            unelevated no-caps
             :label="isEditing ? 'Save Changes' : 'Create'"
             class="clay-btn clay-btn--primary"
             :loading="saving"
@@ -204,22 +177,12 @@
           <span class="org-page__dialog-title">Delete {{ activeTabLabel }}</span>
         </q-card-section>
         <q-card-section class="org-page__dialog-body">
-          <p>
-            Are you sure you want to delete <strong>{{ deleteTarget?.name }}</strong
-            >?
-          </p>
+          <p>Are you sure you want to delete <strong>{{ deleteTarget?.name }}</strong>?</p>
           <p class="org-page__delete-warn">This action cannot be undone.</p>
         </q-card-section>
         <q-card-actions align="right" class="org-page__dialog-actions">
           <q-btn flat no-caps label="Cancel" color="grey-7" v-close-popup />
-          <q-btn
-            unelevated
-            no-caps
-            label="Delete"
-            color="negative"
-            :loading="deleting"
-            @click="deleteItem"
-          />
+          <q-btn unelevated no-caps label="Delete" color="negative" :loading="deleting" @click="deleteItem" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -234,19 +197,19 @@ import { api } from '../../boot/axios'
 const $q = useQuasar()
 
 const activeTab = ref('divisions')
-const loading = ref(false)
-const saving = ref(false)
-const deleting = ref(false)
-const search = ref('')
+const loading   = ref(false)
+const saving    = ref(false)
+const deleting  = ref(false)
+const search    = ref('')
 const sectionDivisionFilter = ref(null)
 
 const divisions = ref([])
-const sections = ref([])
+const sections  = ref([])
 
-const showDialog = ref(false)
+const showDialog       = ref(false)
 const showDeleteDialog = ref(false)
-const isEditing = ref(false)
-const deleteTarget = ref(null)
+const isEditing        = ref(false)
+const deleteTarget     = ref(null)
 
 const pagination = ref({ sortBy: 'name', descending: false, page: 1, rowsPerPage: 10 })
 
@@ -259,7 +222,7 @@ const activeTabLabel = computed(() => {
   return 'Section'
 })
 
-const divisionOptions = computed(() => divisions.value.map((d) => ({ label: d.name, value: d.id })))
+const divisionOptions = computed(() => divisions.value.map(d => ({ label: d.name, value: d.id })))
 
 const currentRows = computed(() => {
   if (activeTab.value === 'divisions') return divisions.value
@@ -270,11 +233,10 @@ const filteredRows = computed(() => {
   let data = currentRows.value
   if (search.value) {
     const q = search.value.toLowerCase()
-    data = data.filter(
-      (r) =>
-        r.name?.toLowerCase().includes(q) ||
-        r.code?.toLowerCase().includes(q) ||
-        r.description?.toLowerCase().includes(q),
+    data = data.filter(r =>
+      r.name?.toLowerCase().includes(q) ||
+      r.code?.toLowerCase().includes(q) ||
+      r.description?.toLowerCase().includes(q)
     )
   }
   return data
@@ -282,18 +244,13 @@ const filteredRows = computed(() => {
 
 const currentColumns = computed(() => {
   const base = [
-    { name: 'id', label: '#', field: 'id', align: 'left', sortable: true },
+    { name: 'id',   label: '#',    field: 'id',   align: 'left', sortable: true },
     { name: 'name', label: 'Name', field: 'name', align: 'left', sortable: true },
     { name: 'code', label: 'Code', field: 'code', align: 'left', sortable: true },
   ]
 
   if (activeTab.value === 'sections') {
-    base.push({
-      name: 'division',
-      label: 'Division',
-      field: (r) => r.division?.name ?? '-',
-      align: 'left',
-    })
+    base.push({ name: 'division', label: 'Division', field: r => r.division?.name ?? '-', align: 'left' })
   }
 
   base.push({ name: 'actions', label: 'Actions', field: 'actions', align: 'center' })
@@ -307,9 +264,12 @@ function notify(type, message) {
 async function fetchAllData() {
   loading.value = true
   try {
-    const [dRes, sRes] = await Promise.all([api.get('/divisions'), api.get('/sections')])
+    const [dRes, sRes] = await Promise.all([
+      api.get('/divisions'),
+      api.get('/sections'),
+    ])
     divisions.value = dRes.data
-    sections.value = sRes.data
+    sections.value  = sRes.data
   } catch {
     notify('negative', 'Failed to load organization data.')
   } finally {
@@ -320,7 +280,9 @@ async function fetchAllData() {
 async function fetchSections() {
   loading.value = true
   try {
-    const params = sectionDivisionFilter.value ? { division_id: sectionDivisionFilter.value } : {}
+    const params = sectionDivisionFilter.value
+      ? { division_id: sectionDivisionFilter.value }
+      : {}
     const { data } = await api.get('/sections', { params })
     sections.value = data
   } catch {
@@ -479,9 +441,7 @@ onMounted(fetchAllData)
     max-width: 95vw;
     padding: 0;
 
-    &--danger {
-      max-width: 400px;
-    }
+    &--danger { max-width: 400px; }
   }
 
   &__dialog-head {
@@ -547,9 +507,7 @@ onMounted(fetchAllData)
   padding: 8px;
   color: $min-text;
 
-  :deep(thead tr) {
-    background: transparent;
-  }
+  :deep(thead tr) { background: transparent; }
   :deep(th) {
     color: $min-text-soft;
     font-weight: 600;
@@ -558,24 +516,15 @@ onMounted(fetchAllData)
     letter-spacing: 0.03em;
     border-bottom: 1px solid $min-border;
   }
-  :deep(td) {
-    color: $min-text;
-    border-bottom: 1px solid $min-border-strong;
-  }
+  :deep(td) { color: $min-text; border-bottom: 1px solid $min-border-strong; }
   :deep(tbody tr) {
     transition: background 0.15s ease;
-    &:hover {
-      background: $min-bg;
-    }
-    &:last-child td {
-      border-bottom: none;
-    }
+    &:hover { background: $min-bg; }
+    &:last-child td { border-bottom: none; }
   }
 }
 
 .clay-btn {
-  &--primary {
-    @include min-button($accent-login);
-  }
+  &--primary { @include min-button($accent-login); }
 }
 </style>

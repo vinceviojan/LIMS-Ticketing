@@ -1,5 +1,6 @@
 <template>
   <q-layout view="hHh Lpr lFf">
+
     <!-- ── Header ───────────────────────────────────────── -->
     <AppHeader @toggle-drawer="toggleSidebar" />
 
@@ -12,58 +13,77 @@
       :breakpoint="768"
       class="user-sidebar"
     >
-      <q-scroll-area class="fit user-sidebar__scroll">
+      <q-scroll-area class="fit">
+
         <!-- ── Sidebar Logos ───────────────────────────── -->
         <div class="user-sidebar__logos" v-show="!miniState">
+
           <!-- BSWM Logo -->
-          <img src="../assets/bswm-logo.png" alt="BSWM Logo" class="user-sidebar__logo-image" />
+          <img
+            src="../assets/bswm-logo.png"
+            alt="BSWM Logo"
+            class="user-sidebar__logo-image"
+          />
 
           <!-- LIMS Logo -->
-          <img src="../assets/75th_LOGO.png" alt="LSD Logo" class="user-sidebar__logo-image" />
+          <img
+            src="../assets/bswm-logo-sidebar.png"
+            alt="LSD Logo"
+            class="user-sidebar__logo-image"
+          />
+
         </div>
+
+        <!-- ── Sidebar Title ─────────────────────────────
+        <div class="user-sidebar__title">
+
+          <q-icon
+            name="person_outline"
+            size="22px"
+            class="user-sidebar__logo-icon"
+          />
+
+          <span>User Portal</span>
+
+        </div> -->
 
         <!-- ── Divider ─────────────────────────────────── -->
         <q-separator class="q-my-sm" />
 
         <!-- ── Navigation ──────────────────────────────── -->
-        <q-list padding class="user-sidebar__nav">
-          <template v-for="group in navGroups" :key="group.heading">
-            <!-- Section Header -->
-            <q-item-label v-show="!miniState" header class="user-sidebar__section-header">
-              {{ group.heading }}
-            </q-item-label>
+        <q-list
+          padding
+          class="user-sidebar__nav"
+        >
 
-            <!-- Nav Items -->
-            <q-item
-              v-for="item in group.items"
-              :key="item.label"
-              clickable
-              v-ripple
-              :to="item.to"
-              class="user-sidebar__item"
-              active-class="user-sidebar__item--active"
-              exact-active-class="user-sidebar__item--active"
-            >
-              <!-- Icon -->
-              <q-item-section avatar>
-                <q-icon :name="item.icon" size="20px" />
-                <q-tooltip
-                  v-if="miniState"
-                  anchor="center right"
-                  self="center left"
-                  :offset="[8, 0]"
-                >
-                  {{ item.label }}
-                </q-tooltip>
-              </q-item-section>
+          <q-item
+            v-for="item in navItems"
+            :key="item.label"
+            clickable
+            v-ripple
+            :to="item.to"
+            class="user-sidebar__item"
+            active-class="user-sidebar__item--active"
+            exact-active-class="user-sidebar__item--active"
+          >
 
-              <!-- Label -->
-              <q-item-section class="user-sidebar__item-label">
-                {{ item.label }}
-              </q-item-section>
-            </q-item>
-          </template>
+            <!-- Icon -->
+            <q-item-section avatar>
+              <q-icon
+                :name="item.icon"
+                size="20px"
+              />
+            </q-item-section>
+
+            <!-- Label -->
+            <q-item-section>
+              {{ item.label }}
+            </q-item-section>
+
+          </q-item>
+
         </q-list>
+
       </q-scroll-area>
     </q-drawer>
 
@@ -71,8 +91,10 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
   </q-layout>
 </template>
+
 
 <script setup>
 import { ref, provide } from 'vue'
@@ -88,6 +110,7 @@ const authStore = useAuthStore()
 const $q = useQuasar()
 
 provide('authStore', authStore)
+
 
 // ─────────────────────────────────────────────────────────
 // Sidebar State
@@ -105,22 +128,29 @@ const toggleSidebar = () => {
   }
 }
 
+
 // ─────────────────────────────────────────────────────────
-// Sidebar Navigation — Grouped
+// Sidebar Navigation
 // ─────────────────────────────────────────────────────────
 
-const navGroups = [
+const navItems = [
   {
-    heading: 'Core Modules',
-    items: [
-      { label: 'Dashboard', icon: 'home', to: '/user/dashboard' },
-      { label: 'My Tickets', icon: 'confirmation_number', to: '/user/ticket-management' },
-    ],
+    label: 'Dashboard',
+    icon: 'home',
+    to: '/user/dashboard'
   },
+
   {
-    heading: 'System',
-    items: [{ label: 'Settings', icon: 'settings', to: '/user/settings' }],
+    label: 'My Tickets',
+    icon: 'confirmation_number',
+    to: '/user/ticket-management'
   },
+
+  {
+    label: 'Settings',
+    icon: 'settings',
+    to: '/user/settings'
+  }
 ]
 </script>
 

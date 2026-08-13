@@ -1,5 +1,6 @@
 <template>
   <q-page class="pc-page">
+
     <!-- ── Header ──────────────────────────────────────────────── -->
     <div class="pc-page__header">
       <div>
@@ -56,11 +57,7 @@
     </div>
 
     <!-- ── Loading State ─────────────────────────────────────────── -->
-    <div
-      v-if="loading"
-      class="column items-center justify-center q-pa-xl text-grey-6 bg-white rounded-lg"
-      style="border: 1px solid #dbe2ea; min-height: 280px; border-radius: 12px"
-    >
+    <div v-if="loading" class="column items-center justify-center q-pa-xl text-grey-6 bg-white rounded-lg" style="border: 1px solid #dbe2ea; min-height: 280px; border-radius: 12px;">
       <q-spinner-dots size="52px" color="primary" />
       <p class="text-h6 q-mt-md text-weight-medium text-grey-7">Loading problem categories…</p>
     </div>
@@ -90,26 +87,10 @@
 
       <template #body-cell-actions="props">
         <q-td :props="props" class="text-center">
-          <q-btn
-            round
-            flat
-            dense
-            icon="edit"
-            size="sm"
-            color="primary"
-            @click="openEditDialog(props.row)"
-          >
+          <q-btn round flat dense icon="edit" size="sm" color="primary" @click="openEditDialog(props.row)">
             <q-tooltip>Edit</q-tooltip>
           </q-btn>
-          <q-btn
-            round
-            flat
-            dense
-            icon="delete_outline"
-            size="sm"
-            color="negative"
-            @click="confirmDelete(props.row)"
-          >
+          <q-btn round flat dense icon="delete_outline" size="sm" color="negative" @click="confirmDelete(props.row)">
             <q-tooltip>Delete</q-tooltip>
           </q-btn>
         </q-td>
@@ -127,14 +108,8 @@
     <q-dialog v-model="showDialog" persistent>
       <q-card class="pc-page__dialog">
         <q-card-section class="pc-page__dialog-head">
-          <q-icon
-            :name="isEditing ? 'edit_note' : 'add_circle_outline'"
-            size="26px"
-            color="primary"
-          />
-          <span class="pc-page__dialog-title">{{
-            isEditing ? 'Edit Category' : 'New Category'
-          }}</span>
+          <q-icon :name="isEditing ? 'edit_note' : 'add_circle_outline'" size="26px" color="primary" />
+          <span class="pc-page__dialog-title">{{ isEditing ? 'Edit Category' : 'New Category' }}</span>
           <q-space />
           <q-btn flat round dense icon="close" v-close-popup />
         </q-card-section>
@@ -145,19 +120,17 @@
           <q-input
             v-model="form.type"
             label="Type *"
-            outlined
-            dense
+            outlined dense
             hint="e.g. hardware, software, network"
-            :rules="[(val) => !!val || 'Required']"
+            :rules="[val => !!val || 'Required']"
             class="q-mb-md"
           />
           <q-input
             v-model="form.categories"
             label="Category Name *"
-            outlined
-            dense
+            outlined dense
             hint="e.g. Laptop Issue, OS Crash"
-            :rules="[(val) => !!val || 'Required']"
+            :rules="[val => !!val || 'Required']"
           />
         </q-card-section>
 
@@ -166,8 +139,7 @@
         <q-card-actions align="right" class="pc-page__dialog-actions">
           <q-btn flat no-caps label="Cancel" color="grey-7" v-close-popup />
           <q-btn
-            unelevated
-            no-caps
+            unelevated no-caps
             :label="isEditing ? 'Save Changes' : 'Create Category'"
             class="clay-btn clay-btn--primary"
             :loading="saving"
@@ -185,26 +157,16 @@
           <span class="pc-page__dialog-title">Delete Category</span>
         </q-card-section>
         <q-card-section class="pc-page__dialog-body">
-          <p>
-            Are you sure you want to delete <strong>{{ deleteTarget?.categories }}</strong> ({{
-              deleteTarget?.type
-            }})?
-          </p>
+          <p>Are you sure you want to delete <strong>{{ deleteTarget?.categories }}</strong> ({{ deleteTarget?.type }})?</p>
           <p class="pc-page__delete-warn">This action cannot be undone.</p>
         </q-card-section>
         <q-card-actions align="right" class="pc-page__dialog-actions">
           <q-btn flat no-caps label="Cancel" color="grey-7" v-close-popup />
-          <q-btn
-            unelevated
-            no-caps
-            label="Delete"
-            color="negative"
-            :loading="deleting"
-            @click="deleteCategory"
-          />
+          <q-btn unelevated no-caps label="Delete" color="negative" :loading="deleting" @click="deleteCategory" />
         </q-card-actions>
       </q-card>
     </q-dialog>
+
   </q-page>
 </template>
 
@@ -216,17 +178,17 @@ import { api } from '../../boot/axios'
 const $q = useQuasar()
 
 // ── State ─────────────────────────────────────────────────────
-const loading = ref(false)
-const saving = ref(false)
+const loading  = ref(false)
+const saving   = ref(false)
 const deleting = ref(false)
-const search = ref('')
+const search   = ref('')
 const filterType = ref(null)
-const rows = ref([])
+const rows     = ref([])
 
-const showDialog = ref(false)
+const showDialog       = ref(false)
 const showDeleteDialog = ref(false)
-const isEditing = ref(false)
-const deleteTarget = ref(null)
+const isEditing        = ref(false)
+const deleteTarget     = ref(null)
 
 const pagination = ref({ sortBy: 'type', descending: false, page: 1, rowsPerPage: 12 })
 
@@ -236,25 +198,26 @@ let editingId = null
 
 // ── Columns ───────────────────────────────────────────────────
 const columns = [
-  { name: 'id', label: '#', field: 'id', align: 'left', sortable: true },
-  { name: 'type', label: 'Type', field: 'type', align: 'left', sortable: true },
-  { name: 'categories', label: 'Category', field: 'categories', align: 'left', sortable: true },
-  { name: 'actions', label: 'Actions', field: 'actions', align: 'center' },
+  { name: 'id',         label: '#',        field: 'id',         align: 'left',   sortable: true },
+  { name: 'type',       label: 'Type',     field: 'type',       align: 'left',   sortable: true },
+  { name: 'categories', label: 'Category', field: 'categories', align: 'left',   sortable: true },
+  { name: 'actions',   label: 'Actions',  field: 'actions',   align: 'center' },
 ]
 
 // ── Computed ──────────────────────────────────────────────────
 const typeFilterOptions = computed(() => {
-  const types = [...new Set(rows.value.map((r) => r.type))]
-  return types.map((t) => ({ label: t, value: t }))
+  const types = [...new Set(rows.value.map(r => r.type))]
+  return types.map(t => ({ label: t, value: t }))
 })
 
 const filteredRows = computed(() => {
   let data = rows.value
-  if (filterType.value) data = data.filter((r) => r.type === filterType.value)
+  if (filterType.value) data = data.filter(r => r.type === filterType.value)
   if (search.value) {
     const q = search.value.toLowerCase()
-    data = data.filter(
-      (r) => r.type?.toLowerCase().includes(q) || r.categories?.toLowerCase().includes(q),
+    data = data.filter(r =>
+      r.type?.toLowerCase().includes(q) ||
+      r.categories?.toLowerCase().includes(q)
     )
   }
   return data
@@ -412,9 +375,7 @@ onMounted(fetchCategories)
     max-width: 95vw;
     padding: 0;
 
-    &--danger {
-      max-width: 400px;
-    }
+    &--danger { max-width: 400px; }
   }
 
   &__dialog-head {
@@ -468,13 +429,9 @@ onMounted(fetchCategories)
   color: $min-text-soft;
   background: $min-surface;
   border: 1px solid $min-border;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 
-  &--total {
-    color: $accent-login;
-    border-color: rgba($accent-login, 0.3);
-    background: #f0fdf4;
-  }
+  &--total { color: $accent-login; border-color: rgba($accent-login, 0.3); background: #f0fdf4; }
 }
 
 // ── Type Badge ────────────────────────────────────────────────
@@ -502,9 +459,7 @@ onMounted(fetchCategories)
   padding: 8px;
   color: $min-text;
 
-  :deep(thead tr) {
-    background: transparent;
-  }
+  :deep(thead tr) { background: transparent; }
   :deep(th) {
     color: $min-text-soft;
     font-weight: 600;
@@ -513,29 +468,19 @@ onMounted(fetchCategories)
     letter-spacing: 0.03em;
     border-bottom: 1px solid $min-border;
   }
-  :deep(td) {
-    color: $min-text;
-    border-bottom: 1px solid $min-border-strong;
-  }
+  :deep(td) { color: $min-text; border-bottom: 1px solid $min-border-strong; }
   :deep(tbody tr) {
     transition: background 0.15s ease;
     &:hover {
       background: $min-bg;
     }
-    &:last-child td {
-      border-bottom: none;
-    }
+    &:last-child td { border-bottom: none; }
   }
-  :deep(.q-table__bottom) {
-    color: $min-text-soft;
-    border-top: 1px solid $min-border;
-  }
+  :deep(.q-table__bottom) { color: $min-text-soft; border-top: 1px solid $min-border; }
 }
 
 // ── Buttons ───────────────────────────────────────────────────
 .clay-btn {
-  &--primary {
-    @include min-button($accent-login);
-  }
+  &--primary { @include min-button($accent-login); }
 }
 </style>

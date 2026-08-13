@@ -1,589 +1,481 @@
 @import '../../css/themes.scss';
 
 .dash {
-  padding: 32px;
-  background: $min-bg;
-  min-height: 100vh;
+    padding: 32px;
+    background: $min-bg;
+    min-height: 100vh;
 
-  // ── Top Bar ──────────────────────────────────────────────────
-  &__topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  &__topbar-left {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0px;
-    min-width: 0;
-  }
-
-  &__title {
-    color: $min-text;
-    font-weight: 800;
-    font-family: 'Nunito', sans-serif;
-    font-size: 1.2rem;
-    margin: 0;
-    line-height: 1.3;
-  }
-
-  &__subtitle {
-    color: $min-text-soft;
-    font-size: 0.8rem;
-    margin-top: 1px;
-
-    strong {
-      color: $min-text;
-      font-weight: 700;
+    // ── Top Bar ──────────────────────────────────────────────────
+    &__topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        gap: 16px;
+        flex-wrap: wrap;
     }
-  }
 
-  &__topbar-actions {
-    display: flex;
-    gap: 10px;
-  }
-
-  // ── KPI Row ──────────────────────────────────────────────────
-  &__kpi-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-    margin-bottom: 24px;
-  }
-
-  // ── Chart Grid ───────────────────────────────────────────────
-  &__grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 24px;
-
-    @media (max-width: 900px) {
-      grid-template-columns: 1fr;
+    &__title {
+        color: $min-text;
+        font-weight: 800;
+        font-family: 'Nunito', sans-serif;
+        font-size: 1.5rem;
+        margin: 0;
     }
-  }
 
-  // ── Quick Actions ────────────────────────────────────────────
-  &__section-label {
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: $min-text-soft;
-    margin-bottom: 12px;
-  }
+    &__subtitle {
+        color: $min-text-soft;
+        font-size: 0.88rem;
+        margin-top: 4px;
 
-  &__actions {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 14px;
-  }
+        strong {
+            color: $min-text;
+            font-weight: 700;
+        }
+    }
+
+    &__topbar-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    // ── KPI Row ──────────────────────────────────────────────────
+    &__kpi-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    // ── Chart Grid ───────────────────────────────────────────────
+    &__grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+
+        @media (max-width: 900px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    // ── Quick Actions ────────────────────────────────────────────
+    &__section-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: $min-text-soft;
+        margin-bottom: 12px;
+    }
+
+    &__actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 14px;
+    }
 }
 
 // ── KPI Card ─────────────────────────────────────────────────────
 .kpi-card {
-  @include min-card();
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  &__header {
+    @include min-card();
+    padding: 18px 20px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  &__label {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: $min-text-soft;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  &__icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  &__value {
-    font-size: 1.7rem;
-    font-weight: 800;
-    color: $min-text;
-    font-family: 'Nunito', sans-serif;
-    line-height: 1.1;
-    min-height: 34px;
-    display: flex;
-    align-items: center;
-  }
-
-  &__footer {
-    display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 6px;
-    margin-top: 4px;
-    position: relative;
-  }
 
-  &__trend {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    font-size: 0.78rem;
-    font-weight: 700;
-
-    &--up {
-      color: $positive;
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
 
-    &--down {
-      color: #ef4444;
+    &__label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: $min-text-soft;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
     }
-  }
 
-  &__period {
-    font-size: 0.72rem;
-    color: $min-text-soft;
-  }
+    &__icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-  &__spark {
-    margin-left: auto;
-    width: 72px;
-    height: 22px;
-  }
+    &__value {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: $min-text;
+        font-family: 'Nunito', sans-serif;
+        line-height: 1.1;
+        min-height: 34px;
+        display: flex;
+        align-items: center;
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+        position: relative;
+    }
+
+    &__trend {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        font-size: 0.78rem;
+        font-weight: 700;
+
+        &--up {
+            color: $positive;
+        }
+
+        &--down {
+            color: #ef4444;
+        }
+    }
+
+    &__period {
+        font-size: 0.72rem;
+        color: $min-text-soft;
+    }
+
+    &__spark {
+        margin-left: auto;
+        width: 72px;
+        height: 22px;
+    }
 }
 
 // ── Panel (shared chart / list / table container) ────────────────
 .panel {
-  @include min-card();
-  padding: 20px;
+    @include min-card();
+    padding: 20px;
 
-  &__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-    gap: 8px;
-  }
-
-  &__head-left {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-  }
-
-  &__title {
-    font-size: 0.95rem;
-    font-weight: 800;
-    color: $min-text;
-    font-family: 'Nunito', sans-serif;
-  }
-
-  &__sub {
-    font-size: 0.76rem;
-    color: $min-text-soft;
-  }
-
-  &__link {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: $accent-login;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
+    &__head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 16px;
     }
-  }
 
-  &__empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 40px 0;
-    color: $min-text-soft;
-    font-size: 0.85rem;
-  }
+    &__title {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: $min-text;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    &__sub {
+        font-size: 0.76rem;
+        color: $min-text-soft;
+    }
+
+    &__link {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: $accent-login;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 40px 0;
+        color: $min-text-soft;
+        font-size: 0.85rem;
+    }
 }
 
 // ── Donut Chart ────────────────────────────────────────────────
 .donut-wrap {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
 }
 
 .donut {
-  width: 140px;
-  height: 140px;
-  flex-shrink: 0;
-  transform: rotate(0deg);
+    width: 140px;
+    height: 140px;
+    flex-shrink: 0;
+    transform: rotate(0deg);
 
-  circle {
-    transform-origin: 60px 60px;
-  }
+    circle {
+        transform-origin: 60px 60px;
+    }
 
-  &__num {
-    font-size: 1.15rem;
-    font-weight: 800;
-    fill: $min-text;
-    font-family: 'Nunito', sans-serif;
-  }
+    &__num {
+        font-size: 1.15rem;
+        font-weight: 800;
+        fill: $min-text;
+        font-family: 'Nunito', sans-serif;
+    }
 
-  &__label-text {
-    font-size: 0.55rem;
-    fill: $min-text-soft;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
+    &__label-text {
+        font-size: 0.55rem;
+        fill: $min-text-soft;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
 }
 
 .donut-legend {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex: 1;
-  min-width: 140px;
-
-  &__item {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.82rem;
-  }
-
-  &__dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  &__name {
-    color: $min-text;
+    flex-direction: column;
+    gap: 10px;
     flex: 1;
-  }
+    min-width: 140px;
 
-  &__val {
-    color: $min-text-soft;
-    font-weight: 700;
-  }
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.82rem;
+    }
+
+    &__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    &__name {
+        color: $min-text;
+        flex: 1;
+    }
+
+    &__val {
+        color: $min-text-soft;
+        font-weight: 700;
+    }
 }
 
 // ── Horizontal Bar Chart ─────────────────────────────────────────
 .hbar-chart {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .hbar {
-  &__label-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 0.82rem;
-  }
+    &__label-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 6px;
+        font-size: 0.82rem;
+    }
 
-  &__name {
-    color: $min-text;
-    font-weight: 600;
-  }
+    &__name {
+        color: $min-text;
+        font-weight: 600;
+    }
 
-  &__count {
-    color: $min-text-soft;
-    font-weight: 700;
-  }
+    &__count {
+        color: $min-text-soft;
+        font-weight: 700;
+    }
 
-  &__track {
-    width: 100%;
-    height: 8px;
-    border-radius: 4px;
-    background: $min-surface;
-    overflow: hidden;
-  }
+    &__track {
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: $min-surface;
+        overflow: hidden;
+    }
 
-  &__fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease;
-  }
+    &__fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s ease;
+    }
 }
 
-// ── Unified Clean Table ──────────────────────────────────────────────────
-.clean-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  &__th {
-    text-align: left;
-    padding: 0 10px 10px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: $min-text-soft;
-    border-bottom: 1px solid $min-border;
-
-    &--right {
-      text-align: right;
-    }
-
-    &--num {
-      width: 32px;
-      text-align: center;
-    }
-  }
-
-  &__row {
-    transition: background 0.12s ease;
-
-    &:last-child .clean-table__td {
-      border-bottom: none;
-    }
-
-    &:hover {
-      background: $min-bg;
-    }
-  }
-
-  &__td {
-    padding: 10px 10px;
-    border-bottom: 1px solid $min-border;
-    vertical-align: middle;
-    font-size: 0.84rem;
-    color: $min-text;
-
-    &--right {
-      text-align: right;
-    }
-
-    &--rank {
-      width: 32px;
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: $min-text-soft;
-      text-align: center;
-    }
-  }
-
-  // Text helpers
-  &__cell-main {
-    font-size: 0.84rem;
-    font-weight: 600;
-    color: $min-text;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
-    display: block;
-  }
-
-  &__cell-sub {
-    font-size: 0.73rem;
-    color: $min-text-soft;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px;
-    display: block;
-    margin-top: 1px;
-  }
-
-  // Avatar + name row (Recent Users)
-  &__user {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  &__user-info {
+// ── Problem Category List ─────────────────────────────────────────
+.cat-list {
     display: flex;
     flex-direction: column;
-    min-width: 0;
-  }
+    gap: 4px;
 
-  &__avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.72rem;
-    font-weight: 800;
-    flex-shrink: 0;
-    text-transform: uppercase;
-    background: #e0e7ff;
-    color: $primary-blue;
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 4px;
+        border-bottom: 1px solid $min-border;
 
-    &--admin {
-      background: #dbeafe;
-      color: #1d4ed8;
+        &:last-child {
+            border-bottom: none;
+        }
     }
 
-    &--staff {
-      background: #f3e8ff;
-      color: #7c3aed;
+    &__rank {
+        font-size: 0.76rem;
+        font-weight: 800;
+        color: $min-text-soft;
+        width: 26px;
+        flex-shrink: 0;
     }
 
-    &--user {
-      background: #dcfce7;
-      color: #15803d;
+    &__info {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
     }
-  }
+
+    &__name {
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: $min-text;
+    }
+
+    &__type {
+        font-size: 0.72rem;
+        color: $min-text-soft;
+        text-transform: capitalize;
+    }
 }
 
-// ── Type Chip (categories) ───────────────────────────────────────────────
-.type-chip {
-  display: inline-block;
-  padding: 2px 9px;
-  border-radius: 20px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-transform: capitalize;
-  letter-spacing: 0.02em;
-  background: #f1f5f9;
-  color: $min-text-soft;
-  border: 1px solid $min-border;
-  white-space: nowrap;
-}
+// ── Recent Users Mini Table ───────────────────────────────────────
+.mini-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
 
-// ── Status Pill (users) ──────────────────────────────────────────────────
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 9px;
-  border-radius: 20px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  white-space: nowrap;
-  background: #f1f5f9;
-  color: $min-text-soft;
+    th {
+        text-align: left;
+        padding: 8px 10px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: $min-text-soft;
+        border-bottom: 1px solid $min-border;
+    }
 
-  &__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    background: currentColor;
-  }
+    td {
+        padding: 11px 10px;
+        color: $min-text;
+        border-bottom: 1px solid $min-border;
+        vertical-align: middle;
+    }
 
-  &--active {
-    background: #dcfce7;
-    color: #15803d;
-  }
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
 
-  &--inactive {
-    background: #f1f5f9;
-    color: #94a3b8;
-  }
+    tbody tr {
+        transition: background 0.15s;
 
-  &--suspended {
-    background: #fef9c3;
-    color: #92400e;
-  }
+        &:hover {
+            background: $min-bg;
+        }
+    }
 
-  &--archived {
-    background: #fee2e2;
-    color: #b91c1c;
-  }
+    &__name {
+        font-weight: 700;
+    }
+
+    &__email {
+        color: $min-text-soft;
+        font-size: 0.8rem;
+    }
 }
 
 .role-badge {
-  padding: 3px 9px;
-  border-radius: 6px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: #fff;
-  background: $min-text-soft;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #fff;
+    background: $min-text-soft;
 
-  &--admin {
-    background: $accent-login;
-  }
+    &--admin {
+        background: $accent-login;
+    }
 
-  &--staff {
-    background: #a855f7;
-  }
+    &--staff {
+        background: #a855f7;
+    }
 
-  &--user {
-    background: $positive;
-  }
+    &--user {
+        background: $positive;
+    }
 }
 
 .status-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: $min-text-soft;
-  margin-right: 4px;
-
-  &--active {
-    background: $positive;
-  }
-
-  &--inactive {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
     background: $min-text-soft;
-  }
+    margin-right: 4px;
 
-  &--suspended {
-    background: #f59e0b;
-  }
+    &--active {
+        background: $positive;
+    }
 
-  &--archived {
-    background: #ef4444;
-  }
+    &--inactive {
+        background: $min-text-soft;
+    }
+
+    &--suspended {
+        background: #f59e0b;
+    }
+
+    &--archived {
+        background: #ef4444;
+    }
 }
 
 // ── Quick Action Cards ────────────────────────────────────────────
 .action-card {
-  @include min-card();
-  padding: 20px 20px;
-  display: flex;
-  margin-bottom: 5%;
-  flex-direction: column;
-  gap: 6px;
-  text-decoration: none;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
+    @include min-card();
+    padding: 20px 20px;
+    display: flex;
+    margin-bottom: 5%;
+    flex-direction: column;
+    gap: 6px;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.1);
-  }
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.1);
+    }
 
-  &__icon {
-    color: $accent-login;
-    margin-bottom: 4px;
-  }
+    &__icon {
+        color: $accent-login;
+        margin-bottom: 4px;
+    }
 
-  &__label {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: $min-text;
-    font-family: 'Nunito', sans-serif;
-  }
+    &__label {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: $min-text;
+        font-family: 'Nunito', sans-serif;
+    }
 
-  &__desc {
-    font-size: 0.76rem;
-    color: $min-text-soft;
-    line-height: 1.35;
-  }
+    &__desc {
+        font-size: 0.76rem;
+        color: $min-text-soft;
+        line-height: 1.35;
+    }
 }

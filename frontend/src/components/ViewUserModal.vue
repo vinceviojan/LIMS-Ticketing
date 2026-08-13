@@ -6,7 +6,8 @@
     transition-show="scale"
     transition-hide="scale"
   >
-    <q-card class="view-user-modal" style="width: 820px; max-width: 95vw; border-radius: 16px">
+    <q-card class="view-user-modal" style="width: 820px; max-width: 95vw; border-radius: 16px;">
+
       <!-- ── Header ─────────────────────────────────────────────── -->
       <q-card-section class="bg-white q-pa-md row items-center justify-between border-bottom">
         <div class="row items-center gap-sm">
@@ -14,12 +15,8 @@
             <q-icon name="manage_accounts" size="22px" color="primary" />
           </div>
           <div>
-            <div class="text-subtitle1 text-weight-bold text-grey-10 line-height-tight">
-              User Account Details
-            </div>
-            <div class="text-caption text-grey-6">
-              Detailed user profile and system access permissions
-            </div>
+            <div class="text-subtitle1 text-weight-bold text-grey-10 line-height-tight">User Account Details</div>
+            <div class="text-caption text-grey-6">Detailed user profile and system access permissions</div>
           </div>
         </div>
         <q-btn flat round dense icon="close" color="grey-6" @click="closeModal" />
@@ -28,16 +25,15 @@
       <q-separator />
 
       <!-- ── Body ────────────────────────────────────────────────── -->
-      <q-card-section class="q-pa-lg" style="max-height: 65vh; overflow-y: auto">
+      <q-card-section class="q-pa-lg" style="max-height: 65vh; overflow-y: auto;">
+
         <!-- 1st Row: Full Name & Email -->
         <div class="row q-col-gutter-md q-mb-md">
           <div class="col-12 col-sm-6">
             <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Full Name</label>
             <q-input
               :model-value="fullName"
-              outlined
-              dense
-              readonly
+              outlined dense readonly
               bg-color="grey-1"
               input-class="text-weight-bold text-grey-9"
             >
@@ -48,14 +44,10 @@
           </div>
 
           <div class="col-12 col-sm-6">
-            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs"
-              >Email Address</label
-            >
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Email Address</label>
             <q-input
               :model-value="user?.email || '—'"
-              outlined
-              dense
-              readonly
+              outlined dense readonly
               bg-color="grey-1"
               input-class="text-weight-bold text-grey-9"
             >
@@ -73,9 +65,7 @@
             <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Role</label>
             <q-input
               :model-value="user?.role || '—'"
-              outlined
-              dense
-              readonly
+              outlined dense readonly
               bg-color="grey-1"
               :input-style="{ color: roleColor, fontWeight: '700' }"
             >
@@ -87,14 +77,10 @@
 
           <!-- Status -->
           <div class="col-12 col-sm-6">
-            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs"
-              >Account Status</label
-            >
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Account Status</label>
             <q-input
               :model-value="user?.status || '—'"
-              outlined
-              dense
-              readonly
+              outlined dense readonly
               bg-color="grey-1"
               :input-style="{ color: statusColor, fontWeight: '700' }"
             >
@@ -111,9 +97,7 @@
             <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Division</label>
             <q-input
               :model-value="user?.division?.name || 'Laboratory Services Division'"
-              outlined
-              dense
-              readonly
+              outlined dense readonly
               bg-color="grey-1"
               input-class="text-weight-medium text-grey-9"
             >
@@ -127,9 +111,7 @@
             <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Section</label>
             <q-input
               :model-value="user?.section?.name || 'Unassigned'"
-              outlined
-              dense
-              readonly
+              outlined dense readonly
               bg-color="grey-1"
               input-class="text-weight-medium text-grey-9"
             >
@@ -146,9 +128,7 @@
             <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Position</label>
             <q-input
               :model-value="user?.position || '—'"
-              outlined
-              dense
-              readonly
+              outlined dense readonly
               bg-color="grey-1"
               input-class="text-weight-medium text-grey-9"
             >
@@ -159,14 +139,10 @@
           </div>
 
           <div class="col-12 col-sm-6">
-            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs"
-              >Tickets Created</label
-            >
+            <label class="form-label text-weight-bold text-grey-8 block q-mb-xs">Tickets Created</label>
             <q-input
               :model-value="ticketsCreatedDisplay"
-              outlined
-              dense
-              readonly
+              outlined dense readonly
               bg-color="grey-1"
               input-class="text-weight-bold text-grey-9"
             >
@@ -176,6 +152,7 @@
             </q-input>
           </div>
         </div>
+
       </q-card-section>
 
       <q-separator />
@@ -184,8 +161,7 @@
       <q-card-actions align="right" class="q-pa-md bg-grey-1 gap-sm">
         <q-btn flat no-caps label="Close" color="grey-7" @click="closeModal" />
         <q-btn
-          unelevated
-          no-caps
+          unelevated no-caps
           color="primary"
           icon="edit"
           label="Edit User"
@@ -202,7 +178,7 @@ import { computed } from 'vue'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
-  user: { type: Object, default: () => ({}) },
+  user:       { type: Object, default: () => ({}) },
 })
 
 const emit = defineEmits(['update:modelValue', 'edit'])
@@ -245,8 +221,7 @@ const statusColor = computed(() => {
 
 const ticketsCreatedDisplay = computed(() => {
   if (!props.user) return '0 Tickets'
-  const count =
-    props.user.tickets_count ?? props.user.tickets?.length ?? props.user.created_tickets_count ?? 0
+  const count = props.user.tickets_count ?? props.user.tickets?.length ?? props.user.created_tickets_count ?? 0
   return `${count} ${count === 1 ? 'Ticket' : 'Tickets'}`
 })
 </script>
@@ -262,16 +237,12 @@ const ticketsCreatedDisplay = computed(() => {
   justify-content: center;
 }
 
-.line-height-tight {
-  line-height: 1.2;
-}
+.line-height-tight { line-height: 1.2; }
 
 .form-label {
   font-size: 0.85rem;
   display: block;
 }
 
-.gap-sm {
-  gap: 8px;
-}
+.gap-sm { gap: 8px; }
 </style>

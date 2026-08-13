@@ -2,6 +2,7 @@
   <div class="login-wrapper">
     <!-- Main 2-Column Container -->
     <div class="login-card">
+      
       <!-- Left Column: Inner Rounded Graphic Card -->
       <div class="login-left-card">
         <!-- Watermark Logo -->
@@ -9,7 +10,7 @@
 
         <div class="left-header">
           <div class="brand-mark">
-            <img src="../../assets/bswm-logo.png" alt="BSWM Logo" class="brand-mark-logo" />
+            <img src="../../assets/bswm-logo-sidebar.png" alt="BSWM Logo" class="brand-mark-logo" />
             <span class="brand-mark-title">LIMS Helpdesk</span>
           </div>
         </div>
@@ -18,7 +19,7 @@
           <div class="brand-title-group">
             <h1 class="agency-title">Bureau of Soils and Water Management</h1>
             <div class="division-badge">
-              <q-icon name="science" size="35px" class="q-mr-xs" />
+              <q-icon name="science" size="16px" class="q-mr-xs" />
               <span>Laboratory Services Division</span>
             </div>
           </div>
@@ -29,7 +30,7 @@
                 <q-icon name="confirmation_number" size="20px" />
               </div>
               <div class="feature-info">
-                <span class="feature-heading">Continuous Ticket Tracking</span>
+                <span class="feature-heading">Seamless Ticket Tracking</span>
                 <span class="feature-subtext">Monitor lab requests end-to-end</span>
               </div>
             </div>
@@ -39,7 +40,7 @@
                 <q-icon name="verified_user" size="20px" />
               </div>
               <div class="feature-info">
-                <span class="feature-heading">User Access Security</span>
+                <span class="feature-heading">User Access Security (UAS)</span>
                 <span class="feature-subtext">Strict compliance & authority standards</span>
               </div>
             </div>
@@ -55,6 +56,7 @@
             </div>
           </div>
         </div>
+
       </div>
 
       <!-- Right Column: Login Form -->
@@ -72,11 +74,7 @@
           </div>
 
           <!-- Error Alert -->
-          <q-banner
-            v-if="authStore.error"
-            class="bg-negative text-white q-mb-lg rounded-borders shadow-2"
-            dense
-          >
+          <q-banner v-if="authStore.error" class="bg-negative text-white q-mb-lg rounded-borders shadow-2" dense>
             <template v-slot:avatar>
               <q-icon name="warning" color="white" size="xs" />
             </template>
@@ -156,8 +154,10 @@
               </div>
             </div>
           </q-form>
+
         </div>
       </div>
+
     </div>
   </div>
 </template>

@@ -20,39 +20,39 @@ const TEMPLATE_URL = new URL('./TicketForm.html', import.meta.url)
 // ================================================================
 
 const FIELD_KEYS = [
-  'ISSUE',
-  'TICKET_ID',
-  'DATE_CREATED',
-  'NEW_STATUS',
-  'URGENCY_LEVEL',
-  'TARGET_RESOLUTION',
+    'ISSUE',
+    'TICKET_ID',
+    'DATE_CREATED',
+    'NEW_STATUS',
+    'URGENCY_LEVEL',
+    'TARGET_RESOLUTION',
 
-  'REQUESTED_BY',
-  'OFFICE',
-  'EMAIL',
-  'FULL_NAME',
+    'REQUESTED_BY',
+    'OFFICE',
+    'EMAIL',
+    'FULL_NAME',
 
-  'PLEASE_SPECIFY',
+    'PLEASE_SPECIFY',
 
-  'ASSIGNED_TO',
-  'DATE_ACTION',
-  'DATE_CLOSE',
+    'ASSIGNED_TO',
+    'DATE_ACTION',
+    'DATE_CLOSE',
 
-  'RESOLUTION_REMARKS',
-  'FINAL_REMARKS',
+    'RESOLUTION_REMARKS',
+    'FINAL_REMARKS',
 
-  'POSITION',
+    'POSITION',
 
-  'APPROVED_BY',
-  'APPROVED_POSITION',
+    'APPROVED_BY',
+    'APPROVED_POSITION',
 
-  'DATE_CLOSED',
-  'CLOSED_DATE',
+    'DATE_CLOSED',
+    'CLOSED_DATE',
 
-  'REF_CODE',
-  'EFFECTIVE_DATE',
-  'REV_NO',
-  'PAGE_NO',
+    'REF_CODE',
+    'EFFECTIVE_DATE',
+    'REV_NO',
+    'PAGE_NO',
 ]
 
 // ================================================================
@@ -60,95 +60,173 @@ const FIELD_KEYS = [
 // ================================================================
 
 export function mapTicketToFields(ticket = {}) {
-  return {
-    // ----------------------------------------------------------
-    // TICKET INFORMATION
-    // ----------------------------------------------------------
+    return {
+        // ----------------------------------------------------------
+        // TICKET INFORMATION
+        // ----------------------------------------------------------
 
-    ISSUE: ticket.category ?? ticket.issue ?? '',
+        ISSUE:
+            ticket.category ??
+            ticket.issue ??
+            '',
 
-    TICKET_ID: ticket.ticket_no ?? ticket.ticketNo ?? (ticket.id != null ? `#${ticket.id}` : ''),
+        TICKET_ID:
+            ticket.ticket_no ??
+            ticket.ticketNo ??
+            (ticket.id != null ? `#${ticket.id}` : ''),
 
-    DATE_CREATED: ticket.created ?? ticket.created_at ?? ticket.dateCreated ?? '',
+        DATE_CREATED:
+            ticket.created ??
+            ticket.created_at ??
+            ticket.dateCreated ??
+            '',
 
-    NEW_STATUS: ticket.status ?? '',
+        NEW_STATUS:
+            ticket.status ??
+            '',
 
-    URGENCY_LEVEL: ticket.priority ?? ticket.urgency_level ?? ticket.urgencyLevel ?? '',
+        URGENCY_LEVEL:
+            ticket.priority ??
+            ticket.urgency_level ??
+            ticket.urgencyLevel ??
+            '',
 
-    TARGET_RESOLUTION:
-      ticket.targetResolution ?? ticket.target_resolution_date ?? ticket.target_resolution ?? '',
+        TARGET_RESOLUTION:
+            ticket.targetResolution ??
+            ticket.target_resolution_date ??
+            ticket.target_resolution ??
+            '',
 
-    // ----------------------------------------------------------
-    // END USER DETAILS
-    // ----------------------------------------------------------
+        // ----------------------------------------------------------
+        // END USER DETAILS
+        // ----------------------------------------------------------
 
-    REQUESTED_BY: ticket.requester ?? ticket.requestedBy ?? '',
+        REQUESTED_BY:
+            ticket.requester ??
+            ticket.requestedBy ??
+            '',
 
-    OFFICE: ticket.office ?? ticket.affiliation ?? '',
+        OFFICE:
+            ticket.office ??
+            ticket.affiliation ??
+            '',
 
-    EMAIL: ticket.email ?? ticket.requesterEmail ?? '',
+        EMAIL:
+            ticket.email ??
+            ticket.requesterEmail ??
+            '',
 
-    FULL_NAME: ticket.requesterFullName ?? ticket.fullName ?? ticket.requester ?? '',
+        FULL_NAME:
+            ticket.requesterFullName ??
+            ticket.fullName ??
+            ticket.requester ??
+            '',
 
-    // ----------------------------------------------------------
-    // DESCRIPTION
-    // ----------------------------------------------------------
+        // ----------------------------------------------------------
+        // DESCRIPTION
+        // ----------------------------------------------------------
 
-    PLEASE_SPECIFY: ticket.description ?? ticket.details ?? ticket.pleaseSpecify ?? '',
+        PLEASE_SPECIFY:
+            ticket.description ??
+            ticket.details ??
+            ticket.pleaseSpecify ??
+            '',
 
-    // ----------------------------------------------------------
-    // RESOLUTION
-    // ----------------------------------------------------------
+        // ----------------------------------------------------------
+        // RESOLUTION
+        // ----------------------------------------------------------
 
-    ASSIGNED_TO: ticket.assignedStaff ?? ticket.assigned_to ?? ticket.assignedTo ?? 'Unassigned',
+        ASSIGNED_TO:
+            ticket.assignedStaff ??
+            ticket.assigned_to ??
+            ticket.assignedTo ??
+            'Unassigned',
 
-    DATE_ACTION: ticket.dateAction ?? ticket.date_action ?? '',
+        DATE_ACTION:
+            ticket.dateAction ??
+            ticket.date_action ??
+            '',
 
-    DATE_CLOSE:
-      ticket.dateClose ?? ticket.date_close ?? ticket.date_closed ?? ticket.approvalDate ?? '',
+        DATE_CLOSE:
+            ticket.dateClose ??
+            ticket.date_close ??
+            ticket.date_closed ??
+            ticket.approvalDate ??
+            '',
 
-    RESOLUTION_REMARKS:
-      ticket.remarks ?? ticket.resolutionRemarks ?? ticket.resolution_remarks ?? '',
+        RESOLUTION_REMARKS:
+            ticket.remarks ??
+            ticket.resolutionRemarks ??
+            ticket.resolution_remarks ??
+            '',
 
-    FINAL_REMARKS: ticket.finalRemarks ?? ticket.final_remarks ?? '',
+        FINAL_REMARKS:
+            ticket.finalRemarks ??
+            ticket.final_remarks ??
+            '',
 
-    // ----------------------------------------------------------
-    // TROUBLESHOOTER
-    // ----------------------------------------------------------
+        // ----------------------------------------------------------
+        // TROUBLESHOOTER
+        // ----------------------------------------------------------
 
-    POSITION: ticket.assignedPosition ?? ticket.position ?? '',
+        POSITION:
+            ticket.assignedPosition ??
+            ticket.position ??
+            '',
 
-    // ----------------------------------------------------------
-    // APPROVAL
-    //
-    // No predefined position is used.
-    // The approval position comes directly from the ticket.
-    // ----------------------------------------------------------
+        // ----------------------------------------------------------
+        // APPROVAL
+        //
+        // No predefined position is used.
+        // The approval position comes directly from the ticket.
+        // ----------------------------------------------------------
 
-    APPROVED_BY: ticket.approvedBy ?? ticket.approved_by ?? '',
+        APPROVED_BY:
+            ticket.approvedBy ??
+            ticket.approved_by ??
+            '',
 
-    APPROVED_POSITION: ticket.approvedPosition ?? ticket.approved_position ?? '',
+        APPROVED_POSITION:
+            ticket.approvedPosition ??
+            ticket.approved_position ??
+            '',
 
-    // ----------------------------------------------------------
-    // CLOSING
-    // ----------------------------------------------------------
+        // ----------------------------------------------------------
+        // CLOSING
+        // ----------------------------------------------------------
 
-    DATE_CLOSED: ticket.dateClosed ?? ticket.date_closed ?? '',
+        DATE_CLOSED:
+            ticket.dateClosed ??
+            ticket.date_closed ??
+            '',
 
-    CLOSED_DATE: ticket.closedDate ?? ticket.closed_date ?? ticket.date_closed ?? '',
+        CLOSED_DATE:
+            ticket.closedDate ??
+            ticket.closed_date ??
+            ticket.date_closed ??
+            '',
 
-    // ----------------------------------------------------------
-    // FORM HEADER
-    // ----------------------------------------------------------
+        // ----------------------------------------------------------
+        // FORM HEADER
+        // ----------------------------------------------------------
 
-    REF_CODE: ticket.refCode ?? 'BSWM_LS_FR_0140',
+        REF_CODE:
+            ticket.refCode ??
+            'BSWM_LS_FR_0140',
 
-    EFFECTIVE_DATE: ticket.effectiveDate ?? 'September 12, 2025',
+        EFFECTIVE_DATE:
+            ticket.effectiveDate ??
+            'September 12, 2025',
 
-    REV_NO: ticket.revNo != null ? String(ticket.revNo) : '1',
+        REV_NO:
+            ticket.revNo != null
+                ? String(ticket.revNo)
+                : '1',
 
-    PAGE_NO: ticket.pageNo ?? '1 of 1',
-  }
+        PAGE_NO:
+            ticket.pageNo ??
+            '1 of 1',
+    }
 }
 
 // ================================================================
@@ -158,21 +236,24 @@ export function mapTicketToFields(ticket = {}) {
 let templateDocPromise = null
 
 async function loadTemplateDoc() {
-  if (!templateDocPromise) {
-    templateDocPromise = fetch(TEMPLATE_URL)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`TicketExport: Failed to load TicketForm.html (${response.status})`)
-        }
+    if (!templateDocPromise) {
+        templateDocPromise = fetch(TEMPLATE_URL)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(
+                        `TicketExport: Failed to load TicketForm.html (${response.status})`
+                    )
+                }
 
-        return response.text()
-      })
-      .then((html) => {
-        return new DOMParser().parseFromString(html, 'text/html')
-      })
-  }
+                return response.text()
+            })
+            .then((html) => {
+                return new DOMParser()
+                    .parseFromString(html, 'text/html')
+            })
+    }
 
-  return templateDocPromise
+    return templateDocPromise
 }
 
 // ================================================================
@@ -194,9 +275,12 @@ async function loadTemplateDoc() {
 // ================================================================
 
 function extractStyles(templateDoc) {
-  return Array.from(templateDoc.querySelectorAll('style'))
-    .map((style) => style.outerHTML)
-    .join('\n')
+    return Array
+        .from(
+            templateDoc.querySelectorAll('style')
+        )
+        .map((style) => style.outerHTML)
+        .join('\n')
 }
 
 // ================================================================
@@ -204,17 +288,27 @@ function extractStyles(templateDoc) {
 // ================================================================
 
 function cloneFormNode(templateDoc) {
-  const template = templateDoc.getElementById('lims-ticket-template')
+    const template =
+        templateDoc.getElementById(
+            'lims-ticket-template'
+        )
 
-  if (!template) {
-    throw new Error('TicketExport: #lims-ticket-template not found in TicketForm.html')
-  }
+    if (!template) {
+        throw new Error(
+            'TicketExport: #lims-ticket-template not found in TicketForm.html'
+        )
+    }
 
-  if (!template.content.firstElementChild) {
-    throw new Error('TicketExport: Ticket template is empty.')
-  }
+    if (!template.content.firstElementChild) {
+        throw new Error(
+            'TicketExport: Ticket template is empty.'
+        )
+    }
 
-  return template.content.firstElementChild.cloneNode(true)
+    return template
+        .content
+        .firstElementChild
+        .cloneNode(true)
 }
 
 // ================================================================
@@ -222,15 +316,22 @@ function cloneFormNode(templateDoc) {
 // ================================================================
 
 function fillFields(root, fields) {
-  FIELD_KEYS.forEach((key) => {
-    if (!(key in fields)) {
-      return
-    }
+    FIELD_KEYS.forEach((key) => {
+        if (!(key in fields)) {
+            return
+        }
 
-    root.querySelectorAll(`[data-field="${key}"]`).forEach((element) => {
-      element.textContent = fields[key] == null ? '' : String(fields[key])
+        root
+            .querySelectorAll(
+                `[data-field="${key}"]`
+            )
+            .forEach((element) => {
+                element.textContent =
+                    fields[key] == null
+                        ? ''
+                        : String(fields[key])
+            })
     })
-  })
 }
 
 // ================================================================
@@ -241,61 +342,97 @@ function fillFields(root, fields) {
 // ================================================================
 
 function setLogoSrc(root, src) {
-  const image = root.querySelector('[data-role="logo-img-1"]')
+    const image =
+        root.querySelector(
+            '[data-role="logo-img-1"]'
+        )
 
-  if (!image) {
-    return
-  }
+    if (!image) {
+        return
+    }
 
-  if (src) {
-    image.src = src
-    image.style.display = ''
-  } else {
-    image.style.display = 'none'
-  }
+    if (src) {
+        image.src = src
+        image.style.display = ''
+    } else {
+        image.style.display = 'none'
+    }
 }
 
 // ================================================================
 // BUILD FILLED FORM
 // ================================================================
 
-async function buildFilledFormNode(ticket, logos = {}) {
-  const templateDoc = await loadTemplateDoc()
+async function buildFilledFormNode(
+    ticket,
+    logos = {}
+) {
+    const templateDoc =
+        await loadTemplateDoc()
 
-  const node = cloneFormNode(templateDoc)
+    const node =
+        cloneFormNode(
+            templateDoc
+        )
 
-  const fields = mapTicketToFields(ticket)
+    const fields =
+        mapTicketToFields(
+            ticket
+        )
 
-  fillFields(node, fields)
+    fillFields(
+        node,
+        fields
+    )
 
-  // ------------------------------------------------------------
-  // Logo priority:
-  //
-  // 1. logos.logo1
-  // 2. ticket.logoUrl
-  // 3. TicketForm.html default BSWM_LOGO.png
-  // ------------------------------------------------------------
+    // ------------------------------------------------------------
+    // Logo priority:
+    //
+    // 1. logos.logo1
+    // 2. ticket.logoUrl
+    // 3. TicketForm.html default BSWM_LOGO.png
+    // ------------------------------------------------------------
 
-  const logo = logos.logo1 || ticket.logoUrl || new URL('./BSWM_LOGO.png', TEMPLATE_URL).href
+    const logo =
+        logos.logo1 ||
+        ticket.logoUrl ||
+        new URL(
+            './BSWM_LOGO.png',
+            TEMPLATE_URL
+        ).href
 
-  setLogoSrc(node, logo)
+    setLogoSrc(
+        node,
+        logo
+    )
 
-  return node
+    return node
 }
 
 // ================================================================
 // BUILD PRINT DOCUMENT
 // ================================================================
 
-async function buildPrintDocument(formNodes) {
-  const templateDoc = await loadTemplateDoc()
+async function buildPrintDocument(
+    formNodes
+) {
+    const templateDoc =
+        await loadTemplateDoc()
 
-  // Get the exact CSS from TicketForm.html.
-  const styles = extractStyles(templateDoc)
+    // Get the exact CSS from TicketForm.html.
+    const styles =
+        extractStyles(
+            templateDoc
+        )
 
-  const body = formNodes.map((node) => node.outerHTML).join('\n')
+    const body =
+        formNodes
+            .map(
+                (node) => node.outerHTML
+            )
+            .join('\n')
 
-  return `
+    return `
 <!DOCTYPE html>
 <html lang="en">
 
@@ -329,126 +466,209 @@ async function buildPrintDocument(formNodes) {
 // PRINT HTML DOCUMENT
 // ================================================================
 
-function printHtmlDocument(html) {
-  return new Promise((resolve, reject) => {
-    const iframe = document.createElement('iframe')
+function printHtmlDocument(
+    html
+) {
+    return new Promise(
+        (resolve, reject) => {
+            const iframe =
+                document.createElement(
+                    'iframe'
+                )
 
-    iframe.style.position = 'fixed'
+            iframe.style.position =
+                'fixed'
 
-    iframe.style.right = '0'
+            iframe.style.right =
+                '0'
 
-    iframe.style.bottom = '0'
+            iframe.style.bottom =
+                '0'
 
-    iframe.style.width = '0'
+            iframe.style.width =
+                '0'
 
-    iframe.style.height = '0'
+            iframe.style.height =
+                '0'
 
-    iframe.style.border = '0'
+            iframe.style.border =
+                '0'
 
-    iframe.style.visibility = 'hidden'
+            iframe.style.visibility =
+                'hidden'
 
-    document.body.appendChild(iframe)
+            document.body.appendChild(
+                iframe
+            )
 
-    const cleanup = () => {
-      setTimeout(() => {
-        iframe.remove()
-      }, 1000)
-    }
-
-    iframe.onload = () => {
-      try {
-        const win = iframe.contentWindow
-
-        const documentInsideIframe = iframe.contentDocument
-
-        if (!win || !documentInsideIframe) {
-          throw new Error('TicketExport: Unable to access print document.')
-        }
-
-        const images = Array.from(documentInsideIframe.images)
-
-        const waitForImages = Promise.all(
-          images.map((image) => {
-            if (image.complete) {
-              return Promise.resolve()
+            const cleanup = () => {
+                setTimeout(
+                    () => {
+                        iframe.remove()
+                    },
+                    1000
+                )
             }
 
-            return new Promise((resolveImage) => {
-              image.addEventListener('load', resolveImage, {
-                once: true,
-              })
+            iframe.onload = () => {
+                try {
+                    const win =
+                        iframe.contentWindow
 
-              image.addEventListener('error', resolveImage, {
-                once: true,
-              })
-            })
-          }),
-        )
+                    const documentInsideIframe =
+                        iframe.contentDocument
 
-        waitForImages.then(() => {
-          win.focus()
+                    if (
+                        !win ||
+                        !documentInsideIframe
+                    ) {
+                        throw new Error(
+                            'TicketExport: Unable to access print document.'
+                        )
+                    }
 
-          win.print()
+                    const images =
+                        Array.from(
+                            documentInsideIframe.images
+                        )
 
-          cleanup()
+                    const waitForImages =
+                        Promise.all(
+                            images.map(
+                                (image) => {
+                                    if (
+                                        image.complete
+                                    ) {
+                                        return Promise.resolve()
+                                    }
 
-          resolve()
-        })
-      } catch (error) {
-        cleanup()
+                                    return new Promise(
+                                        (resolveImage) => {
+                                            image.addEventListener(
+                                                'load',
+                                                resolveImage,
+                                                {
+                                                    once: true
+                                                }
+                                            )
 
-        reject(error)
-      }
-    }
+                                            image.addEventListener(
+                                                'error',
+                                                resolveImage,
+                                                {
+                                                    once: true
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        )
 
-    iframe.onerror = () => {
-      cleanup()
+                    waitForImages.then(
+                        () => {
+                            win.focus()
 
-      reject(new Error('TicketExport: Failed to load print document.'))
-    }
+                            win.print()
 
-    iframe.srcdoc = html
-  })
+                            cleanup()
+
+                            resolve()
+                        }
+                    )
+                } catch (error) {
+                    cleanup()
+
+                    reject(error)
+                }
+            }
+
+            iframe.onerror = () => {
+                cleanup()
+
+                reject(
+                    new Error(
+                        'TicketExport: Failed to load print document.'
+                    )
+                )
+            }
+
+            iframe.srcdoc =
+                html
+        }
+    )
 }
 
 // ================================================================
 // DOWNLOAD BLOB
 // ================================================================
 
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob)
+function downloadBlob(
+    blob,
+    filename
+) {
+    const url =
+        URL.createObjectURL(
+            blob
+        )
 
-  const anchor = document.createElement('a')
+    const anchor =
+        document.createElement(
+            'a'
+        )
 
-  anchor.href = url
+    anchor.href =
+        url
 
-  anchor.download = filename
+    anchor.download =
+        filename
 
-  document.body.appendChild(anchor)
+    document.body.appendChild(
+        anchor
+    )
 
-  anchor.click()
+    anchor.click()
 
-  anchor.remove()
+    anchor.remove()
 
-  setTimeout(() => {
-    URL.revokeObjectURL(url)
-  }, 100)
+    setTimeout(
+        () => {
+            URL.revokeObjectURL(
+                url
+            )
+        },
+        100
+    )
 }
 
 // ================================================================
 // EXPORT SINGLE TICKET TO PDF
 // ================================================================
 
-export async function exportTicketToPdf(ticket, logos) {
-  if (!ticket) {
-    throw new Error('No ticket provided for export.')
-  }
+export async function exportTicketToPdf(
+    ticket,
+    logos
+) {
+    if (!ticket) {
+        throw new Error(
+            'No ticket provided for export.'
+        )
+    }
 
-  const node = await buildFilledFormNode(ticket, logos)
+    const node =
+        await buildFilledFormNode(
+            ticket,
+            logos
+        )
 
-  const html = await buildPrintDocument([node])
+    const html =
+        await buildPrintDocument(
+            [node]
+        )
 
-  await printHtmlDocument(html)
+    await printHtmlDocument(
+        html
+    )
 }
 
 // ================================================================
@@ -466,59 +686,110 @@ export async function exportTicketToPdf(ticket, logos) {
 //
 // ================================================================
 
-export async function exportTicketsToPdf(tickets = [], getLogos) {
-  if (!tickets.length) {
-    throw new Error('No tickets selected for export.')
-  }
+export async function exportTicketsToPdf(
+    tickets = [],
+    getLogos
+) {
+    if (!tickets.length) {
+        throw new Error(
+            'No tickets selected for export.'
+        )
+    }
 
-  const total = tickets.length
+    const total =
+        tickets.length
 
-  const nodes = []
+    const nodes = []
 
-  for (let index = 0; index < total; index++) {
-    const ticket = tickets[index]
+    for (
+        let index = 0;
+        index < total;
+        index++
+    ) {
+        const ticket =
+            tickets[index]
 
-    const logos = typeof getLogos === 'function' ? getLogos(ticket) : undefined
+        const logos =
+            typeof getLogos === 'function'
+                ? getLogos(ticket)
+                : undefined
 
-    const node = await buildFilledFormNode(ticket, logos)
+        const node =
+            await buildFilledFormNode(
+                ticket,
+                logos
+            )
 
-    // --------------------------------------------------------
-    // Automatically update page number.
-    // --------------------------------------------------------
+        // --------------------------------------------------------
+        // Automatically update page number.
+        // --------------------------------------------------------
 
-    node.querySelectorAll('[data-field="PAGE_NO"]').forEach((element) => {
-      element.textContent = `${index + 1} of ${total}`
-    })
+        node
+            .querySelectorAll(
+                '[data-field="PAGE_NO"]'
+            )
+            .forEach(
+                (element) => {
+                    element.textContent =
+                        `${index + 1} of ${total}`
+                }
+            )
 
-    nodes.push(node)
-  }
+        nodes.push(
+            node
+        )
+    }
 
-  const html = await buildPrintDocument(nodes)
+    const html =
+        await buildPrintDocument(
+            nodes
+        )
 
-  await printHtmlDocument(html)
+    await printHtmlDocument(
+        html
+    )
 }
 
 // ================================================================
 // EXPORT SINGLE TICKET TO HTML
 // ================================================================
 
-export async function exportTicketToHtml(ticket, filename, logos) {
-  if (!ticket) {
-    throw new Error('No ticket provided for export.')
-  }
+export async function exportTicketToHtml(
+    ticket,
+    filename,
+    logos
+) {
+    if (!ticket) {
+        throw new Error(
+            'No ticket provided for export.'
+        )
+    }
 
-  const node = await buildFilledFormNode(ticket, logos)
+    const node =
+        await buildFilledFormNode(
+            ticket,
+            logos
+        )
 
-  const html = await buildPrintDocument([node])
+    const html =
+        await buildPrintDocument(
+            [node]
+        )
 
-  const name = filename || `${ticket.ticket_no || ticket.id || 'ticket'}.html`
+    const name =
+        filename ||
+        `${ticket.ticket_no || ticket.id || 'ticket'}.html`
 
-  downloadBlob(
-    new Blob([html], {
-      type: 'text/html;charset=utf-8;',
-    }),
-    name,
-  )
+    downloadBlob(
+        new Blob(
+            [html],
+            {
+                type:
+                    'text/html;charset=utf-8;'
+            }
+        ),
+        name
+    )
 }
 
 // ================================================================
@@ -526,123 +797,200 @@ export async function exportTicketToHtml(ticket, filename, logos) {
 // ================================================================
 
 export async function exportTicketsToHtml(
-  tickets = [],
-  filename = 'tickets-export.html',
-  getLogos,
+    tickets = [],
+    filename = 'tickets-export.html',
+    getLogos
 ) {
-  if (!tickets.length) {
-    throw new Error('No tickets selected for export.')
-  }
+    if (!tickets.length) {
+        throw new Error(
+            'No tickets selected for export.'
+        )
+    }
 
-  const nodes = []
+    const nodes = []
 
-  for (const ticket of tickets) {
-    const logos = typeof getLogos === 'function' ? getLogos(ticket) : undefined
+    for (
+        const ticket of tickets
+    ) {
+        const logos =
+            typeof getLogos === 'function'
+                ? getLogos(ticket)
+                : undefined
 
-    const node = await buildFilledFormNode(ticket, logos)
+        const node =
+            await buildFilledFormNode(
+                ticket,
+                logos
+            )
 
-    nodes.push(node)
-  }
+        nodes.push(
+            node
+        )
+    }
 
-  const html = await buildPrintDocument(nodes)
+    const html =
+        await buildPrintDocument(
+            nodes
+        )
 
-  downloadBlob(
-    new Blob([html], {
-      type: 'text/html;charset=utf-8;',
-    }),
-    filename,
-  )
+    downloadBlob(
+        new Blob(
+            [html],
+            {
+                type:
+                    'text/html;charset=utf-8;'
+            }
+        ),
+        filename
+    )
 }
 
 // ================================================================
 // CSV HELPER
 // ================================================================
 
-function csvCell(value) {
-  const text = String(value ?? '')
+function csvCell(
+    value
+) {
+    const text =
+        String(
+            value ?? ''
+        )
 
-  if (/[",\n\r]/.test(text)) {
-    return `"${text.replace(/"/g, '""')}"`
-  }
+    if (
+        /[",\n\r]/.test(
+            text
+        )
+    ) {
+        return `"${text.replace(
+            /"/g,
+            '""'
+        )}"`
+    }
 
-  return text
+    return text
 }
 
 // ================================================================
 // EXPORT TICKETS TO CSV
 // ================================================================
 
-export function exportTicketsToCSV(tickets = [], filename = 'tickets-export.csv') {
-  if (!tickets.length) {
-    throw new Error('No tickets selected for export.')
-  }
+export function exportTicketsToCSV(
+    tickets = [],
+    filename = 'tickets-export.csv'
+) {
+    if (!tickets.length) {
+        throw new Error(
+            'No tickets selected for export.'
+        )
+    }
 
-  const keys = [
-    'TICKET_ID',
-    'ISSUE',
-    'DATE_CREATED',
-    'NEW_STATUS',
-    'URGENCY_LEVEL',
-    'TARGET_RESOLUTION',
+    const keys = [
+        'TICKET_ID',
+        'ISSUE',
+        'DATE_CREATED',
+        'NEW_STATUS',
+        'URGENCY_LEVEL',
+        'TARGET_RESOLUTION',
 
-    'REQUESTED_BY',
-    'OFFICE',
-    'EMAIL',
-    'FULL_NAME',
+        'REQUESTED_BY',
+        'OFFICE',
+        'EMAIL',
+        'FULL_NAME',
 
-    'PLEASE_SPECIFY',
+        'PLEASE_SPECIFY',
 
-    'ASSIGNED_TO',
-    'DATE_ACTION',
-    'DATE_CLOSE',
+        'ASSIGNED_TO',
+        'DATE_ACTION',
+        'DATE_CLOSE',
 
-    'RESOLUTION_REMARKS',
-    'FINAL_REMARKS',
+        'RESOLUTION_REMARKS',
+        'FINAL_REMARKS',
 
-    'POSITION',
+        'POSITION',
 
-    'APPROVED_BY',
-    'APPROVED_POSITION',
+        'APPROVED_BY',
+        'APPROVED_POSITION',
 
-    'DATE_CLOSED',
-    'CLOSED_DATE',
-  ]
+        'DATE_CLOSED',
+        'CLOSED_DATE',
+    ]
 
-  const header = keys.join(',')
+    const header =
+        keys.join(',')
 
-  const rows = tickets.map((ticket) => {
-    const fields = mapTicketToFields(ticket)
+    const rows =
+        tickets.map(
+            (ticket) => {
+                const fields =
+                    mapTicketToFields(
+                        ticket
+                    )
 
-    return keys.map((key) => csvCell(fields[key])).join(',')
-  })
+                return keys
+                    .map(
+                        (key) =>
+                            csvCell(
+                                fields[key]
+                            )
+                    )
+                    .join(',')
+            }
+        )
 
-  const csv = [header, ...rows].join('\n')
+    const csv =
+        [
+            header,
+            ...rows
+        ].join('\n')
 
-  downloadBlob(
-    new Blob([csv], {
-      type: 'text/csv;charset=utf-8;',
-    }),
-    filename,
-  )
+    downloadBlob(
+        new Blob(
+            [csv],
+            {
+                type:
+                    'text/csv;charset=utf-8;'
+            }
+        ),
+        filename
+    )
 }
 
 // ================================================================
 // EXPORT TICKETS TO JSON
 // ================================================================
 
-export function exportTicketsToJSON(tickets = [], filename = 'tickets-export.json') {
-  if (!tickets.length) {
-    throw new Error('No tickets selected for export.')
-  }
+export function exportTicketsToJSON(
+    tickets = [],
+    filename = 'tickets-export.json'
+) {
+    if (!tickets.length) {
+        throw new Error(
+            'No tickets selected for export.'
+        )
+    }
 
-  const data = tickets.map(mapTicketToFields)
+    const data =
+        tickets.map(
+            mapTicketToFields
+        )
 
-  downloadBlob(
-    new Blob([JSON.stringify(data, null, 2)], {
-      type: 'application/json',
-    }),
-    filename,
-  )
+    downloadBlob(
+        new Blob(
+            [
+                JSON.stringify(
+                    data,
+                    null,
+                    2
+                )
+            ],
+            {
+                type:
+                    'application/json'
+            }
+        ),
+        filename
+    )
 }
 
 // ================================================================
@@ -650,14 +998,14 @@ export function exportTicketsToJSON(tickets = [], filename = 'tickets-export.jso
 // ================================================================
 
 export default {
-  mapTicketToFields,
+    mapTicketToFields,
 
-  exportTicketToPdf,
-  exportTicketsToPdf,
+    exportTicketToPdf,
+    exportTicketsToPdf,
 
-  exportTicketToHtml,
-  exportTicketsToHtml,
+    exportTicketToHtml,
+    exportTicketsToHtml,
 
-  exportTicketsToCSV,
-  exportTicketsToJSON,
+    exportTicketsToCSV,
+    exportTicketsToJSON,
 }

@@ -1,55 +1,55 @@
 @import '@/css/themes.scss';
 
 .ticket-page {
-  background: $min-bg;
-  min-height: 100vh;
+    background: $min-bg;
+    min-height: 100vh;
 }
 
 // ── Ticket Detail ─────────────────────────────────────────────
 .ticket-detail {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
 
-  &__row {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    &__row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
 
-    &--full {
-      grid-column: 1 / -1;
+        &--full {
+            grid-column: 1 / -1;
+        }
     }
-  }
 
-  &__label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: $min-text-soft;
-  }
+    &__label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: $min-text-soft;
+    }
 
-  &__value {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: $min-text;
-  }
+    &__value {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $min-text;
+    }
 
-  &__desc {
-    font-size: 0.88rem;
-    color: $min-text;
-    margin: 0;
-    line-height: 1.5;
-    background: $min-surface;
-    padding: 12px 16px;
-    border-radius: 8px;
-    border: 1px solid $min-border;
-  }
+    &__desc {
+        font-size: 0.88rem;
+        color: $min-text;
+        margin: 0;
+        line-height: 1.5;
+        background: $min-surface;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid $min-border;
+    }
 }
 
 // ── Buttons ───────────────────────────────────────────────────
 .clay-btn {
-  &--primary {
-    @include min-button($accent-login);
-  }
-}
+    &--primary {
+        @include min-button($accent-login);
+    }
+}
