@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-
     <title>LIMS Helpdesk Request Form</title>
 
     <style>
@@ -367,65 +366,151 @@
         .logo-cell {
             text-align: center;
 
-            padding: 2pt !important;
+            padding: 2px !important;
+
+            vertical-align: middle !important;
         }
 
-        .logo-cell img {
-            max-width: 58pt;
+        .logo-slot {
+            width: 100%;
 
-            max-height: 58pt;
+            height: 76pt;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+        .logo-circle {
+            width: 100%;
+
+            height: 76pt;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+        .logo-circle img {
+            width: 100%;
+
+            height: 100%;
+
+            max-width: 100%;
+
+            max-height: 100%;
+
+            object-fit: contain;
 
             display: block;
-
-            margin: 0 auto;
         }
 
         /* =========================================================
-           HEADER TITLE
+           HEADER AGENCY
         ========================================================= */
 
-        .title-cell {
+        .title-agency {
+            height: 32pt;
+
             text-align: center;
 
-            padding: 2pt 4pt !important;
+            padding: 0 5px !important;
         }
 
-        .title-agency {
-            font-size: 9.5pt;
+        .agency-name {
+            font-family: Calibri, Arial, sans-serif;
+
+            font-size: 10pt;
 
             font-weight: bold;
 
-            color: var(--navy);
+            line-height: 1;
+
+            white-space: nowrap;
         }
 
-        .title-form {
-            font-size: 11pt;
+        .agency-division {
+            font-family: Calibri, Arial, sans-serif;
+
+            font-size: 10pt;
 
             font-weight: bold;
 
-            color: var(--navy);
+            line-height: 1;
 
-            margin-top: 2pt;
+            margin-top: 3px;
+
+            white-space: nowrap;
         }
 
         /* =========================================================
-           HEADER REF / META
+           FORM TITLE
+        ========================================================= */
+
+        .title-form {
+            height: 32pt;
+
+            text-align: center;
+
+            font-family: Calibri, Arial, sans-serif;
+
+            font-size: 10pt;
+
+            font-weight: bold;
+
+            padding: 0 5px !important;
+
+            white-space: nowrap;
+        }
+
+        /* =========================================================
+           HEADER REFERENCE LABEL
         ========================================================= */
 
         .ref-label {
-            font-size: 8.5pt;
+            font-family: Calibri, Arial, sans-serif;
 
-            font-weight: bold;
+            font-size: 10pt;
 
-            padding: 2pt 4pt !important;
+            font-weight: normal;
+
+            padding: 0 6px !important;
+
+            text-align: left;
+
+            white-space: nowrap;
         }
 
-        .ref-value {
-            font-size: 8.5pt;
+        /* =========================================================
+           HEADER REFERENCE VALUE
+        ========================================================= */
 
-            padding: 2pt 4pt !important;
+        .ref-value {
+            font-family: Calibri, Arial, sans-serif;
+
+            font-size: 10pt;
+
+            font-weight: normal;
+
+            padding: 0 5px !important;
+
+            text-align: center;
+
+            white-space: nowrap;
 
             outline: none;
+        }
+
+        .ref-value.large {
+            font-size: 10pt;
+
+            font-weight: bold;
         }
 
         .ref-value.center {
@@ -606,44 +691,289 @@
 
             /* =====================================================
                PRINT DIALOG - BORDER ALIGNMENT FIX
+               Keep section bars and tables exactly the same width
             ===================================================== */
-            .form-table,
-            .end-user-details-table,
-            .resolution-responsible-table {
-                width: 100% !important;
+
+            .form-page,
+            .form-page * {
                 box-sizing: border-box !important;
             }
 
+            .form-table,
+            .header-table,
             .section-bar,
+            .text-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            table.form-table {
+                border-collapse: collapse !important;
+                table-layout: fixed !important;
+            }
+
+            table.form-table td {
+                box-sizing: border-box !important;
+            }
+
+            /* =====================================================
+               FORCE EVERY FORM SECTION TO USE THE SAME CONTENT WIDTH
+               This prevents 1px/fractional right-border drift in
+               Chrome/Edge Print Preview.
+            ===================================================== */
+
+            .form-page>.section-gap {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            .form-page>.section-gap>.section-bar,
+            .form-page>.section-gap>.form-table,
+            .form-page>.section-gap>.text-box,
+            .form-page>.section-gap>div.text-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* END USER DETAILS
+               The section header is a DIV while the content is a
+               collapsed-border TABLE. Give both the same outer
+               print box so the right edge is visually straight. */
             .end-user-details-bar,
+            .end-user-details-table {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            .end-user-details-bar {
+                width: 100% !important;
+                padding-left: 7px !important;
+                padding-right: 7px !important;
+                border-left: 0.75pt solid var(--border) !important;
+                border-right: 0.75pt solid var(--border) !important;
+                border-bottom: none !important;
+            }
+
+            .end-user-details-table {
+                border-left: 0.75pt solid var(--border) !important;
+                border-right: 0.75pt solid var(--border) !important;
+                border-top: none !important;
+            }
+
+            .section-gap .section-bar+.form-table {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* DESCRIPTION / DETAILED ACTION / FINAL REMARKS */
+            .section-gap>.text-box,
+            .action-details-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* SERVICE REQUEST TICKET CLOSING APPROVAL */
+            .approval-col {
+                box-sizing: border-box !important;
+            }
+
+            .footer-cell {
+                box-sizing: border-box !important;
+            }
+
+            /* Prevent fractional-width overflow from creating
+               a detached / uneven right border in Print Preview. */
+            .section-bar,
+            .form-table,
+            .text-box {
+                overflow: hidden !important;
+            }
+
+            /* Final table geometry for Print Preview */
+            table.form-table {
+                display: table !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+            }
+
+            table.form-table td {
+                box-sizing: border-box !important;
+            }
+
+            /* Use the exact same outer border box for every section. */
+            .section-bar,
+            table.form-table,
+            .text-box {
+                border-left-width: 0.75pt !important;
+                border-right-width: 0.75pt !important;
+            }
+
+            .section-bar {
+                display: flex !important;
+            }
+
+            .text-box {
+                display: flex !important;
+            }
+
+            /* =====================================================
+               ALL SECTION HEADER / TABLE OUTER EDGES
+               Use one exact border box for every section.
+               This removes the 1px/fractional right-edge drift
+               visible in Chrome/Edge Print Preview.
+            ===================================================== */
+
+            .form-page>.section-gap {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            .form-page>.section-gap>.section-bar,
+            .form-page>.section-gap>table.form-table,
+            .form-page>.section-gap>.text-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Keep TABLE elements as real tables in Print Preview.
+               display:block causes Chrome/Edge to calculate the
+               collapsed right border differently. */
+            .form-page>.section-gap>table.form-table,
+            .form-page table.form-table {
+                display: table !important;
+                border-collapse: collapse !important;
+                table-layout: fixed !important;
+            }
+
+            .form-page>.section-gap>.section-bar {
+                display: flex !important;
+            }
+
+            .form-page>.section-gap>.text-box {
+                display: flex !important;
+            }
+
+            /* Header bars: their border box must end at the
+               exact same x-position as the table below. */
             .resolution-header,
+            .end-user-details-bar,
+            .final-remarks-header,
+            .closing-approval-header,
+            .action-details-bar {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* Every section table uses the same outer border box. */
+            .resolution-responsible-table,
+            .end-user-details-table,
+            .form-page table.form-table {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                table-layout: fixed !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* Text boxes directly below section headers. */
+            .action-details-box,
+            .form-page>.section-gap>.text-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* Keep the outermost left/right borders identical. */
+            .resolution-header,
+            .end-user-details-bar,
+            .final-remarks-header,
+            .closing-approval-header,
             .action-details-bar,
+            .resolution-responsible-table,
+            .end-user-details-table,
+            .form-page table.form-table,
+            .action-details-box,
+            .form-page>.section-gap>.text-box {
+                border-left-width: 0.75pt !important;
+                border-right-width: 0.75pt !important;
+            }
+
+            /* Prevent the centered headings from changing the
+               width because of their flex layout. */
             .final-remarks-header,
             .closing-approval-header {
-                width: 100% !important;
-                box-sizing: border-box !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
             }
         }
     </style>
 </head>
 
+
 <body>
 
-    <div class="toolbar">
+    <!-- =========================================================
+         TOOLBAR
+    ========================================================= -->
 
-        <button id="fill-sample-btn">Fill Sample Data</button>
+    <div class="toolbar no-print">
 
-        <button id="clear-btn">Clear</button>
+        <label class="btn" for="logo-upload-1">
+            Upload Logo
+        </label>
 
-        <label class="btn" for="logo-upload-1">Upload Logo</label>
-        <input type="file" id="logo-upload-1" accept="image/*">
+        <input id="logo-upload-1" type="file" accept="image/*">
+
+        <button id="fill-sample-btn">
+            Fill Sample Data
+        </button>
+
+        <button id="clear-btn">
+            Clear Fields
+        </button>
 
         <div class="spacer"></div>
 
-        <button id="print-btn">Print / Save as PDF</button>
+        <button id="print-btn">
+            Print / Save as PDF
+        </button>
 
     </div>
 
+
+    <!-- =========================================================
+         FORM TEMPLATE
+    ========================================================= -->
 
     <template id="lims-ticket-template">
 
@@ -663,78 +993,105 @@
 
                     <col class="header-ref-label-1">
 
-                    <col class="header-ref-value-1">
-
                     <col class="header-ref-label-2">
+
+                    <col class="header-ref-value-1">
 
                     <col class="header-ref-value-2">
 
                 </colgroup>
 
 
+                <!-- =================================================
+                     ROW 1
+                ================================================= -->
+
                 <tr>
 
                     <!-- LOGO -->
 
-                    <td rowspan="4" class="logo-cell">
+                    <td class="logo-cell" rowspan="3">
 
-                        <img data-role="logo-img-1" src="./BSWM_LOGO.png" alt="BSWM Logo">
+                        <div class="logo-slot">
+
+                            <div class="logo-circle" data-role="logo-circle-1">
+
+                                <img data-role="logo-img-1" src="./BSWM_LOGO.png"
+                                    alt="Department of Agriculture / BSWM logo">
+
+                            </div>
+
+                        </div>
 
                     </td>
 
 
-                    <!-- AGENCY TITLE -->
+                    <!-- AGENCY -->
 
-                    <td class="title-cell title-agency">
+                    <td class="title-agency">
 
-                        BUREAU OF SOILS AND WATER MANAGEMENT
+                        <div class="agency-name">
+                            BUREAU OF SOILS AND WATER MANAGEMENT
+                        </div>
+
+                        <div class="agency-division">
+                            Laboratory Services Division
+                        </div>
 
                     </td>
 
 
-                    <!-- REF CODE -->
+                    <!-- REFERENCE CODE -->
 
-                    <td class="ref-label">
+                    <td class="ref-label" colspan="2">
                         Reference Code:
                     </td>
 
-                    <td colspan="3" class="ref-value" data-field="REF_CODE" contenteditable="true">
+
+                    <td class="ref-value large" colspan="2" data-field="REF_CODE" contenteditable="true">
                         BSWM_LS_FR_0140
                     </td>
 
                 </tr>
 
 
+                <!-- =================================================
+                     ROW 2
+                ================================================= -->
+
                 <tr>
 
                     <!-- FORM TITLE -->
 
-                    <td rowspan="3" class="title-cell title-form">
-
-                        SERVICE REQUEST TICKET
-
+                    <td class="title-form" rowspan="2">
+                        LIMS HELPDESK REQUEST FORM
                     </td>
 
 
                     <!-- EFFECTIVE DATE -->
 
-                    <td class="ref-label">
-                        Effective Date:
+                    <td class="ref-label" colspan="2">
+                        Effective date:
                     </td>
 
-                    <td colspan="3" class="ref-value" data-field="EFFECTIVE_DATE" contenteditable="true">
+
+                    <td class="ref-value large" colspan="2" data-field="EFFECTIVE_DATE" contenteditable="true">
                         September 12, 2025
                     </td>
 
                 </tr>
 
 
+                <!-- =================================================
+                     ROW 3
+                ================================================= -->
+
                 <tr>
 
-                    <!-- REVISION NO -->
+                    <!-- REVISION -->
 
                     <td class="ref-label">
-                        Revision No.:
+                        Rev. No.
                     </td>
 
                     <td class="ref-value center" data-field="REV_NO" contenteditable="true">
@@ -742,7 +1099,7 @@
                     </td>
 
 
-                    <!-- PAGE NO -->
+                    <!-- PAGE -->
 
                     <td class="ref-label">
                         Page No.:
@@ -754,21 +1111,6 @@
 
                 </tr>
 
-
-                <tr>
-
-                    <!-- EMPTY FILLER ROW FOR HEADER BORDER -->
-
-                    <td class="ref-label" style="height:12pt;"></td>
-
-                    <td class="ref-value"></td>
-
-                    <td class="ref-label"></td>
-
-                    <td class="ref-value"></td>
-
-                </tr>
-
             </table>
 
 
@@ -776,78 +1118,89 @@
                  TOP META
             ===================================================== -->
 
-            <table class="form-table meta-table">
+            <div>
 
-                <colgroup>
+                <table class="form-table meta-table">
 
-                    <col style="width:130pt;">
+                    <colgroup>
 
-                    <col style="width:136pt;">
+                        <col style="width:108pt;">
 
-                    <col style="width:130pt;">
+                        <col style="width:158pt;">
 
-                    <col style="width:136pt;">
+                        <col style="width:118pt;">
 
-                </colgroup>
+                        <col style="width:148pt;">
 
-
-                <!-- ISSUE & TICKET NO -->
-
-                <tr style="height:20pt;">
-
-                    <td class="label-cell">
-                        ISSUE:
-                    </td>
-
-                    <td class="value-cell" data-field="ISSUE" contenteditable="true"></td>
-
-                    <td class="label-cell">
-                        TICKET NO.:
-                    </td>
-
-                    <td class="value-cell" data-field="TICKET_ID" contenteditable="true"></td>
-
-                </tr>
+                    </colgroup>
 
 
-                <!-- STATUS & DATE SUBMITTED -->
+                    <!-- ISSUE -->
 
-                <tr style="height:20pt;">
+                    <tr style="height:20pt;">
 
-                    <td class="label-cell">
-                        TICKET STATUS:
-                    </td>
+                        <td class="label-cell">
+                            ISSUE:
+                        </td>
 
-                    <td class="value-cell" data-field="NEW_STATUS" contenteditable="true"></td>
+                        <td class="value-cell" colspan="3" data-field="ISSUE" contenteditable="true"></td>
 
-                    <td class="label-cell">
-                        DATE SUBMITTED:
-                    </td>
-
-                    <td class="value-cell" data-field="DATE_CREATED" contenteditable="true"></td>
-
-                </tr>
+                    </tr>
 
 
-                <!-- URGENCY & TARGET RESOLUTION -->
+                    <!-- TICKET NUMBER -->
 
-                <tr style="height:20pt;">
+                    <tr style="height:20pt;">
 
-                    <td class="label-cell">
-                        URGENCY LEVEL:
-                    </td>
+                        <td class="label-cell">
+                            TICKET NO:
+                        </td>
 
-                    <td class="value-cell" data-field="URGENCY_LEVEL" contenteditable="true"></td>
+                        <td class="value-cell" data-field="TICKET_ID" contenteditable="true"></td>
 
-                    <td class="label-cell">
-                        RESOLUTION TARGET:
-                    </td>
+                        <td class="label-cell">
+                            DATE SUBMITTED:
+                        </td>
 
-                    <td class="value-cell" data-field="TARGET_RESOLUTION" contenteditable="true"></td>
+                        <td class="value-cell" rowspan="2" data-field="DATE_CREATED" contenteditable="true"></td>
 
-                </tr>
+                    </tr>
 
-            </table>
+
+                    <!-- STATUS -->
+
+                    <tr style="height:20pt;">
+
+                        <td class="label-cell">
+                            TICKET STATUS:
+                        </td>
+
+                        <td class="value-cell" colspan="2" data-field="NEW_STATUS" contenteditable="true"></td>
+
+                    </tr>
+
+
+                    <!-- URGENCY -->
+
+                    <tr style="height:20pt;">
+
+                        <td class="label-cell">
+                            URGENCY LEVEL:
+                        </td>
+
+                        <td class="value-cell" data-field="URGENCY_LEVEL" contenteditable="true"></td>
+
+                        <td class="label-cell">
+                            RESOLUTION TARGET:
+                        </td>
+
+                        <td class="value-cell" data-field="TARGET_RESOLUTION" contenteditable="true"></td>
+
+                    </tr>
+
+                </table>
+
+            </div>
 
 
             <!-- =====================================================
@@ -865,9 +1218,9 @@
 
                     <colgroup>
 
-                        <col style="width:130pt;">
+                        <col style="width:150pt;">
 
-                        <col style="width:402pt;">
+                        <col>
 
                     </colgroup>
 
@@ -883,6 +1236,7 @@
                         <td class="value-cell" data-field="REQUESTED_BY" contenteditable="true"></td>
 
                     </tr>
+
 
 
                     <!-- EMAIL -->
@@ -950,7 +1304,7 @@
 
                         <col style="width:130pt;">
 
-                        <col style="width:402pt;">
+                        <col>
 
                     </colgroup>
 
@@ -974,6 +1328,7 @@
 
                     <colgroup>
 
+                        <!-- Match RESPONSIBLE PERSON label width -->
                         <col style="width:130pt;">
 
                         <col style="width:136pt;">
@@ -1099,6 +1454,8 @@
 
                     </tr>
 
+
+
                 </table>
 
             </div>
@@ -1120,124 +1477,371 @@
     ========================================================= -->
 
     <script>
+
         (function () {
+
             const FIELD_KEYS = [
+
                 'ISSUE',
+
                 'TICKET_ID',
+
                 'DATE_CREATED',
+
                 'NEW_STATUS',
+
                 'URGENCY_LEVEL',
+
                 'TARGET_RESOLUTION',
 
                 'REQUESTED_BY',
+
                 'OFFICE',
+
                 'EMAIL',
+
                 'FULL_NAME',
 
                 'PLEASE_SPECIFY',
 
                 'ASSIGNED_TO',
+
                 'DATE_ACTION',
+
                 'DATE_CLOSE',
 
                 'RESOLUTION_REMARKS',
+
                 'FINAL_REMARKS',
 
                 'POSITION',
 
                 'APPROVED_BY',
+
                 'APPROVED_POSITION',
 
                 'DATE_CLOSED',
+
                 'CLOSED_DATE',
 
                 'REF_CODE',
+
                 'EFFECTIVE_DATE',
+
                 'REV_NO',
-                'PAGE_NO',
+
+                'PAGE_NO'
+
             ];
 
+
+            /* =====================================================
+               FILL FIELDS
+            ===================================================== */
+
             function fillFields(root, data) {
-                FIELD_KEYS.forEach(key => {
-                    if (!(key in data)) return;
-                    root.querySelectorAll(`[data-field="${key}"]`).forEach(el => {
-                        el.textContent = data[key] == null ? '' : String(data[key]);
-                    });
+
+                FIELD_KEYS.forEach((key) => {
+
+                    if (!(key in data)) {
+                        return;
+                    }
+
+                    root
+                        .querySelectorAll(
+                            [data - field="${key}"]
+                        )
+                        .forEach((el) => {
+
+                            el.textContent =
+                                data[key] == null
+                                    ? ''
+                                    : String(data[key]);
+
+                        });
+
                 });
+
             }
+
+
+            /* =====================================================
+               SET LOGO
+            ===================================================== */
 
             function setLogo(root, src) {
-                const img = root.querySelector('[data-role="logo-img-1"]');
-                if (!img) return;
-                img.src = src || './BSWM_LOGO.png';
+
+                const img =
+                    root.querySelector(
+                        '[data-role="logo-img-1"]'
+                    );
+
+                if (!img) {
+                    return;
+                }
+
+                img.src =
+                    src || './LOGO.png';
+
             }
+
+
+            /* =====================================================
+               CLONE FORM
+            ===================================================== */
 
             function cloneForm() {
-                const tpl = document.getElementById('lims-ticket-template');
-                return tpl.content.firstElementChild.cloneNode(true);
+
+                const tpl =
+                    document.getElementById(
+                        'lims-ticket-template'
+                    );
+
+                return tpl
+                    .content
+                    .firstElementChild
+                    .cloneNode(true);
+
             }
 
+
+            /* =====================================================
+               PUBLIC API
+            ===================================================== */
+
             window.LimsTicketForm = {
+
                 FIELD_KEYS,
+
                 fillFields,
+
                 setLogo,
-                cloneForm,
+
+                cloneForm
+
             };
 
-            const container = document.getElementById('form-container');
-            const formNode = cloneForm();
-            container.appendChild(formNode);
 
-            document.getElementById('logo-upload-1').addEventListener('change', e => {
-                const file = e.target.files && e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = () => setLogo(formNode, reader.result);
-                reader.readAsDataURL(file);
-            });
+            /* =====================================================
+               CREATE FORM
+            ===================================================== */
 
-            document.getElementById('fill-sample-btn').addEventListener('click', () => {
-                fillFields(formNode, {
-                    ISSUE: 'Unable to print sample results',
-                    TICKET_ID: 'TCK-2026-0142',
-                    DATE_CREATED: 'August 10, 2026',
-                    NEW_STATUS: 'In Progress',
-                    URGENCY_LEVEL: 'High',
-                    TARGET_RESOLUTION: 'August 13, 2026',
-                    REQUESTED_BY: 'Juan Dela Cruz',
-                    OFFICE: 'Soil Chemistry Section',
-                    EMAIL: 'jdelacruz@bswm.da.gov.ph',
-                    FULL_NAME: 'Juan P. Dela Cruz',
-                    PLEASE_SPECIFY: 'LIMS print job for batch #2026-118 fails at the print-preview step; error dialog references the reporting module.',
-                    ASSIGNED_TO: 'Maria Santos',
-                    DATE_ACTION: 'August 11, 2026',
-                    DATE_CLOSE: '',
-                    RESOLUTION_REMARKS: 'Reinstalled the reporting module driver and cleared the print spooler cache; issue no longer reproduces.',
-                    FINAL_REMARKS: 'Monitored for 24 hours, no recurrence reported.',
-                    POSITION: 'IT Support Officer',
-                    APPROVED_BY: 'Engr. Ana Reyes',
-                    APPROVED_POSITION: 'Laboratory Chief',
-                    DATE_CLOSED: '',
-                    CLOSED_DATE: '',
-                    REF_CODE: 'BSWM_LS_FR_0140',
-                    EFFECTIVE_DATE: 'September 12, 2025',
-                    REV_NO: '1',
-                    PAGE_NO: '1 of 1',
-                });
-            });
+            const container =
+                document.getElementById(
+                    'form-container'
+                );
 
-            document.getElementById('clear-btn').addEventListener('click', () => {
-                const cleared = {};
-                FIELD_KEYS.forEach(key => { cleared[key] = ''; });
-                fillFields(formNode, cleared);
-                setLogo(formNode, './BSWM_LOGO.png');
-            });
 
-            document.getElementById('print-btn').addEventListener('click', () => {
-                window.print();
-            });
+            const formNode =
+                cloneForm();
+
+
+            container.appendChild(
+                formNode
+            );
+
+
+            /* =====================================================
+               LOGO UPLOAD
+            ===================================================== */
+
+            document
+                .getElementById(
+                    'logo-upload-1'
+                )
+                .addEventListener(
+                    'change',
+                    (e) => {
+
+                        const file =
+                            e.target.files &&
+                            e.target.files[0];
+
+                        if (!file) {
+                            return;
+                        }
+
+                        const reader =
+                            new FileReader();
+
+
+                        reader.onload =
+                            () => {
+
+                                setLogo(
+                                    formNode,
+                                    reader.result
+                                );
+
+                            };
+
+
+                        reader.readAsDataURL(
+                            file
+                        );
+
+                    }
+                );
+
+
+            /* =====================================================
+               SAMPLE DATA
+            ===================================================== */
+
+            document
+                .getElementById(
+                    'fill-sample-btn'
+                )
+                .addEventListener(
+                    'click',
+                    () => {
+
+                        fillFields(
+                            formNode,
+                            {
+
+                                ISSUE:
+                                    'Unable to print sample results',
+
+                                TICKET_ID:
+                                    'TCK-2026-0142',
+
+                                DATE_CREATED:
+                                    'August 10, 2026',
+
+                                NEW_STATUS:
+                                    'In Progress',
+
+                                URGENCY_LEVEL:
+                                    'High',
+
+                                TARGET_RESOLUTION:
+                                    'August 13, 2026',
+
+                                REQUESTED_BY:
+                                    'Juan Dela Cruz',
+
+                                OFFICE:
+                                    'Soil Chemistry Section',
+
+                                EMAIL:
+                                    'jdelacruz@bswm.da.gov.ph',
+
+                                FULL_NAME:
+                                    'Juan P. Dela Cruz',
+
+                                PLEASE_SPECIFY:
+                                    'LIMS print job for batch #2026-118 fails at the print-preview step; error dialog references the reporting module.',
+
+                                ASSIGNED_TO:
+                                    'Maria Santos',
+
+                                DATE_ACTION:
+                                    'August 11, 2026',
+
+                                DATE_CLOSE:
+                                    '',
+
+                                RESOLUTION_REMARKS:
+                                    'Reinstalled the reporting module driver and cleared the print spooler cache; issue no longer reproduces.',
+
+                                FINAL_REMARKS:
+                                    'Monitored for 24 hours, no recurrence reported.',
+
+                                POSITION:
+                                    'IT Support Officer',
+
+                                APPROVED_BY:
+                                    'Engr. Ana Reyes',
+
+                                APPROVED_POSITION:
+                                    '',
+
+                                DATE_CLOSED:
+                                    '',
+
+                                CLOSED_DATE:
+                                    '',
+
+                                REF_CODE:
+                                    'BSWM_LS_FR_0140',
+
+                                EFFECTIVE_DATE:
+                                    'September 12, 2025',
+
+                                REV_NO:
+                                    '1',
+
+                                PAGE_NO:
+                                    '1 of 1'
+
+                            }
+                        );
+
+                    }
+                );
+
+
+            /* =====================================================
+               CLEAR FIELDS
+            ===================================================== */
+
+            document
+                .getElementById(
+                    'clear-btn'
+                )
+                .addEventListener(
+                    'click',
+                    () => {
+
+                        const cleared = {};
+
+
+                        FIELD_KEYS.forEach(
+                            (key) => {
+
+                                cleared[key] = '';
+
+                            }
+                        );
+
+
+                        fillFields(
+                            formNode,
+                            cleared
+                        );
+
+
+                        setLogo(
+                            formNode,
+                            './LOGO.png'
+                        );
+
+                    }
+                );
+
+
+            /* =====================================================
+               PRINT
+            ===================================================== */
+
+            document
+                .getElementById(
+                    'print-btn'
+                )
+                .addEventListener(
+                    'click',
+                    () => {
+
+                        window.print();
+
+                    }
+                );
+
         })();
+
     </script>
+
 </body>
 
 </html>

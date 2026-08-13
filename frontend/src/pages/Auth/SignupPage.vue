@@ -84,7 +84,7 @@
           <div class="mobile-brand-header">
             <img src="../../assets/bswm-logo-sidebar.png" alt="BSWM Logo" class="mobile-logo" />
 
-            <span class="mobile-brand-title"> LIMS Ticketing </span>
+            <span class="mobile-brand-title"> LIMS Helpdesk </span>
           </div>
 
           <!-- Signup Header -->
