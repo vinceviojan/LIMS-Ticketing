@@ -27,16 +27,18 @@
     <!-- ── KPI Cards ────────────────────────────────────────────── -->
     <div class="report-page__kpis">
       <div v-for="kpi in kpiCards" :key="kpi.label" class="kpi-card" :class="`kpi-card--${kpi.color}`">
-        <div class="kpi-card__icon-wrap">
-          <q-icon :name="kpi.icon" size="24px" />
+        <div class="kpi-card__header">
+          <span class="kpi-card__label">{{ kpi.label }}</span>
+          <div class="kpi-card__icon">
+            <q-icon :name="kpi.icon" size="18px" />
+          </div>
         </div>
-        <div class="kpi-card__body">
-          <div class="kpi-card__value">{{ kpi.value }}</div>
-          <div class="kpi-card__label">{{ kpi.label }}</div>
-          <div class="kpi-card__trend" :class="kpi.up ? 'kpi-card__trend--up' : 'kpi-card__trend--down'">
+        <div class="kpi-card__value">{{ kpi.value }}</div>
+        <div class="kpi-card__footer">
+          <span class="kpi-card__trend" :class="kpi.up ? 'kpi-card__trend--up' : 'kpi-card__trend--down'">
             <q-icon :name="kpi.up ? 'trending_up' : 'trending_down'" size="14px" />
             {{ kpi.trend }}
-          </div>
+          </span>
         </div>
       </div>
     </div>
@@ -78,7 +80,7 @@
           </div>
           <div class="report-card__bars">
             <div v-for="item in paginatedCategories" :key="item.label" class="bar-row">
-              <span class="bar-row__label">{{ item.label }}</span>
+              <span class="bar-row__label" :title="item.label">{{ item.label }}</span>
               <div class="bar-row__track">
                 <div
                   class="bar-row__fill bar-row__fill--primary"
