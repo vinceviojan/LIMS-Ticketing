@@ -31,6 +31,10 @@ Route::middleware('throttle:api')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [SignupController::class, 'store']);
     Route::get('/attachments/{id}', [TicketController::class, 'viewAttachment']);
+    
+    // Public Organization Routes
+    Route::get('/divisions', [DivisionController::class, 'index']);
+    Route::get('/sections', [SectionController::class, 'index']);
 
     Route::middleware('auth:sanctum')->group(function () {
 
@@ -43,8 +47,8 @@ Route::middleware('throttle:api')->group(function () {
         Route::apiResource('users', UserController::class);
 
         // Organization Structure Routes
-        Route::apiResource('divisions', DivisionController::class);
-        Route::apiResource('sections', SectionController::class);
+        Route::apiResource('divisions', DivisionController::class)->except(['index']);
+        Route::apiResource('sections', SectionController::class)->except(['index']);
 
         // Tickets & Attachments
         Route::apiResource('/tickets', TicketController::class);
