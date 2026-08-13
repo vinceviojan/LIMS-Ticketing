@@ -18,6 +18,8 @@
 
         * {
             box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         body {
@@ -143,7 +145,7 @@
             font-size: 10pt;
             font-weight: bold;
 
-            padding: 5px 7px;
+            padding: 3px 7px;
 
             line-height: 1.2;
 
@@ -152,10 +154,9 @@
             vertical-align: middle;
         }
 
-        /* Colored label cells used on the white detail tables */
-        table.form-table .label-cell[style*="background:none"] {
-            background: var(--blue-light) !important;
-            color: var(--navy-dark) !important;
+        .label-cell.light {
+            background: var(--white);
+            color: var(--black);
         }
 
         /* =========================================================
@@ -167,7 +168,7 @@
 
             font-size: 10pt;
 
-            padding: 5px 10px;
+            padding: 3px 7px;
 
             line-height: 1.2;
 
@@ -201,7 +202,7 @@
 
             font-size: 10pt;
 
-            padding: 5pt 7pt;
+            padding: 3px 7px;
 
             display: flex;
 
@@ -216,6 +217,22 @@
 
         .section-bar.small {
             font-size: 10pt;
+        }
+
+        /* DETAILED OF ACTION - match RESOLUTION section-bar borders */
+        .action-details-bar {
+            margin-top: 0 !important;
+            border-top: 0.75pt solid var(--border) !important;
+            border-left: 0.75pt solid var(--border) !important;
+            border-right: 0.75pt solid var(--border) !important;
+            border-bottom: none !important;
+            width: 100%;
+        }
+
+        /* Keep the action details text aligned with the other tables */
+        .action-details-box .text-area {
+            padding-left: 10px;
+            padding-right: 10px;
         }
 
         .section-bar.centered {
@@ -239,7 +256,7 @@
         .text-box .text-area {
             flex: 1;
 
-            padding: 5pt 10px;
+            padding: 3px 7px;
 
             font-family: Calibri, Arial, sans-serif;
 
@@ -514,6 +531,22 @@
             margin-top: 8pt;
         }
 
+        /* =========================================================
+           TOP META INNER SPACING
+        ========================================================= */
+
+        .meta-table .label-cell,
+        .form-table .label-cell {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .meta-table .value-cell,
+        .form-table .value-cell {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
         .section-gap {
             margin-top: 10pt;
         }
@@ -534,34 +567,16 @@
            APPROVAL
         ========================================================= */
 
-        .approval-outer {
-            border: 0.75pt solid var(--border);
-
-            border-top: none;
-        }
-
-        .approval-box {
-            display: flex;
-
-            border-bottom: 0.75pt solid var(--border);
-
-            min-height: 59pt;
-        }
-
         .approval-col {
-            flex: 1;
-
-            padding: 6pt 10px;
+            padding: 5pt 7pt;
 
             font-family: Calibri, Arial, sans-serif;
 
             font-size: 10pt;
 
             background: var(--blue-soft);
-        }
 
-        .approval-col.left {
-            border-right: 0.75pt solid var(--border);
+            vertical-align: top;
         }
 
         .approval-label {
@@ -601,14 +616,8 @@
             background: #fffbdd;
         }
 
-        .approval-footer {
-            display: flex;
-        }
-
         .footer-cell {
-            flex: 1;
-
-            padding: 4pt 10px;
+            padding: 3px 7px;
 
             font-family: Calibri, Arial, sans-serif;
 
@@ -621,10 +630,6 @@
             background: var(--blue-light);
 
             color: var(--navy-dark);
-        }
-
-        .footer-cell.left {
-            border-right: 0.75pt solid var(--border);
         }
 
         .footer-cell span[contenteditable="true"] {
@@ -642,6 +647,11 @@
         ========================================================= */
 
         @media print {
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
 
             .toolbar {
                 display: none;
@@ -665,6 +675,108 @@
                 size: letter;
 
                 margin: 0;
+            }
+
+            /* =====================================================
+               PRINT DIALOG - BORDER ALIGNMENT FIX
+               Keep section bars and tables exactly the same width
+            ===================================================== */
+
+            .form-page,
+            .form-page * {
+                box-sizing: border-box !important;
+            }
+
+            .form-table,
+            .header-table,
+            .section-bar,
+            .text-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            table.form-table {
+                border-collapse: collapse !important;
+                table-layout: fixed !important;
+            }
+
+            table.form-table td {
+                box-sizing: border-box !important;
+            }
+
+            /* =====================================================
+               FORCE EVERY FORM SECTION TO USE THE SAME CONTENT WIDTH
+               This prevents 1px/fractional right-border drift in
+               Chrome/Edge Print Preview.
+            ===================================================== */
+
+            .form-page>.section-gap {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            .form-page>.section-gap>.section-bar,
+            .form-page>.section-gap>.form-table,
+            .form-page>.section-gap>.text-box,
+            .form-page>.section-gap>div.text-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* END USER DETAILS */
+            .section-gap .section-bar+.form-table {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* DESCRIPTION / DETAILED ACTION / FINAL REMARKS */
+            .section-gap>.text-box,
+            .action-details-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* SERVICE REQUEST TICKET CLOSING APPROVAL */
+            .approval-col {
+                box-sizing: border-box !important;
+            }
+
+            .footer-cell {
+                box-sizing: border-box !important;
+            }
+
+            /* Prevent fractional-width overflow from creating
+               a detached / uneven right border in Print Preview. */
+            .section-bar,
+            .form-table,
+            .text-box {
+                overflow: hidden !important;
+            }
+
+            /* Use the exact same outer border box for every section. */
+            .section-bar,
+            table.form-table,
+            .text-box {
+                border-left-width: 0.75pt !important;
+                border-right-width: 0.75pt !important;
+            }
+
+            .section-bar {
+                display: flex !important;
+            }
+
+            .text-box {
+                display: flex !important;
             }
         }
     </style>
@@ -960,7 +1072,7 @@
 
                     <tr style="height:20pt;">
 
-                        <td class="label-cell" style="background:none;color:var(--black);">
+                        <td class="label-cell light">
                             REQUESTED BY:
                         </td>
 
@@ -974,7 +1086,7 @@
 
                     <tr style="height:20pt;">
 
-                        <td class="label-cell" style="background:none;color:var(--black);">
+                        <td class="label-cell light">
                             EMAIL ADDRESS:
                         </td>
 
@@ -987,7 +1099,7 @@
 
                     <tr style="height:20pt;">
 
-                        <td class="label-cell" style="background:none;color:var(--black);">
+                        <td class="label-cell light">
                             FULL NAME:
                         </td>
 
@@ -1042,7 +1154,7 @@
 
                     <tr class="resolution-row1">
 
-                        <td class="label-cell" style="background:none;color:var(--black);">
+                        <td class="label-cell light">
                             RESPONSIBLE PERSON:
                         </td>
 
@@ -1059,26 +1171,27 @@
 
                     <colgroup>
 
-                        <col style="width:100pt;">
+                        <!-- Match RESPONSIBLE PERSON label width -->
+                        <col style="width:130pt;">
 
-                        <col style="width:166pt;">
+                        <col style="width:136pt;">
 
-                        <col style="width:80pt;">
+                        <col style="width:130pt;">
 
-                        <col style="width:186pt;">
+                        <col style="width:136pt;">
 
                     </colgroup>
 
 
                     <tr class="resolution-row2">
 
-                        <td class="label-cell" style="background:none;color:var(--black);">
+                        <td class="label-cell light">
                             DATE OF ACTION:
                         </td>
 
                         <td class="value-cell" data-field="DATE_ACTION" contenteditable="true"></td>
 
-                        <td class="label-cell" style="background:none;color:var(--black);">
+                        <td class="label-cell light">
                             DATE CLOSE:
                         </td>
 
@@ -1091,12 +1204,12 @@
 
                 <!-- ACTION DETAILS -->
 
-                <div class="section-bar small" style="margin-top:0;border-top:none;">
+                <div class="section-bar small action-details-bar">
                     DETAILED OF ACTION
                 </div>
 
 
-                <div class="text-box remarks-box">
+                <div class="text-box remarks-box action-details-box">
 
                     <div class="text-area" data-field="RESOLUTION_REMARKS" contenteditable="true"></div>
 
@@ -1136,17 +1249,22 @@
                 </div>
 
 
-                <div class="approval-outer">
+                <table class="form-table" style="border-top:none;">
+
+                    <colgroup>
+
+                        <col style="width:50%;">
+
+                        <col style="width:50%;">
+
+                    </colgroup>
 
 
-                    <!-- APPROVAL PEOPLE -->
-
-                    <div class="approval-box">
-
+                    <tr>
 
                         <!-- TROUBLESHOOT BY -->
 
-                        <div class="approval-col left">
+                        <td class="approval-col">
 
                             <div class="approval-label">
                                 TROUBLESHOOT BY:
@@ -1158,12 +1276,12 @@
 
                             <div class="approval-position" data-field="POSITION" contenteditable="true"></div>
 
-                        </div>
+                        </td>
 
 
                         <!-- APPROVED BY -->
 
-                        <div class="approval-col right">
+                        <td class="approval-col">
 
                             <div class="approval-label">
                                 APPROVED BY:
@@ -1175,35 +1293,35 @@
 
                             <div class="approval-position" data-field="APPROVED_POSITION" contenteditable="true"></div>
 
-                        </div>
+                        </td>
 
-                    </div>
+                    </tr>
 
 
-                    <!-- APPROVAL FOOTER -->
+                    <tr>
 
-                    <div class="approval-footer">
+                        <!-- APPROVAL FOOTER -->
 
-                        <div class="footer-cell left">
+                        <td class="footer-cell">
 
                             APPROVAL DATE:
 
                             <span data-field="DATE_CLOSED" contenteditable="true"></span>
 
-                        </div>
+                        </td>
 
 
-                        <div class="footer-cell">
+                        <td class="footer-cell">
 
                             CLOSED DATE:
 
                             <span data-field="CLOSED_DATE" contenteditable="true"></span>
 
-                        </div>
+                        </td>
 
-                    </div>
+                    </tr>
 
-                </div>
+                </table>
 
             </div>
 
