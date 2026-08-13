@@ -31,16 +31,16 @@
                     />
                   </div>
 
-                  <!-- 2. Title -->
+                  <!-- 2. Main Label (Category if hideTitle, Title otherwise) -->
                   <div
                     class="text-subtitle1 text-weight-bold text-grey-9 ellipsis-2-lines q-mb-xs"
                     style="line-height: 1.35; height: 42px; overflow: hidden;"
-                    :title="ticket.title"
+                    :title="hideTitle ? ticket.category : ticket.title"
                   >
-                    {{ ticket.title }}
+                    {{ hideTitle ? ticket.category : ticket.title }}
                   </div>
 
-                  <!-- 3. Requester & 5. Date -->
+                  <!-- 3. Requester & Date -->
                   <div class="row items-center justify-between no-wrap q-mb-xs" style="gap: 8px;">
                     <span class="text-caption text-weight-bold text-grey-9 ellipsis" style="min-width: 0; flex: 1;" :title="ticket.requester">
                       {{ ticket.requester }}
@@ -50,8 +50,8 @@
                     </span>
                   </div>
 
-                  <!-- 4. Category -->
-                  <div class="text-caption text-grey-7 text-weight-medium ellipsis q-mb-xs" style="font-size: 0.75rem;" :title="ticket.category">
+                  <!-- 4. Category (only if Title is shown) -->
+                  <div v-if="!hideTitle" class="text-caption text-grey-7 text-weight-medium ellipsis q-mb-xs" style="font-size: 0.75rem;" :title="ticket.category">
                     {{ ticket.category }}
                   </div>
                 </div>
@@ -216,7 +216,9 @@
     displayMode: { type: String, default: 'table' },
     loading: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
-    selectable: { type: Boolean, default: false }
+    selectable: { type: Boolean, default: false },
+    perPage: { type: Number, default: 9 },
+    hideTitle: { type: Boolean, default: false }
   })
 
   const emit = defineEmits(['view-ticket', 'edit-ticket', 'update:selected'])
@@ -248,7 +250,7 @@
 
   // ── Pagination State ─────────────────────────────────────────
   const currentPage = ref(1)
-  const perPage = ref(9)
+  const perPage = computed(() => props.perPage)
 
   // Reset to page 1 if the underlying tickets array changes significantly (e.g. filters applied)
   watch(() => props.tickets, () => {
@@ -256,24 +258,31 @@
   }, { deep: false })
 
   const maxPages = computed(() => {
-    return Math.ceil(props.tickets.length / perPage.value)
+    return Math.ceil(props.tickets.length / props.perPage) || 1
   })
 
   const paginatedTickets = computed(() => {
-    const start = (currentPage.value - 1) * perPage.value
-    return props.tickets.slice(start, start + perPage.value)
+    const start = (currentPage.value - 1) * props.perPage
+    return props.tickets.slice(start, start + props.perPage)
   })
 
   // ── Table Configuration ──────────────────────────────────────
-  const tableColumns = [
-    { name: 'ticket_no', label: 'Ticket #', field: 'ticket_no', align: 'left', sortable: true },
-    { name: 'title', label: 'Title', field: 'title', align: 'left', sortable: true },
-    { name: 'requester', label: 'Requester', field: 'requester', align: 'left', sortable: true },
-    { name: 'category', label: 'Category', field: 'category', align: 'left', sortable: true },
-    { name: 'created', label: 'Date', field: 'created', align: 'left', sortable: true },
-    { name: 'priority', label: 'Priority', field: 'priority', align: 'center', sortable: true },
-    { name: 'status', label: 'Status', field: 'status', align: 'center', sortable: true }
-  ]
+  const tableColumns = computed(() => {
+    const cols = [
+      { name: 'ticket_no', label: 'Ticket #', field: 'ticket_no', align: 'left', sortable: true },
+    ]
+    if (!props.hideTitle) {
+      cols.push({ name: 'title', label: 'Title', field: 'title', align: 'left', sortable: true })
+    }
+    cols.push(
+      { name: 'category', label: 'Category', field: 'category', align: 'left', sortable: true },
+      { name: 'requester', label: 'Requester', field: 'requester', align: 'left', sortable: true },
+      { name: 'created', label: 'Date', field: 'created', align: 'left', sortable: true },
+      { name: 'priority', label: 'Priority', field: 'priority', align: 'center', sortable: true },
+      { name: 'status', label: 'Status', field: 'status', align: 'center', sortable: true }
+    )
+    return cols
+  })
 
   // ── Style Helpers ────────────────────────────────────────────
   const getStatusStyle = (status) => {

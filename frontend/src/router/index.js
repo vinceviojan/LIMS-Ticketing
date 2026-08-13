@@ -14,30 +14,28 @@ const routes = [
   ...PrivateRoutes,
   {
     path: '/:catchAll(.*)*',
-    component: () => import('../pages/NotFoundPage.vue')
-  }
+    component: () => import('../pages/NotFoundPage.vue'),
+  },
 ]
 
 export default defineRouter(() => {
   const createHistory = import.meta.env.QUASAR_SERVER
     ? createMemoryHistory
-    : (
-      import.meta.env.QUASAR_VUE_ROUTER_MODE === 'history'
-        ? createWebHistory
-        : createWebHashHistory
-    )
+    : import.meta.env.QUASAR_VUE_ROUTER_MODE === 'history'
+      ? createWebHistory
+      : createWebHashHistory
 
   const Router = createRouter({
     history: createHistory(import.meta.env.QUASAR_VUE_ROUTER_BASE),
     routes,
-    scrollBehavior: () => ({ left: 0, top: 0 })
+    scrollBehavior: () => ({ left: 0, top: 0 }),
   })
 
   // =====================================================
   // AUTH & ROLE NAVIGATION GUARD
   // =====================================================
 
-  Router.beforeEach((to, from, next) => {
+  Router.beforeEach((to) => {
     const token = localStorage.getItem('token')
     const storedUser = localStorage.getItem('user')
     const user = storedUser ? JSON.parse(storedUser) : null
@@ -47,32 +45,31 @@ export default defineRouter(() => {
     if (token && (to.path === '/login' || to.path === '/signup' || to.path === '/')) {
       switch (role) {
         case 'admin':
-          return next('/admin/dashboard')
+          return '/admin/dashboard'
         case 'staff':
-          return next('/staff/dashboard')
+          return '/staff/dashboard'
         case 'user':
-          return next('/user/dashboard')
+          return '/user/dashboard'
         default:
-          return next()
+          return true
       }
     }
 
     // ---- Require authentication for private routes ----
     if (to.meta.requiresAuth && !token) {
-      return next('/login')
+      return '/login'
     }
 
     // ---- Role-based access check ----
     if (to.meta.requiredRoles && token) {
       const allowedRoles = to.meta.requiredRoles.map((r) => r.toLowerCase())
       if (!allowedRoles.includes(role)) {
-        return next('/forbidden')
+        return '/forbidden'
       }
     }
 
-    next()
+    return true
   })
 
   return Router
 })
-
