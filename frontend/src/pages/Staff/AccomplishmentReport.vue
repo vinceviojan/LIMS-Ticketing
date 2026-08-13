@@ -120,6 +120,7 @@ const columns = [
   { name: 'category', label: 'Category', field: 'category', align: 'left' },
   { name: 'requester', label: 'Requester', field: 'requester', align: 'left' },
   { name: 'priority', label: 'Priority', field: 'priority', align: 'center', sortable: true },
+  { name: 'resolution', label: 'Resolution', field: 'resolution', align: 'left' },
   { name: 'status', label: 'Status', field: 'status', align: 'center' },
   { name: 'date', label: 'Date Resolved', field: 'created', align: 'right', sortable: true }
 ]
@@ -160,7 +161,8 @@ async function fetchClosedTickets() {
       status: t.status || 'CLOSE',
       created: (t.date_submitted || t.created_at || '').split('T')[0],
       description: t.description || '',
-      remarks: t.remarks || ''
+      remarks: t.remarks || '',
+      resolution: t.resolution || ''
     }))
 
     filterTickets()
@@ -189,34 +191,62 @@ function openReportDialog() {
 
 const generatedReportText = computed(() => {
   if (selectedTickets.value.length === 0) return ''
-  
-  let text = `Accomplishment Report\nPeriod: ${dateStart.value} to ${dateEnd.value}\nStaff: ${authStore.userName}\n\n`
-  
+
+  const count = selectedTickets.value.length
+  const staff = authStore.userName
+  const period = `${dateStart.value} to ${dateEnd.value}`
+
+  // Build a smart summary of the unique categories resolved
+  const categories = [...new Set(selectedTickets.value.map(t => t.category).filter(Boolean))]
+  const categoryList = categories.length > 0 ? categories.join(', ') : 'various categories'
+  const highPriorityCount = selectedTickets.value.filter(t => t.priority === 'HIGH' || t.priority === 'CRITICAL').length
+  const priorityNote = highPriorityCount > 0 ? ` including ${highPriorityCount} high-priority item(s)` : ''
+  const summaryLine = `${staff} successfully resolved ${count} ticket(s)${priorityNote} covering ${categoryList} during the period ${period}.`
+
+  let text = `ACCOMPLISHMENT REPORT\n`
+  text += `${'='.repeat(60)}\n`
+  text += `Period  : ${period}\n`
+  text += `Staff   : ${staff}\n`
+  text += `Generated: ${new Date().toLocaleString()}\n`
+  text += `${'='.repeat(60)}\n\n`
+  text += `SUMMARY\n`
+  text += `${'-'.repeat(60)}\n`
+  text += `${summaryLine}\n\n`
+
   if (reportFormat.value === 'bullets') {
-    text += `Resolved ${selectedTickets.value.length} tickets:\n\n`
+    text += `RESOLVED TICKETS (${count})\n`
+    text += `${'-'.repeat(60)}\n`
     selectedTickets.value.forEach(t => {
       const id = t.ticket_no || `#${t.id}`
-      text += `- [${id}] ${t.title} (${t.created})\n`
+      text += `• [${id}] ${t.title} (${t.created})\n`
+      if (t.resolution) {
+        text += `  Resolution: ${t.resolution}\n`
+      }
     })
-  } 
+  }
   else if (reportFormat.value === 'detailed') {
-    text += `Detailed summary of ${selectedTickets.value.length} resolved tickets:\n\n`
+    text += `DETAILED RESOLUTION LOG (${count} tickets)\n`
+    text += `${'-'.repeat(60)}\n`
     selectedTickets.value.forEach((t, i) => {
       const id = t.ticket_no || `#${t.id}`
       text += `${i + 1}. Ticket ${id}: ${t.title}\n`
-      text += `   Category: ${t.category} | Priority: ${t.priority} | Requester: ${t.requester}\n`
-      text += `   Date Resolved: ${t.created}\n`
-      text += `   Remarks: ${t.remarks}\n\n`
+      text += `   Category  : ${t.category}\n`
+      text += `   Priority  : ${t.priority}\n`
+      text += `   Requester : ${t.requester}\n`
+      text += `   Resolved  : ${t.created}\n`
+      text += `   Remarks   : ${t.remarks || '—'}\n`
+      text += `   Resolution: ${t.resolution || '—'}\n\n`
     })
   }
   else if (reportFormat.value === 'csv') {
-    text += `Ticket No,Title,Category,Requester,Priority,Date Resolved\n`
+    text += `Ticket No,Title,Category,Requester,Priority,Date Resolved,Resolution\n`
     selectedTickets.value.forEach(t => {
       const id = t.ticket_no || `#${t.id}`
-      text += `"${id}","${t.title}","${t.category}","${t.requester}","${t.priority}","${t.created}"\n`
+      const res = (t.resolution || '').replace(/"/g, '""')
+      text += `"${id}","${t.title}","${t.category}","${t.requester}","${t.priority}","${t.created}","${res}"\n`
     })
   }
-  
+
   return text
 })
 

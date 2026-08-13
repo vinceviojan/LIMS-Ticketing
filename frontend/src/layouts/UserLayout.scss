@@ -1,157 +1,203 @@
 @import '@/css/themes.scss';
 
 /* =========================================================
-   USER SIDEBAR — Light Gray Theme with Nav Background Font Color
+   USER SIDEBAR — Light Gray Theme
    ========================================================= */
 
 .user-sidebar {
-    background: #f8fafc !important;
-    border-right: 1px solid #e2e8f0 !important;
+  background: #f8fafc !important;
+  border-right: 1px solid #e2e8f0 !important;
+  overflow-x: hidden !important;
 
-    /* =======================================================
+  /* =======================================================
+     SCROLL AREA — no horizontal overflow
+     ======================================================= */
+  &__scroll {
+    overflow-x: hidden !important;
+  }
+
+  /* =======================================================
      SIDEBAR LOGOS
      ======================================================= */
-    &__logos {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        width: 100%;
-        padding: 18px 12px 10px;
-        box-sizing: border-box;
-    }
+  &__logos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 18px 12px 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
 
-    &__logo-image {
-        width: 100px;
-        height: 100px;
-        object-fit: contain;
-        display: block;
-        flex-shrink: 0;
-        max-width: 100px;
-        max-height: 100px;
-    }
+  &__logo-image {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+    max-width: 100px;
+    max-height: 100px;
+  }
 
-    /* =======================================================
+  /* =======================================================
      SIDEBAR TITLE
      ======================================================= */
-    &__title {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        width: 100%;
-        padding: 5px 12px 12px;
-        box-sizing: border-box;
-        font-family: 'Nunito', 'Quicksand', sans-serif;
-        font-weight: 800;
-        font-size: 0.95rem;
-        line-height: 1.2;
-        color: $primary-blue;
-        text-align: center;
-    }
+  &__title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 5px 12px 12px;
+    box-sizing: border-box;
+    font-family: 'Nunito', 'Quicksand', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    color: $primary-blue;
+    text-align: center;
+  }
 
-    &__logo-icon {
-        color: $primary-blue;
-        flex-shrink: 0;
-    }
+  &__logo-icon {
+    color: $primary-blue;
+    flex-shrink: 0;
+  }
 
-    /* =======================================================
+  /* =======================================================
+     SECTION HEADERS
+     ======================================================= */
+  &__section-header {
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.07em !important;
+    color: #94a3b8 !important;
+    padding: 12px 12px 4px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* =======================================================
      NAVIGATION
      ======================================================= */
-    &__nav {
-        padding: 4px 8px;
+  &__nav {
+    padding: 4px 8px;
+    overflow-x: hidden;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    margin-bottom: 2px;
+    min-height: 44px;
+    color: #475569;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+    overflow: hidden;
+
+    &:hover {
+      background: #e2e8f0;
+      color: $primary-blue;
     }
 
-    &__item {
-        display: flex;
-        align-items: center;
-        border-radius: 8px;
-        margin-bottom: 2px;
-        min-height: 44px;
-        color: #475569;
-        font-size: 0.88rem;
-        font-weight: 500;
-        transition: background 0.15s ease, color 0.15s ease;
+    &--active {
+      background: #e0e7ff !important;
+      color: $primary-blue !important;
+      font-weight: 700;
+      border-left: 3px solid $primary-blue;
+      border-radius: 0 8px 8px 0;
 
-        &:hover {
-            background: #e2e8f0;
-            color: $primary-blue;
-        }
-
-        &--active {
-            background: #e0e7ff !important;
-            color: $primary-blue !important;
-            font-weight: 700;
-            border-left: 3px solid $primary-blue;
-            border-radius: 0 8px 8px 0;
-
-            .q-icon {
-                color: $primary-blue !important;
-            }
-        }
+      .q-icon {
+        color: $primary-blue !important;
+      }
     }
+  }
+
+  &__item-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* =========================================================
+   QUASAR DRAWER — force no horizontal scroll
+   ========================================================= */
+.user-sidebar .q-drawer__content {
+  overflow-x: hidden !important;
+}
+
+.user-sidebar .q-scrollarea__container {
+  overflow-x: hidden !important;
 }
 
 /* =========================================================
    SEPARATOR
    ========================================================= */
 .user-sidebar .q-separator {
-    background: #cbd5e1 !important;
+  background: #cbd5e1 !important;
 }
 
 /* =========================================================
    RESPONSIVE
    ========================================================= */
 @media (max-width: 768px) {
-    .user-sidebar {
-        &__logos {
-            gap: 8px;
-            padding-top: 15px;
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
-        &__logo-image {
-            width: 65px;
-            height: 65px;
-            max-width: 65px;
-            max-height: 65px;
-        }
-
-        &__title {
-            font-size: 0.9rem;
-            padding-bottom: 10px;
-        }
-
-        &__item {
-            min-height: 42px;
-            font-size: 0.85rem;
-        }
+  .user-sidebar {
+    &__logos {
+      gap: 8px;
+      padding-top: 15px;
+      padding-left: 10px;
+      padding-right: 10px;
     }
+
+    &__logo-image {
+      width: 65px;
+      height: 65px;
+      max-width: 65px;
+      max-height: 65px;
+    }
+
+    &__title {
+      font-size: 0.9rem;
+      padding-bottom: 10px;
+    }
+
+    &__item {
+      min-height: 42px;
+      font-size: 0.85rem;
+    }
+  }
 }
 
 @media (max-width: 480px) {
-    .user-sidebar {
-        &__logos {
-            gap: 6px;
-            padding-top: 12px;
-        }
-
-        &__logo-image {
-            width: 55px;
-            height: 55px;
-            max-width: 55px;
-            max-height: 55px;
-        }
-
-        &__title {
-            font-size: 0.85rem;
-            padding-bottom: 8px;
-        }
-
-        &__item {
-            min-height: 40px;
-            font-size: 0.82rem;
-        }
+  .user-sidebar {
+    &__logos {
+      gap: 6px;
+      padding-top: 12px;
     }
+
+    &__logo-image {
+      width: 55px;
+      height: 55px;
+      max-width: 55px;
+      max-height: 55px;
+    }
+
+    &__title {
+      font-size: 0.85rem;
+      padding-bottom: 8px;
+    }
+
+    &__item {
+      min-height: 40px;
+      font-size: 0.82rem;
+    }
+  }
 }

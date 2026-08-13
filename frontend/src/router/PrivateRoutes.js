@@ -8,44 +8,44 @@ export const PrivateRoutes = [
       {
         path: 'dashboard',
         name: 'admin-dashboard',
-        component: () => import('../pages/Admin/DashboardPage.vue')
+        component: () => import('../pages/Admin/DashboardPage.vue'),
       },
       {
         path: 'users',
         name: 'admin-users',
-        component: () => import('../pages/Admin/UserPage.vue')
+        component: () => import('../pages/Admin/UserPage.vue'),
       },
       {
         path: 'organization',
         name: 'admin-organization',
-        component: () => import('../pages/Admin/OrganizationPage.vue')
+        component: () => import('../pages/Admin/OrganizationPage.vue'),
       },
       {
         path: 'ticket-management',
         name: 'admin-tickets',
-        component: () => import('../pages/Admin/TicketManagementPage.vue')
+        component: () => import('../pages/Admin/TicketManagementPage.vue'),
       },
       {
         path: 'problem-categories',
         name: 'admin-problem-categories',
-        component: () => import('../pages/Admin/ProblemCategoriesPage.vue')
+        component: () => import('../pages/Admin/ProblemCategoriesPage.vue'),
       },
       {
         path: 'reports',
         name: 'admin-reports',
-        component: () => import('../pages/Admin/ReportPage.vue')
+        component: () => import('../pages/Admin/ReportPage.vue'),
       },
       {
         path: 'logs',
         name: 'admin-logs',
-        component: () => import('../pages/Admin/LogsPage.vue')
+        component: () => import('../pages/Admin/LogsPage.vue'),
       },
       {
         path: 'settings',
         name: 'admin-settings',
-        component: () => import('../pages/Admin/SettingsPage.vue')
-      }
-    ]
+        component: () => import('../pages/Admin/SettingsPage.vue'),
+      },
+    ],
   },
 
   {
@@ -57,24 +57,24 @@ export const PrivateRoutes = [
       {
         path: 'dashboard',
         name: 'staff-dashboard',
-        component: () => import('../pages/Staff/DashboardPage.vue')
+        component: () => import('../pages/Staff/DashboardPage.vue'),
       },
       {
         path: 'ticket-management',
         name: 'staff-tickets',
-        component: () => import('../pages/Staff/TicketManagementPage.vue')
+        component: () => import('../pages/Staff/TicketManagementPage.vue'),
       },
       {
         path: 'settings',
         name: 'staff-settings',
-        component: () => import('../pages/Staff/SettingsPage.vue')
+        component: () => import('../pages/Staff/SettingsPage.vue'),
       },
       {
         path: 'accomplishment',
         name: 'staff-accomplishment',
-        component: () => import('../pages/Staff/AccomplishmentReport.vue')
-      }
-    ]
+        component: () => import('../pages/Staff/AccomplishmentReport.vue'),
+      },
+    ],
   },
 
   {
@@ -86,18 +86,18 @@ export const PrivateRoutes = [
       {
         path: 'dashboard',
         name: 'user-dashboard',
-        component: () => import('../pages/User/DashboardPage.vue')
+        component: () => import('../pages/User/DashboardPage.vue'),
       },
       {
         path: 'ticket-management',
         name: 'user-tickets',
-        component: () => import('../pages/User/TicketManagementPage.vue')
+        component: () => import('../pages/User/TicketManagementPage.vue'),
       },
       {
         path: 'settings',
         name: 'user-settings',
-        component: () => import('../pages/User/SettingsPage.vue')
-      }
-    ]
-  }
+        component: () => import('../pages/User/SettingsPage.vue'),
+      },
+    ],
+  },
 ]

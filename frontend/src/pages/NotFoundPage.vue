@@ -1,7 +1,6 @@
 <template>
   <div class="error-page">
     <div class="error-page__content">
-
       <span class="error-page__code">404</span>
 
       <div class="error-page__rule" />
@@ -15,11 +14,8 @@
         <button class="error-page__btn error-page__btn--ghost" @click="$router.back()">
           Go back
         </button>
-        <button class="error-page__btn error-page__btn--solid" @click="goHome">
-          Return home
-        </button>
+        <button class="error-page__btn error-page__btn--solid" @click="goHome">Return home</button>
       </div>
-
     </div>
   </div>
 </template>
@@ -32,7 +28,9 @@ const router = useRouter()
 const authStore = inject('authStore', null)
 
 const goHome = () => {
-  const role = authStore?.userRole || (JSON.parse(localStorage.getItem('user') || '{}')?.role || '').toLowerCase()
+  const role =
+    authStore?.userRole ||
+    (JSON.parse(localStorage.getItem('user') || '{}')?.role || '').toLowerCase()
   if (role === 'admin') return router.push('/admin/dashboard')
   if (role === 'staff') return router.push('/staff/dashboard')
   if (role === 'user') return router.push('/user/dashboard')
@@ -101,7 +99,10 @@ const goHome = () => {
   padding: 9px 20px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .error-page__btn--ghost {
