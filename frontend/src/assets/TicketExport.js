@@ -60,7 +60,7 @@ const FIELD_KEYS = [
 // ================================================================
 
 export function mapTicketToFields(ticket = {}) {
-    return {
+    const fields = {
         // ----------------------------------------------------------
         // TICKET INFORMATION
         // ----------------------------------------------------------
@@ -133,14 +133,26 @@ export function mapTicketToFields(ticket = {}) {
             '',
 
         // ----------------------------------------------------------
-        // RESOLUTION
+        // RESOLUTION & TROUBLESHOOTER
         // ----------------------------------------------------------
 
         ASSIGNED_TO:
-            ticket.assignedStaff ??
-            ticket.assigned_to ??
-            ticket.assignedTo ??
-            'Unassigned',
+            (typeof ticket.assignedStaff === 'string' && ticket.assignedStaff.trim() ? ticket.assignedStaff : null) ||
+            ticket.assigned_staff?.name ||
+            (ticket.assigned_staff && typeof ticket.assigned_staff === 'object' ? `${ticket.assigned_staff.first_name || ''} ${ticket.assigned_staff.last_name || ''}`.trim() : null) ||
+            (typeof ticket.assigned_staff === 'string' ? ticket.assigned_staff : null) ||
+            ticket.assigned_to ||
+            ticket.assignedTo ||
+            '',
+
+        POSITION:
+            ticket.assignedPosition ||
+            ticket.assigned_position ||
+            (ticket.assigned_staff && typeof ticket.assigned_staff === 'object' ? ticket.assigned_staff.position : '') ||
+            (ticket.assignedStaff && typeof ticket.assignedStaff === 'object' ? ticket.assignedStaff.position : '') ||
+            (ticket.raw_assigned_staff && typeof ticket.raw_assigned_staff === 'object' ? ticket.raw_assigned_staff.position : '') ||
+            ticket.position ||
+            'IT Staff',
 
         DATE_ACTION:
             ticket.dateAction ??
@@ -166,30 +178,23 @@ export function mapTicketToFields(ticket = {}) {
             '',
 
         // ----------------------------------------------------------
-        // TROUBLESHOOTER
-        // ----------------------------------------------------------
-
-        POSITION:
-            ticket.assignedPosition ??
-            ticket.position ??
-            '',
-
-        // ----------------------------------------------------------
         // APPROVAL
-        //
-        // No predefined position is used.
-        // The approval position comes directly from the ticket.
         // ----------------------------------------------------------
 
         APPROVED_BY:
-            ticket.approvedBy ??
-            ticket.approved_by ??
-            '',
+            (typeof ticket.approvedBy === 'string' && ticket.approvedBy.trim() ? ticket.approvedBy : null) ||
+            ticket.approved_by?.name ||
+            (ticket.approved_by && typeof ticket.approved_by === 'object' ? `${ticket.approved_by.first_name || ''} ${ticket.approved_by.last_name || ''}`.trim() : null) ||
+            (typeof ticket.approved_by === 'string' ? ticket.approved_by : null) ||
+            'Authorized Approver',
 
         APPROVED_POSITION:
-            ticket.approvedPosition ??
-            ticket.approved_position ??
-            '',
+            ticket.approvedPosition ||
+            ticket.approved_position ||
+            (ticket.approved_by && typeof ticket.approved_by === 'object' ? ticket.approved_by.position : '') ||
+            (ticket.approvedBy && typeof ticket.approvedBy === 'object' ? ticket.approvedBy.position : '') ||
+            (ticket.raw_approved_by && typeof ticket.raw_approved_by === 'object' ? ticket.raw_approved_by.position : '') ||
+            'Laboratory Chief',
 
         // ----------------------------------------------------------
         // CLOSING
@@ -227,6 +232,17 @@ export function mapTicketToFields(ticket = {}) {
             ticket.pageNo ??
             '1 of 1',
     }
+
+    console.log('📌 [TicketExport API Data Mapped]:', {
+        rawInput: ticket,
+        mappedFields: fields,
+        assignedStaffName: fields.ASSIGNED_TO,
+        assignedStaffPosition: fields.POSITION,
+        approvedByName: fields.APPROVED_BY,
+        approvedByPosition: fields.APPROVED_POSITION,
+    })
+
+    return fields
 }
 
 // ================================================================
@@ -649,6 +665,7 @@ export async function exportTicketToPdf(
     ticket,
     logos
 ) {
+    console.log('🚀 [Export Single Ticket PDF Initiated]:', ticket)
     if (!ticket) {
         throw new Error(
             'No ticket provided for export.'
@@ -690,6 +707,7 @@ export async function exportTicketsToPdf(
     tickets = [],
     getLogos
 ) {
+    console.log('🚀 [Export Multiple Tickets PDF Initiated]:', tickets)
     if (!tickets.length) {
         throw new Error(
             'No tickets selected for export.'

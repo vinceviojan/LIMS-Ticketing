@@ -592,19 +592,31 @@
         .approval-name {
             font-size: 10pt;
 
-            min-height: 11pt;
+            font-weight: bold;
+
+            text-transform: uppercase;
+
+            min-height: 14pt;
 
             outline: none;
 
             padding-left: 4px;
+
+            color: #111827;
         }
 
         .approval-position {
-            font-size: 10pt;
+            font-size: 9.5pt;
 
-            min-height: 10pt;
+            font-weight: normal;
 
-            margin-top: 1pt;
+            font-style: italic;
+
+            color: #374151;
+
+            min-height: 12pt;
+
+            margin-top: 2pt;
 
             outline: none;
 
@@ -729,7 +741,34 @@
                 margin-right: 0 !important;
             }
 
-            /* END USER DETAILS */
+            /* END USER DETAILS
+               The section header is a DIV while the content is a
+               collapsed-border TABLE. Give both the same outer
+               print box so the right edge is visually straight. */
+            .end-user-details-bar,
+            .end-user-details-table {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            .end-user-details-bar {
+                width: 100% !important;
+                padding-left: 7px !important;
+                padding-right: 7px !important;
+                border-left: 0.75pt solid var(--border) !important;
+                border-right: 0.75pt solid var(--border) !important;
+                border-bottom: none !important;
+            }
+
+            .end-user-details-table {
+                border-left: 0.75pt solid var(--border) !important;
+                border-right: 0.75pt solid var(--border) !important;
+                border-top: none !important;
+            }
+
             .section-gap .section-bar+.form-table {
                 width: 100% !important;
                 max-width: 100% !important;
@@ -763,6 +802,19 @@
                 overflow: hidden !important;
             }
 
+            /* Final table geometry for Print Preview */
+            table.form-table {
+                display: table !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+            }
+
+            table.form-table td {
+                box-sizing: border-box !important;
+            }
+
             /* Use the exact same outer border box for every section. */
             .section-bar,
             table.form-table,
@@ -777,6 +829,111 @@
 
             .text-box {
                 display: flex !important;
+            }
+
+            /* =====================================================
+               ALL SECTION HEADER / TABLE OUTER EDGES
+               Use one exact border box for every section.
+               This removes the 1px/fractional right-edge drift
+               visible in Chrome/Edge Print Preview.
+            ===================================================== */
+
+            .form-page>.section-gap {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            .form-page>.section-gap>.section-bar,
+            .form-page>.section-gap>table.form-table,
+            .form-page>.section-gap>.text-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Keep TABLE elements as real tables in Print Preview.
+               display:block causes Chrome/Edge to calculate the
+               collapsed right border differently. */
+            .form-page>.section-gap>table.form-table,
+            .form-page table.form-table {
+                display: table !important;
+                border-collapse: collapse !important;
+                table-layout: fixed !important;
+            }
+
+            .form-page>.section-gap>.section-bar {
+                display: flex !important;
+            }
+
+            .form-page>.section-gap>.text-box {
+                display: flex !important;
+            }
+
+            /* Header bars: their border box must end at the
+               exact same x-position as the table below. */
+            .resolution-header,
+            .end-user-details-bar,
+            .final-remarks-header,
+            .closing-approval-header,
+            .action-details-bar {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* Every section table uses the same outer border box. */
+            .resolution-responsible-table,
+            .end-user-details-table,
+            .form-page table.form-table {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                table-layout: fixed !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* Text boxes directly below section headers. */
+            .action-details-box,
+            .form-page>.section-gap>.text-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* Keep the outermost left/right borders identical. */
+            .resolution-header,
+            .end-user-details-bar,
+            .final-remarks-header,
+            .closing-approval-header,
+            .action-details-bar,
+            .resolution-responsible-table,
+            .end-user-details-table,
+            .form-page table.form-table,
+            .action-details-box,
+            .form-page>.section-gap>.text-box {
+                border-left-width: 0.75pt !important;
+                border-right-width: 0.75pt !important;
+            }
+
+            /* Prevent the centered headings from changing the
+               width because of their flex layout. */
+            .final-remarks-header,
+            .closing-approval-header {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
             }
         }
     </style>
@@ -1002,7 +1159,7 @@
                         <td class="value-cell" data-field="TICKET_ID" contenteditable="true"></td>
 
                         <td class="label-cell">
-                            DATA SUBMITTED:
+                            DATE SUBMITTED:
                         </td>
 
                         <td class="value-cell" rowspan="2" data-field="DATE_CREATED" contenteditable="true"></td>
@@ -1052,12 +1209,12 @@
 
             <div class="section-gap">
 
-                <div class="section-bar">
+                <div class="section-bar end-user-details-bar">
                     END USER DETAILS
                 </div>
 
 
-                <table class="form-table" style="border-top:none;">
+                <table class="form-table end-user-details-table" style="border-top:none;">
 
                     <colgroup>
 
@@ -1134,14 +1291,14 @@
 
             <div class="section-gap">
 
-                <div class="section-bar">
+                <div class="section-bar resolution-header">
                     RESOLUTION
                 </div>
 
 
                 <!-- RESPONSIBLE PERSON -->
 
-                <table class="form-table" style="border-top:none;">
+                <table class="form-table resolution-responsible-table" style="border-top:none;">
 
                     <colgroup>
 
@@ -1224,7 +1381,7 @@
 
             <div class="section-gap">
 
-                <div class="section-bar centered">
+                <div class="section-bar centered final-remarks-header">
                     FINAL REMARKS
                 </div>
 
@@ -1244,7 +1401,7 @@
 
             <div class="section-gap">
 
-                <div class="section-bar centered">
+                <div class="section-bar centered closing-approval-header">
                     SERVICE REQUEST TICKET CLOSING APPROVAL
                 </div>
 
@@ -1298,28 +1455,6 @@
                     </tr>
 
 
-                    <tr>
-
-                        <!-- APPROVAL FOOTER -->
-
-                        <td class="footer-cell">
-
-                            APPROVAL DATE:
-
-                            <span data-field="DATE_CLOSED" contenteditable="true"></span>
-
-                        </td>
-
-
-                        <td class="footer-cell">
-
-                            CLOSED DATE:
-
-                            <span data-field="CLOSED_DATE" contenteditable="true"></span>
-
-                        </td>
-
-                    </tr>
 
                 </table>
 

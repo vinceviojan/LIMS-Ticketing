@@ -218,6 +218,7 @@ class ReportController extends Controller
             return [
                 'id' => $item->assigned_staff_id,
                 'name' => $user ? ($user->name ?: "{$user->first_name} {$user->last_name}") : 'Unknown Staff',
+                'position' => $user?->position ?? '',
                 'dept' => $dept,
                 'resolved_count' => (int) $item->resolved_count,
                 'avg_rating' => $avgRating ? floatval($avgRating) : null,

@@ -266,8 +266,12 @@ async function fetchTickets() {
       requester: t.user ? (t.user.first_name + ' ' + t.user.last_name) : 'Unknown',
       email: t.user ? t.user.email : '',
       assignedStaff: t.assigned_staff ? (t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`) : '',
+      assignedPosition: t.assigned_staff?.position || t.assigned_position || '',
+      assigned_staff: t.assigned_staff,
       assigned_staff_id: t.assigned_staff_id,
       approved_by: t.approved_by ? (t.approved_by.name || `${t.approved_by.first_name} ${t.approved_by.last_name}`) : '',
+      approvedPosition: t.approved_by?.position || t.approved_position || '',
+      approved_by_obj: t.approved_by,
       category: t.problem_category ? t.problem_category.categories : 'Uncategorized',
       problem_category_id: t.problem_category_id,
       priority: t.urgency || 'NORMAL',
@@ -352,6 +356,7 @@ function viewTicket(ticket) {
 // ── Export ──────────────────────────────────────────────────
 async function exportSelected() {
   const selection = selectedTickets.value
+  console.log('🖱️ [Export Selected Clicked]:', selection)
   if (!selection.length) {
     $q.notify({ type: 'warning', message: 'Select one or more tickets first.' })
     return
