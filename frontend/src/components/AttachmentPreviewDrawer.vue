@@ -7,12 +7,15 @@
     transition-show="slide-left"
     transition-hide="slide-right"
   >
-    <q-card class="attachment-drawer" style="width: 480px; max-width: 90vw; height: 100vh; display: flex; flex-direction: column;">
+    <q-card
+      class="attachment-drawer"
+      style="width: 480px; max-width: 90vw; height: 100vh; display: flex; flex-direction: column"
+    >
       <!-- Header -->
       <q-card-section class="bg-primary text-white row items-center justify-between q-py-sm">
         <div class="row items-center gap-xs">
           <q-icon :name="getIcon(attachment)" size="22px" />
-          <span class="text-subtitle1 text-weight-bold ellipsis" style="max-width: 320px;">
+          <span class="text-subtitle1 text-weight-bold ellipsis" style="max-width: 320px">
             {{ attachment?.file_name || 'Attachment Preview' }}
           </span>
         </div>
@@ -22,7 +25,9 @@
       <q-separator />
 
       <!-- Body Preview Area -->
-      <q-card-section class="col flex flex-center bg-grey-2 q-pa-none overflow-hidden relative-position">
+      <q-card-section
+        class="col flex flex-center bg-grey-2 q-pa-none overflow-hidden relative-position"
+      >
         <div v-if="loading" class="column items-center">
           <q-spinner-dots color="primary" size="40px" />
           <span class="text-caption text-grey-7 q-mt-xs">Loading attachment...</span>
@@ -31,7 +36,14 @@
         <div v-else-if="error" class="column items-center q-pa-md text-center">
           <q-icon name="error_outline" color="negative" size="48px" />
           <span class="text-subtitle2 text-grey-8 q-mt-sm">{{ error }}</span>
-          <q-btn unelevated no-caps label="Try Direct Download" color="primary" class="q-mt-sm" @click="downloadFile" />
+          <q-btn
+            unelevated
+            no-caps
+            label="Try Direct Download"
+            color="primary"
+            class="q-mt-sm"
+            @click="downloadFile"
+          />
         </div>
 
         <!-- Image Preview -->
@@ -39,34 +51,49 @@
           v-else-if="isImage"
           :src="blobUrl"
           alt="Attachment Preview"
-          style="max-width: 100%; max-height: 100%; object-fit: contain; padding: 12px;"
+          style="max-width: 100%; max-height: 100%; object-fit: contain; padding: 12px"
         />
 
         <!-- PDF Preview -->
         <iframe
           v-else-if="isPdf"
           :src="blobUrl"
-          style="width: 100%; height: 100%; border: none;"
+          style="width: 100%; height: 100%; border: none"
         ></iframe>
 
         <!-- External Link / Fallback -->
         <div v-else class="column items-center q-pa-lg text-center">
           <q-icon name="insert_drive_file" color="primary" size="64px" />
           <div class="text-subtitle1 text-weight-bold q-mt-md">{{ attachment?.file_name }}</div>
-          <div v-if="attachment?.file_size" class="text-caption text-grey-7">{{ formatBytes(attachment.file_size) }}</div>
-          <div v-if="attachment?.external_url" class="text-caption text-primary text-weight-medium q-mt-xs word-break">
+          <div v-if="attachment?.file_size" class="text-caption text-grey-7">
+            {{ formatBytes(attachment.file_size) }}
+          </div>
+          <div
+            v-if="attachment?.external_url"
+            class="text-caption text-primary text-weight-medium q-mt-xs word-break"
+          >
             {{ attachment.external_url }}
           </div>
 
           <q-btn
             v-if="attachment?.external_url"
-            unelevated no-caps icon="open_in_new" label="Open Google Drive Link"
-            color="primary" class="q-mt-md" @click="openExternal"
+            unelevated
+            no-caps
+            icon="open_in_new"
+            label="Open Google Drive Link"
+            color="primary"
+            class="q-mt-md"
+            @click="openExternal"
           />
           <q-btn
             v-else
-            unelevated no-caps icon="download" label="Download File"
-            color="primary" class="q-mt-md" @click="downloadFile"
+            unelevated
+            no-caps
+            icon="download"
+            label="Download File"
+            color="primary"
+            class="q-mt-md"
+            @click="downloadFile"
           />
         </div>
       </q-card-section>
@@ -81,8 +108,13 @@
         <div class="row gap-xs">
           <q-btn
             v-if="blobUrl"
-            flat dense icon="download" label="Save"
-            color="primary" no-caps @click="downloadFile"
+            flat
+            dense
+            icon="download"
+            label="Save"
+            color="primary"
+            no-caps
+            @click="downloadFile"
           />
           <q-btn flat dense label="Close" color="grey-7" no-caps v-close-popup />
         </div>
@@ -103,13 +135,13 @@ const props = defineProps({
 defineEmits(['update:modelValue'])
 
 const loading = ref(false)
-const error   = ref(null)
+const error = ref(null)
 const blobUrl = ref(null)
 
 const isImage = computed(() => {
   if (!props.attachment) return false
   const type = (props.attachment.file_type || props.attachment.file_name || '').toLowerCase()
-  return ['png', 'jpg', 'jpeg', 'gif', 'webp'].some(ext => type.includes(ext))
+  return ['png', 'jpg', 'jpeg', 'gif', 'webp'].some((ext) => type.includes(ext))
 })
 
 const isPdf = computed(() => {
@@ -118,17 +150,20 @@ const isPdf = computed(() => {
   return type.includes('pdf')
 })
 
-watch(() => props.modelValue, async (isOpen) => {
-  if (isOpen && props.attachment) {
-    clearBlob()
-    if (props.attachment.external_url) {
-      return
+watch(
+  () => props.modelValue,
+  async (isOpen) => {
+    if (isOpen && props.attachment) {
+      clearBlob()
+      if (props.attachment.external_url) {
+        return
+      }
+      await loadAttachmentBlob()
+    } else {
+      clearBlob()
     }
-    await loadAttachmentBlob()
-  } else {
-    clearBlob()
-  }
-})
+  },
+)
 
 function clearBlob() {
   if (blobUrl.value) {
@@ -146,10 +181,10 @@ async function loadAttachmentBlob() {
   try {
     const url = props.attachment.legacy_type
       ? `/tickets/${props.attachment.ticket_id}/attachment/${props.attachment.legacy_type}`
-      : `/attachments/${props.attachment.id}`;
-      
+      : `/attachments/${props.attachment.id}`
+
     const res = await api.get(url, {
-      responseType: 'blob'
+      responseType: 'blob',
     })
     blobUrl.value = URL.createObjectURL(res.data)
   } catch (err) {
@@ -180,7 +215,10 @@ function downloadFile() {
     a.click()
     document.body.removeChild(a)
   } else if (props.attachment?.legacy_type && props.attachment?.ticket_id) {
-    window.open(`/api/tickets/${props.attachment.ticket_id}/attachment/${props.attachment.legacy_type}`, '_blank')
+    window.open(
+      `/api/tickets/${props.attachment.ticket_id}/attachment/${props.attachment.legacy_type}`,
+      '_blank',
+    )
   } else if (props.attachment?.id) {
     window.open(`/api/attachments/${props.attachment.id}`, '_blank')
   }
@@ -191,7 +229,7 @@ function getIcon(att) {
   if (att.external_url || att.file_type === 'gdrive') return 'add_link'
   const ext = (att.file_type || att.file_name || '').toLowerCase()
   if (ext.includes('pdf')) return 'picture_as_pdf'
-  if (['png', 'jpg', 'jpeg'].some(x => ext.includes(x))) return 'image'
+  if (['png', 'jpg', 'jpeg'].some((x) => ext.includes(x))) return 'image'
   return 'insert_drive_file'
 }
 

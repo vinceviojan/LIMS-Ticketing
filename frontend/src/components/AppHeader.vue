@@ -1,13 +1,22 @@
 <template>
   <q-header class="app-header" elevated>
     <q-toolbar class="app-header__toolbar">
-
       <!-- ── Drawer Toggle ────────────────────────────── -->
       <q-btn flat dense round icon="menu" @click="$emit('toggle-drawer')" class="q-mr-sm" />
 
       <!-- ── Brand / Logo ─────────────────────────────── -->
       <div class="app-header__brand">
-        <span class="app-header__title">LIMS Helpdesk</span>
+        <span class="app-header__title" style="cursor: default">
+          LIMS Helpdesk
+          <q-tooltip
+            anchor="bottom middle"
+            self="top middle"
+            :offset="[0, 6]"
+            class="app-header__version-tooltip"
+          >
+            LIMS Helpdesk v1.0.0
+          </q-tooltip>
+        </span>
       </div>
 
       <q-space />
@@ -61,7 +70,6 @@
           </q-list>
         </q-menu>
       </q-btn>
-
     </q-toolbar>
 
     <!-- ── Logout Confirm Dialog ─────────────────────── -->
@@ -77,13 +85,7 @@
         </q-card-section>
 
         <q-card-actions align="right" class="app-header__dialog-actions">
-          <q-btn
-            flat
-            no-caps
-            label="Cancel"
-            class="app-header__dialog-cancel"
-            v-close-popup
-          />
+          <q-btn flat no-caps label="Cancel" class="app-header__dialog-cancel" v-close-popup />
           <q-btn
             unelevated
             no-caps

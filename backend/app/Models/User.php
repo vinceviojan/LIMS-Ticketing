@@ -64,4 +64,20 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Section::class);
     }
+
+    /**
+     * Get user position with fallback defaults.
+     */
+    public function getPositionAttribute($value): string
+    {
+        if (!empty($value)) {
+            return $value;
+        }
+
+        return match (strtoupper($this->role ?? '')) {
+            'ADMIN' => 'IT Officer III',
+            'STAFF' => 'Project Development Officer',
+            default => 'Staff Member',
+        };
+    }
 }

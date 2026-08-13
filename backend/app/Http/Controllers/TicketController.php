@@ -83,9 +83,9 @@ class TicketController extends Controller
         $query = (clone $baseQuery)
             ->select(self::LIST_COLUMNS)
             ->with([
-                'user:id,first_name,last_name,name,email',
-                'assignedStaff:id,first_name,last_name,name',
-                'approvedBy:id,first_name,last_name,name',
+                'user:id,first_name,last_name,name,email,position',
+                'assignedStaff:id,first_name,last_name,name,position',
+                'approvedBy:id,first_name,last_name,name,position',
                 'problemCategory:id,categories',
                 'attachments',
             ]);

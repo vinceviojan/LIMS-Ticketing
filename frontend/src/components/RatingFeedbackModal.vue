@@ -4,10 +4,11 @@
     persistent
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <q-card style="width: 520px; max-width: 92vw; border-radius: 16px;" class="bg-white shadow-10">
-      
+    <q-card style="width: 520px; max-width: 92vw; border-radius: 16px" class="bg-white shadow-10">
       <!-- Header -->
-      <q-card-section class="q-pa-lg bg-amber-1 border-bottom-amber row items-center justify-between">
+      <q-card-section
+        class="q-pa-lg bg-amber-1 border-bottom-amber row items-center justify-between"
+      >
         <div class="row items-center gap-sm">
           <q-avatar size="42px" color="amber-3" text-color="amber-10" icon="rate_review" />
           <div>
@@ -43,14 +44,14 @@
             How would you rate the resolution service? <span class="text-negative">*</span>
           </div>
           <div class="row items-center gap-md q-py-xs">
-            <q-rating
-              v-model="rating"
-              max="5"
-              size="34px"
-              color="amber-8"
-              icon="star"
-            />
-            <q-chip dense color="amber-2" text-color="amber-10" class="text-weight-bold" style="font-size: 0.85rem; padding: 4px 12px;">
+            <q-rating v-model="rating" max="5" size="34px" color="amber-8" icon="star" />
+            <q-chip
+              dense
+              color="amber-2"
+              text-color="amber-10"
+              class="text-weight-bold"
+              style="font-size: 0.85rem; padding: 4px 12px"
+            >
               {{ ratingLabel }}
             </q-chip>
           </div>
@@ -75,13 +76,7 @@
       <!-- Actions -->
       <q-separator />
       <q-card-actions align="right" class="q-pa-md bg-grey-1 gap-sm">
-        <q-btn
-          flat
-          no-caps
-          label="Cancel"
-          color="grey-7"
-          v-close-popup
-        />
+        <q-btn flat no-caps label="Cancel" color="grey-7" v-close-popup />
         <q-btn
           color="amber-9"
           label="Submit Feedback"
@@ -89,7 +84,7 @@
           unelevated
           no-caps
           class="text-weight-bold"
-          style="padding: 6px 20px;"
+          style="padding: 6px 20px"
           :loading="submitting"
           :disable="!rating || !feedback.trim()"
           @click="submitRating"
@@ -132,12 +127,16 @@ const ratingTextMap = {
 
 const ratingLabel = computed(() => ratingTextMap[rating.value] || `${rating.value} Stars`)
 
-watch(() => props.ticket, (newVal) => {
-  if (newVal) {
-    rating.value = newVal.rating || 5
-    feedback.value = newVal.feedback || ''
-  }
-}, { immediate: true })
+watch(
+  () => props.ticket,
+  (newVal) => {
+    if (newVal) {
+      rating.value = newVal.rating || 5
+      feedback.value = newVal.feedback || ''
+    }
+  },
+  { immediate: true },
+)
 
 async function submitRating() {
   if (!props.ticket?.id || !rating.value || !feedback.value.trim()) return

@@ -1,6 +1,10 @@
 <template>
-  <q-dialog :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" persistent>
-    <q-card class="ticket-page__dialog" style="max-width: 650px; width: 100%;">
+  <q-dialog
+    :model-value="modelValue"
+    @update:model-value="$emit('update:modelValue', $event)"
+    persistent
+  >
+    <q-card class="ticket-page__dialog" style="max-width: 650px; width: 100%">
       <q-card-section class="ticket-page__dialog-head">
         <q-icon name="edit_note" size="26px" color="primary" />
         <span class="ticket-page__dialog-title">New Ticket</span>
@@ -11,7 +15,7 @@
       <q-separator />
 
       <q-form @submit="submitTicket">
-        <q-card-section class="ticket-page__dialog-body" style="max-height: 65vh; overflow-y: auto;">
+        <q-card-section class="ticket-page__dialog-body" style="max-height: 65vh; overflow-y: auto">
           <!-- ── Requester (auto-filled, read-only) ────────────── -->
           <div class="ticket-page__form-row">
             <q-input :model-value="requesterName" label="Requester" outlined dense readonly />
@@ -25,18 +29,20 @@
           <q-input
             v-model="form.title"
             label="Subject / Title *"
-            outlined dense
+            outlined
+            dense
             class="q-mt-sm q-mb-sm"
-            :rules="[val => !!val || 'Required']"
+            :rules="[(val) => !!val || 'Required']"
           />
           <q-input
             v-model="form.description"
             label="Description *"
-            outlined dense
+            outlined
+            dense
             type="textarea"
             rows="3"
             class="q-mb-sm"
-            :rules="[val => !!val || 'Required']"
+            :rules="[(val) => !!val || 'Required']"
           />
 
           <div class="ticket-page__form-row">
@@ -44,14 +50,20 @@
               v-model="form.priority"
               :options="priorityOptions"
               label="Priority"
-              outlined dense emit-value map-options
+              outlined
+              dense
+              emit-value
+              map-options
               :disable="!isAdmin"
             />
             <q-select
               v-model="form.category"
               :options="categoryOptions"
               label="Category"
-              outlined dense emit-value map-options
+              outlined
+              dense
+              emit-value
+              map-options
             />
           </div>
 
@@ -60,21 +72,29 @@
             v-model="form.assigned_staff_id"
             :options="staffOptions"
             label="Assign Staff"
-            outlined dense clearable emit-value map-options class="q-mt-sm"
+            outlined
+            dense
+            clearable
+            emit-value
+            map-options
+            class="q-mt-sm"
           />
 
           <!-- ── Attachments Section ───────────────────────────────────── -->
           <div class="q-mt-md">
             <div class="text-subtitle2 text-weight-bold q-mb-xs">Attachments</div>
             <div class="text-caption text-grey-7 q-mb-sm">
-              Acceptable file types: <strong>PDF, PNG, JPEG, DOC, DOCX</strong> or <strong>Google Drive links</strong>.
+              Acceptable file types: <strong>PDF, PNG, JPEG, DOC, DOCX</strong> or
+              <strong>Google Drive links</strong>.
             </div>
 
             <!-- File Pickers -->
             <q-file
               v-model="fileList"
               label="Select / Drag Files to Attach"
-              outlined dense multiple
+              outlined
+              dense
+              multiple
               append
               use-chips
               accept=".pdf, .png, .jpg, .jpeg, .doc, .docx"
@@ -93,11 +113,20 @@
                     <q-icon :name="getFileIcon(file.name)" color="primary" />
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label class="text-weight-medium text-body2">{{ file.name }}</q-item-label>
+                    <q-item-label class="text-weight-medium text-body2">{{
+                      file.name
+                    }}</q-item-label>
                     <q-item-label caption>{{ formatBytes(file.size) }}</q-item-label>
                   </q-item-section>
                   <q-item-section side>
-                    <q-btn flat round dense icon="cancel" color="negative" @click="removeFile(idx)" />
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      icon="cancel"
+                      color="negative"
+                      @click="removeFile(idx)"
+                    />
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -106,20 +135,44 @@
             <!-- Google Drive / External Link Fields -->
             <div class="q-mt-md">
               <div class="row items-center justify-between q-mb-xs">
-                <span class="text-caption text-weight-bold text-grey-8">Google Drive / External Links</span>
-                <q-btn flat dense no-caps icon="add" label="Add Link" color="primary" size="sm" @click="addDriveLink" />
+                <span class="text-caption text-weight-bold text-grey-8"
+                  >Google Drive / External Links</span
+                >
+                <q-btn
+                  flat
+                  dense
+                  no-caps
+                  icon="add"
+                  label="Add Link"
+                  color="primary"
+                  size="sm"
+                  @click="addDriveLink"
+                />
               </div>
-              <div v-for="(link, lIdx) in form.gdrive_links" :key="lIdx" class="row items-center q-mb-xs gap-sm">
+              <div
+                v-for="(link, lIdx) in form.gdrive_links"
+                :key="lIdx"
+                class="row items-center q-mb-xs gap-sm"
+              >
                 <q-input
                   v-model="form.gdrive_links[lIdx]"
                   placeholder="https://drive.google.com/file/d/..."
-                  outlined dense class="col"
+                  outlined
+                  dense
+                  class="col"
                 >
                   <template #prepend>
                     <q-icon name="add_link" color="primary" />
                   </template>
                 </q-input>
-                <q-btn flat round dense icon="delete" color="negative" @click="removeDriveLink(lIdx)" />
+                <q-btn
+                  flat
+                  round
+                  dense
+                  icon="delete"
+                  color="negative"
+                  @click="removeDriveLink(lIdx)"
+                />
               </div>
             </div>
           </div>
@@ -130,7 +183,9 @@
         <q-card-actions align="right" class="ticket-page__dialog-actions">
           <q-btn flat no-caps label="Cancel" color="grey-7" @click="closeModal" />
           <q-btn
-            unelevated no-caps type="submit"
+            unelevated
+            no-caps
+            type="submit"
             label="Submit Ticket"
             class="clay-btn clay-btn--primary"
             :loading="saving"
@@ -165,8 +220,12 @@ const requesterName = computed(() => {
   return u.full_name || `${u.first_name || ''} ${u.last_name || ''}`.trim() || '—'
 })
 const requesterEmail = computed(() => authStore?.user?.email || '—')
-const requesterDivision = computed(() => authStore?.user?.division?.name || authStore?.userDivision || '—')
-const requesterSection = computed(() => authStore?.user?.section?.name || authStore?.userSection || '—')
+const requesterDivision = computed(
+  () => authStore?.user?.division?.name || authStore?.userDivision || '—',
+)
+const requesterSection = computed(
+  () => authStore?.user?.section?.name || authStore?.userSection || '—',
+)
 
 const saving = ref(false)
 const fileList = ref([])
@@ -184,12 +243,15 @@ function emptyForm() {
 
 const form = ref(emptyForm())
 
-watch(() => props.modelValue, (isOpen) => {
-  if (isOpen) {
-    form.value = emptyForm()
-    fileList.value = []
-  }
-})
+watch(
+  () => props.modelValue,
+  (isOpen) => {
+    if (isOpen) {
+      form.value = emptyForm()
+      fileList.value = []
+    }
+  },
+)
 
 function closeModal() {
   emit('update:modelValue', false)
@@ -241,7 +303,8 @@ async function submitTicket() {
 
     if (isAdmin.value) {
       payload.append('urgency', form.value.priority)
-      if (form.value.assigned_staff_id) payload.append('assigned_staff_id', form.value.assigned_staff_id)
+      if (form.value.assigned_staff_id)
+        payload.append('assigned_staff_id', form.value.assigned_staff_id)
     }
 
     // Append multiple files
@@ -261,10 +324,15 @@ async function submitTicket() {
     }
 
     await api.post('/tickets', payload, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
 
-    $q.notify({ type: 'positive', message: 'Ticket submitted successfully.', position: 'top-right', timeout: 2500 })
+    $q.notify({
+      type: 'positive',
+      message: 'Ticket submitted successfully.',
+      position: 'top-right',
+      timeout: 2500,
+    })
     closeModal()
     emit('refresh')
   } catch (err) {
@@ -280,7 +348,7 @@ async function submitTicket() {
       message: msg + (errs ? ' ' + errs : ''),
       position: 'top',
       timeout: 5000,
-      actions: [{ label: 'Dismiss', color: 'white' }]
+      actions: [{ label: 'Dismiss', color: 'white' }],
     })
   } finally {
     saving.value = false
