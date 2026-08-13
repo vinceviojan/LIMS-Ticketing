@@ -23,21 +23,30 @@
     </div>
 
     <!-- ── Action Required: Unrated Ticket Banner ─────────────── -->
-    <div v-if="unratedTicket" class="q-mb-lg q-pa-md bg-amber-1 rounded-borders border-amber" style="border: 1px solid #fde68a; border-left: 5px solid #f59e0b;">
+    <div
+      v-if="unratedTicket"
+      class="q-mb-lg q-pa-md bg-amber-1 rounded-borders border-amber"
+      style="border: 1px solid #fde68a; border-left: 5px solid #f59e0b"
+    >
       <div class="row items-center justify-between gap-sm">
         <div class="row items-center gap-sm col">
           <q-avatar size="40px" color="amber-3" text-color="amber-10" icon="rate_review" />
           <div>
-            <div class="text-subtitle2 text-weight-bold text-amber-10">Action Required: Rate & Review Resolved Ticket</div>
+            <div class="text-subtitle2 text-weight-bold text-amber-10">
+              Action Required: Rate & Review Resolved Ticket
+            </div>
             <div class="text-caption text-grey-9">
-              Ticket <strong>{{ unratedTicket.ticket_no || '#' + unratedTicket.id }}</strong> ({{ unratedTicket.title }}) has been resolved. Please rate the service received.
+              Ticket <strong>{{ unratedTicket.ticket_no || '#' + unratedTicket.id }}</strong> ({{
+                unratedTicket.title
+              }}) has been resolved. Please rate the service received.
             </div>
           </div>
         </div>
         <q-btn
           color="amber-9"
           label="⭐ Rate Service Now"
-          unelevated no-caps
+          unelevated
+          no-caps
           class="text-weight-bold"
           @click="viewTicket(unratedTicket)"
         />
@@ -54,12 +63,16 @@
         :unelevated="activeTab === tab.value"
         no-caps
         class="border-radius-8 text-weight-bold"
-        style="padding: 4px 16px;"
+        style="padding: 4px 16px"
         @click="activeTab = tab.value"
       >
         <q-icon :name="tab.icon" size="18px" class="q-mr-sm" />
         {{ tab.label }}
-        <q-badge :color="activeTab === tab.value ? 'white' : 'grey-3'" :text-color="activeTab === tab.value ? 'primary' : 'grey-8'" class="q-ml-sm text-weight-bolder">
+        <q-badge
+          :color="activeTab === tab.value ? 'white' : 'grey-3'"
+          :text-color="activeTab === tab.value ? 'primary' : 'grey-8'"
+          class="q-ml-sm text-weight-bolder"
+        >
           {{ tabCount(tab.value) }}
         </q-badge>
       </q-btn>
@@ -69,11 +82,13 @@
     <div class="row items-center q-gutter-md q-mb-lg flex-wrap">
       <q-input
         v-model="search"
-        dense outlined clearable
+        dense
+        outlined
+        clearable
         placeholder="Search tickets..."
         bg-color="white"
         class="col-12 col-sm-auto border-radius-8"
-        style="min-width: 240px;"
+        style="min-width: 240px"
       >
         <template #prepend><q-icon name="search" /></template>
       </q-input>
@@ -82,38 +97,48 @@
         v-model="filterPriority"
         :options="priorityOptions"
         label="Priority"
-        dense outlined clearable
-        emit-value map-options
+        dense
+        outlined
+        clearable
+        emit-value
+        map-options
         bg-color="white"
         class="col-12 col-sm-auto border-radius-8"
-        style="min-width: 150px;"
+        style="min-width: 150px"
       />
 
       <q-select
         v-model="filterCategory"
         :options="categoryOptions"
         label="Category"
-        dense outlined clearable
-        emit-value map-options
+        dense
+        outlined
+        clearable
+        emit-value
+        map-options
         bg-color="white"
         class="col-12 col-sm-auto border-radius-8"
-        style="min-width: 170px;"
+        style="min-width: 170px"
       />
 
       <q-select
         v-model="sortBy"
         :options="sortOptions"
         label="Sort By"
-        dense outlined
-        emit-value map-options
+        dense
+        outlined
+        emit-value
+        map-options
         bg-color="white"
         class="col-12 col-sm-auto border-radius-8"
-        style="min-width: 190px;"
+        style="min-width: 190px"
       />
 
       <q-btn
         v-if="search || filterPriority || filterCategory || sortBy !== 'newest'"
-        flat dense no-caps
+        flat
+        dense
+        no-caps
         color="negative"
         icon="restart_alt"
         label="Reset"
@@ -124,8 +149,20 @@
       <q-space />
 
       <q-btn-group outline class="bg-white border-radius-8">
-        <q-btn :color="displayMode === 'card' ? 'primary' : 'grey-7'" :flat="displayMode !== 'card'" unelevated icon="grid_view" @click="displayMode = 'card'" />
-        <q-btn :color="displayMode === 'table' ? 'primary' : 'grey-7'" :flat="displayMode !== 'table'" unelevated icon="list" @click="displayMode = 'table'" />
+        <q-btn
+          :color="displayMode === 'card' ? 'primary' : 'grey-7'"
+          :flat="displayMode !== 'card'"
+          unelevated
+          icon="grid_view"
+          @click="displayMode = 'card'"
+        />
+        <q-btn
+          :color="displayMode === 'table' ? 'primary' : 'grey-7'"
+          :flat="displayMode !== 'table'"
+          unelevated
+          icon="list"
+          @click="displayMode = 'table'"
+        />
       </q-btn-group>
     </div>
 
@@ -146,11 +183,7 @@
     />
 
     <!-- ── View Dialog (read-only) ─────────────────────────────── -->
-    <ViewTicketModal
-      v-model="showViewDialog"
-      :ticket="selectedTicket"
-      @refresh="fetchTickets"
-    />
+    <ViewTicketModal v-model="showViewDialog" :ticket="selectedTicket" @refresh="fetchTickets" />
 
     <!-- ── Rating & Feedback Pop Up Modal ───────────────────────── -->
     <RatingFeedbackModal
@@ -158,7 +191,6 @@
       :ticket="ratingTicket"
       @submitted="fetchTickets"
     />
-
   </q-page>
 </template>
 
@@ -175,7 +207,7 @@ const $q = useQuasar()
 
 // State
 const loading = ref(true)
-const search  = ref('')
+const search = ref('')
 const filterPriority = ref(null)
 const filterCategory = ref(null)
 const sortBy = ref('newest')
@@ -197,30 +229,32 @@ const sortOptions = [
   { label: 'Oldest First', value: 'oldest' },
   { label: 'Ticket # (A-Z)', value: 'ticket_asc' },
   { label: 'Title (A-Z)', value: 'title_asc' },
-  { label: 'Priority (High to Low)', value: 'priority_desc' }
+  { label: 'Priority (High to Low)', value: 'priority_desc' },
 ]
 
 const priorityOptions = [
-  { label: 'Low',      value: 'LOW'      },
-  { label: 'Normal',   value: 'NORMAL'   },
-  { label: 'High',     value: 'HIGH'     },
+  { label: 'Low', value: 'LOW' },
+  { label: 'Normal', value: 'NORMAL' },
+  { label: 'High', value: 'HIGH' },
 ]
 
 const categoryOptions = ref([])
 const tickets = ref([])
 
 const unratedTicket = computed(() => {
-  return tickets.value.find(t => ['CLOSE'].includes(t.status) && (!t.rating || !t.feedback || t.feedback.trim() === ''))
+  return tickets.value.find(
+    (t) => ['CLOSE'].includes(t.status) && (!t.rating || !t.feedback || t.feedback.trim() === ''),
+  )
 })
 
 const statusTabs = [
-  { label: 'All',      value: 'ALL',      icon: 'list_alt'       },
-  { label: 'Open',     value: 'OPEN',     icon: 'inbox'          },
-  { label: 'On-going', value: 'ON-GOING', icon: 'autorenew'      },
-  { label: 'Resolved', value: 'RESOLVED', icon: 'task'           },
-  { label: 'Escalated',value: 'ESCALATED',icon: 'pending_actions'},
-  { label: 'Closed',   value: 'CLOSE',    icon: 'check_box'      },
-  { label: 'Canceled', value: 'CANCEL',   icon: 'cancel'         },
+  { label: 'All', value: 'ALL', icon: 'list_alt' },
+  { label: 'Open', value: 'OPEN', icon: 'inbox' },
+  { label: 'On-going', value: 'ON-GOING', icon: 'autorenew' },
+  { label: 'Resolved', value: 'RESOLVED', icon: 'task' },
+  { label: 'Escalated', value: 'ESCALATED', icon: 'pending_actions' },
+  { label: 'Closed', value: 'CLOSE', icon: 'check_box' },
+  { label: 'Canceled', value: 'CANCEL', icon: 'cancel' },
 ]
 
 // ── Lifecycle ────────────────────────────────────────────────
@@ -233,7 +267,7 @@ async function fetchCategories() {
   try {
     const res = await api.get('/problem-categories')
     const cats = res.data?.data || res.data || []
-    categoryOptions.value = cats.map(c => ({ label: c.categories, value: c.id }))
+    categoryOptions.value = cats.map((c) => ({ label: c.categories, value: c.id }))
   } catch (err) {
     console.error('Failed to load categories', err)
   }
@@ -246,13 +280,15 @@ async function fetchTickets() {
     const data = res.data?.data || res.data || []
 
     // Map backend array to UI properties internally
-    tickets.value = data.map(t => ({
+    tickets.value = data.map((t) => ({
       id: t.id,
       real_id: t.id,
       ticket_no: t.ticket_no,
       title: t.issue || 'No Title',
-      requester: t.user ? (t.user.first_name + ' ' + t.user.last_name) : 'Unknown',
-      assignedStaff: t.assigned_staff ? (t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`) : '',
+      requester: t.user ? t.user.first_name + ' ' + t.user.last_name : 'Unknown',
+      assignedStaff: t.assigned_staff
+        ? t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`
+        : '',
       assigned_staff_id: t.assigned_staff_id,
       category: t.problem_category ? t.problem_category.categories : 'Uncategorized',
       problem_category_id: t.problem_category_id,
@@ -265,8 +301,14 @@ async function fetchTickets() {
       attachments: t.attachments || [],
       upload_intralab: t.upload_intralab,
       upload_limsportal: t.upload_limsportal,
-      hasAttachments: Boolean((t.attachments && t.attachments.length) || t.upload_intralab || t.upload_limsportal),
-      created: new Date(t.date_submitted || t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      hasAttachments: Boolean(
+        (t.attachments && t.attachments.length) || t.upload_intralab || t.upload_limsportal,
+      ),
+      created: new Date(t.date_submitted || t.created_at).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }),
     }))
 
     if (unratedTicket.value && !showRatingModal.value) {
@@ -283,16 +325,17 @@ async function fetchTickets() {
 // ── Computed ─────────────────────────────────────────────────
 const filteredTickets = computed(() => {
   let data = tickets.value
-  if (activeTab.value !== 'ALL') data = data.filter(t => t.status === activeTab.value)
-  if (filterPriority.value) data = data.filter(t => t.priority === filterPriority.value)
-  if (filterCategory.value) data = data.filter(t => t.category === filterCategory.value)
+  if (activeTab.value !== 'ALL') data = data.filter((t) => t.status === activeTab.value)
+  if (filterPriority.value) data = data.filter((t) => t.priority === filterPriority.value)
+  if (filterCategory.value) data = data.filter((t) => t.category === filterCategory.value)
   if (search.value) {
     const q = search.value.toLowerCase()
-    data = data.filter(t =>
+    data = data.filter(
+      (t) =>
         t.title?.toLowerCase().includes(q) ||
         t.ticket_no?.toLowerCase().includes(q) ||
         t.requester?.toLowerCase().includes(q) ||
-      t.category?.toLowerCase().includes(q)
+        t.category?.toLowerCase().includes(q),
     )
   }
 
@@ -314,7 +357,7 @@ const filteredTickets = computed(() => {
 
 function tabCount(status) {
   if (status === 'ALL') return tickets.value.length
-  return tickets.value.filter(t => t.status === status).length
+  return tickets.value.filter((t) => t.status === status).length
 }
 
 // ── Actions ─────────────────────────────────────────────────
