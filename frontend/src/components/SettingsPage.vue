@@ -345,7 +345,7 @@ async function saveSystem() {
 async function loadDivisionAndSection() {
   try {
     const res = await api.get('/getDivisionAndSection')
-
+    console.log(res.data);
     division.value = res.data?.division ?? null
     section.value = res.data?.section ?? null
 
@@ -373,7 +373,7 @@ async function loadDivisionAndSection() {
 }
 
 onMounted(async () => {
-  loadDivisionAndSection()
+  await loadDivisionAndSection()
 
   try {
     const { data } = await api.get('/logs/session')

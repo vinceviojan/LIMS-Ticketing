@@ -1,12 +1,19 @@
-export const DIVISION_OPTIONS = [
-  'Laboratory Services Division'
-]
+import { api } from '../boot/axios'
 
-export const SECTION_OPTIONS = [
-  'Soil Chemistry',
-  'Soil Physics',
-  'Water Chemistry',
-  'Rapid Soil Test',
-  'TEIM',
-  'Customer Center'
-]
+export const fetchDivisions = async () => {
+  try {
+    const response = await api.get('/divisions')
+    // Exclude the 'LIMS' section from each division
+    const divisions = response.data.map(division => {
+      return {
+        ...division,
+        sections: division.sections.filter(section => section.name !== 'LIMS' && section.code !== 'LIMS')
+      }
+    })
+    return divisions
+  } catch (error) {
+    console.error('Error fetching divisions:', error)
+    return []
+  }
+}
+

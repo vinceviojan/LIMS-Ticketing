@@ -44,7 +44,7 @@
             </q-item>
           </q-list>
         </q-btn-dropdown>
-        <q-btn
+        <!-- <q-btn
           id="new-ticket-btn"
           color="primary"
           label="New Ticket"
@@ -53,7 +53,7 @@
           no-caps
           class="border-radius-8 text-weight-bold"
         @click="openCreateDialog"
-        />
+        /> -->
       </div>
     </div>
 
@@ -365,9 +365,9 @@ function resetFilters() {
 }
 
 // ── Actions ─────────────────────────────────────────────────
-function openCreateDialog() {
-  showAddDialog.value = true
-}
+// function openCreateDialog() {
+//   showAddDialog.value = true
+// }
 
 function viewTicket(ticket) {
   modalMode.value = 'view'
