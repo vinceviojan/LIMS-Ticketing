@@ -435,13 +435,17 @@
                 </label>
 
                 <q-select
-                  v-model="form.division"
+                  v-model="form.division_id"
                   :options="divisionOptions"
+                  option-value="id"
+                  option-label="name"
+                  emit-value
+                  map-options
                   outlined
                   dense
                   class="custom-field"
-                  :error="!!errors.division"
-                  :error-message="errors.division"
+                  :error="!!errors.division_id"
+                  :error-message="errors.division_id"
                   :rules="[
                     (val) =>
                       !!val ||
@@ -470,13 +474,17 @@
                 </label>
 
                 <q-select
-                  v-model="form.sections"
+                  v-model="form.section_id"
                   :options="sectionOptions"
+                  option-value="id"
+                  option-label="name"
+                  emit-value
+                  map-options
                   outlined
                   dense
                   class="custom-field"
-                  :error="!!errors.sections"
-                  :error-message="errors.sections"
+                  :error="!!errors.section_id"
+                  :error-message="errors.section_id"
                   :rules="[
                     (val) =>
                       !!val ||
@@ -596,10 +604,10 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../../boot/axios'
-import { DIVISION_OPTIONS, SECTION_OPTIONS } from '../../constants/organization'
+import { fetchDivisions } from '../../constants/organization'
 
 import './SignupPage.scss'
 
@@ -625,8 +633,8 @@ const form = reactive({
   email: '',
   password: '',
   password_confirmation: '',
-  division: null,
-  sections: null,
+  division_id: null,
+  section_id: null,
   position: ''
 })
 
@@ -640,8 +648,8 @@ const errors = reactive({
   email: '',
   password: '',
   password_confirmation: '',
-  division: '',
-  sections: '',
+  division_id: '',
+  section_id: '',
   position: ''
 })
 
@@ -649,8 +657,18 @@ const errors = reactive({
 // Options
 // ==========================================================================
 
-const divisionOptions = DIVISION_OPTIONS
-const sectionOptions = SECTION_OPTIONS
+const divisionOptions = ref([])
+const sectionOptions = ref([])
+
+onMounted(async () => {
+  divisionOptions.value = await fetchDivisions()
+})
+
+watch(() => form.division_id, (newDivisionId) => {
+  form.section_id = null
+  const selectedDivision = divisionOptions.value.find(d => d.id === newDivisionId)
+  sectionOptions.value = selectedDivision ? selectedDivision.sections : []
+})
 
 // ==========================================================================
 // Clear Validation Errors
@@ -662,8 +680,8 @@ const clearErrors = () => {
   errors.email = ''
   errors.password = ''
   errors.password_confirmation = ''
-  errors.division = ''
-  errors.sections = ''
+  errors.division_id = ''
+  errors.section_id = ''
   errors.position = ''
 }
 
@@ -688,8 +706,8 @@ const signup = async () => {
         password: form.password,
         password_confirmation:
           form.password_confirmation,
-        division: form.division,
-        sections: form.sections,
+        division_id: form.division_id,
+        section_id: form.section_id,
         position: form.position
       }
     )
@@ -737,11 +755,11 @@ const signup = async () => {
       errors.password_confirmation =
         validationErrors.password_confirmation?.[0] || ''
 
-      errors.division =
-        validationErrors.division?.[0] || ''
+      errors.division_id =
+        validationErrors.division_id?.[0] || ''
 
-      errors.sections =
-        validationErrors.sections?.[0] || ''
+      errors.section_id =
+        validationErrors.section_id?.[0] || ''
 
       errors.position =
         validationErrors.position?.[0] || ''

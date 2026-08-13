@@ -37,13 +37,13 @@
         <!-- ── Sidebar Title ───────────────────────────── -->
         <div class="staff-sidebar__title">
 
-          <q-icon
+          <!-- <q-icon
             name="support_agent"
             size="22px"
             class="staff-sidebar__logo-icon"
-          />
+          /> -->
 
-          <span>Staff Panel</span>
+          <!-- <span>Staff Panel</span> -->
 
         </div>
 
