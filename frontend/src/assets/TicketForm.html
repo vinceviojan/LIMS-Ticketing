@@ -1,250 +1,225 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+
+<head>
+    <meta charset="UTF-8">
+
     <title>LIMS Helpdesk Request Form</title>
 
     <style>
-      :root {
-        --navy: #002060;
-        --navy-dark: #001640;
-        --blue-light: #eaf2fb;
-        --blue-soft: #f5f8fc;
-        --white: #ffffff;
-        --black: #141414;
-        --border: #7f8c9a;
-      }
+        :root {
+            --navy: #002060;
+            --navy-dark: #001640;
+            --blue-light: #eaf2fb;
+            --blue-soft: #f5f8fc;
+            --white: #ffffff;
+            --black: #141414;
+            --border: #7f8c9a;
+        }
 
-<<<<<<< Updated upstream
         * {
             box-sizing: border-box;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
-=======
-      * {
-        box-sizing: border-box;
-      }
->>>>>>> Stashed changes
 
-      body {
-        margin: 0;
-        background: #e9e9e9;
-        font-family: Calibri, Arial, sans-serif;
-        color: var(--black);
-      }
+        body {
+            margin: 0;
+            background: #e9e9e9;
+            font-family: Calibri, Arial, sans-serif;
+            color: var(--black);
+        }
 
-      /* =========================================================
+        /* =========================================================
            TOOLBAR
         ========================================================= */
 
-      .toolbar {
-        position: sticky;
-        top: 0;
-        z-index: 10;
+        .toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
 
-        display: flex;
-        gap: 8px;
-        align-items: center;
+            display: flex;
+            gap: 8px;
+            align-items: center;
 
-        padding: 10px 16px;
+            padding: 10px 16px;
 
-        background: #1c1c1c;
-        color: #fff;
+            background: #1c1c1c;
+            color: #fff;
 
-        font-size: 13px;
-      }
+            font-size: 13px;
+        }
 
-      .toolbar button,
-      .toolbar label.btn {
-        background: #3a3a3a;
-        color: #fff;
+        .toolbar button,
+        .toolbar label.btn {
+            background: #3a3a3a;
+            color: #fff;
 
-        border: 1px solid #555;
+            border: 1px solid #555;
 
-        padding: 6px 12px;
+            padding: 6px 12px;
 
-        border-radius: 4px;
+            border-radius: 4px;
 
-        cursor: pointer;
+            cursor: pointer;
 
-        font-size: 13px;
-      }
+            font-size: 13px;
+        }
 
-      .toolbar button:hover,
-      .toolbar label.btn:hover {
-        background: #4a4a4a;
-      }
+        .toolbar button:hover,
+        .toolbar label.btn:hover {
+            background: #4a4a4a;
+        }
 
-      .toolbar input[type='file'] {
-        display: none;
-      }
+        .toolbar input[type="file"] {
+            display: none;
+        }
 
-      .toolbar .spacer {
-        flex: 1;
-      }
+        .toolbar .spacer {
+            flex: 1;
+        }
 
-      /* =========================================================
+        /* =========================================================
            PAGE
         ========================================================= */
 
-      .form-page {
-        width: 612pt;
-        min-height: 792pt;
+        .form-page {
+            width: 612pt;
+            min-height: 792pt;
 
-        margin: 24px auto;
-        padding: 40pt;
+            margin: 24px auto;
+            padding: 40pt;
 
-        background: #fff;
+            background: #fff;
 
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
 
-        font-family: Calibri, Arial, sans-serif;
-        font-size: 10pt;
+            font-family: Calibri, Arial, sans-serif;
+            font-size: 10pt;
 
-        position: relative;
-      }
+            position: relative;
+        }
 
-      /* =========================================================
+        /* =========================================================
            GENERIC TABLE
         ========================================================= */
 
-      table.form-table {
-        width: 100%;
+        table.form-table {
+            width: 100%;
 
-        border-collapse: collapse;
+            border-collapse: collapse;
 
-        border: 0.75pt solid var(--border);
+            border: 0.75pt solid var(--border);
 
-        table-layout: fixed;
-      }
+            table-layout: fixed;
+        }
 
-      table.form-table td {
-        border: 0.75pt solid var(--border);
+        table.form-table td {
+            border: 0.75pt solid var(--border);
 
-        padding: 0;
+            padding: 0;
 
-        vertical-align: middle;
+            vertical-align: middle;
 
-        overflow: hidden;
-      }
+            overflow: hidden;
+        }
 
-      table.form-table .value-cell {
-        background: var(--white);
-      }
+        table.form-table .value-cell {
+            background: var(--white);
+        }
 
-      table.form-table tr:nth-child(even) .value-cell {
-        background: var(--blue-soft);
-      }
+        table.form-table tr:nth-child(even) .value-cell {
+            background: var(--blue-soft);
+        }
 
-      /* =========================================================
+        /* =========================================================
            LABEL CELL
         ========================================================= */
 
-      .label-cell {
-        background: var(--navy);
-        color: var(--white);
+        .label-cell {
+            background: var(--navy);
+            color: var(--white);
 
-        font-family: Calibri, Arial, sans-serif;
+            font-family: Calibri, Arial, sans-serif;
 
-        font-size: 10pt;
-        font-weight: bold;
+            font-size: 10pt;
+            font-weight: bold;
 
-<<<<<<< Updated upstream
             padding: 3px 7px;
-=======
-        padding: 5px 7px;
->>>>>>> Stashed changes
 
-        line-height: 1.2;
+            line-height: 1.2;
 
-        white-space: nowrap;
+            white-space: nowrap;
 
-        vertical-align: middle;
-      }
+            vertical-align: middle;
+        }
 
-<<<<<<< Updated upstream
         .label-cell.light {
             background: var(--white);
             color: var(--black);
         }
-=======
-      /* Colored label cells used on the white detail tables */
-      table.form-table .label-cell[style*='background:none'] {
-        background: var(--blue-light) !important;
-        color: var(--navy-dark) !important;
-      }
->>>>>>> Stashed changes
 
-      /* =========================================================
+        /* =========================================================
            VALUE / EDITABLE CELL
         ========================================================= */
 
-      .value-cell {
-        font-family: Calibri, Arial, sans-serif;
+        .value-cell {
+            font-family: Calibri, Arial, sans-serif;
 
-        font-size: 10pt;
+            font-size: 10pt;
 
-<<<<<<< Updated upstream
             padding: 3px 7px;
-=======
-        padding: 5px 10px;
->>>>>>> Stashed changes
 
-        line-height: 1.2;
+            line-height: 1.2;
 
-        outline: none;
-      }
+            outline: none;
+        }
 
-      .value-cell.center {
-        text-align: center;
-      }
+        .value-cell.center {
+            text-align: center;
+        }
 
-      .value-cell[contenteditable='true']:focus {
-        background: #fffbdd;
-      }
+        .value-cell[contenteditable="true"]:focus {
+            background: #fffbdd;
+        }
 
-      table.form-table .value-cell {
-        color: #1f2937;
-      }
+        table.form-table .value-cell {
+            color: #1f2937;
+        }
 
-      /* =========================================================
+        /* =========================================================
            SECTION BAR
         ========================================================= */
 
-      .section-bar {
-        background: var(--navy);
+        .section-bar {
+            background: var(--navy);
 
-        color: var(--white);
+            color: var(--white);
 
-        font-family: Calibri, Arial, sans-serif;
+            font-family: Calibri, Arial, sans-serif;
 
-        font-weight: bold;
+            font-weight: bold;
 
-        font-size: 10pt;
+            font-size: 10pt;
 
-<<<<<<< Updated upstream
             padding: 3px 7px;
-=======
-        padding: 5pt 7pt;
->>>>>>> Stashed changes
 
-        display: flex;
+            display: flex;
 
-        align-items: center;
+            align-items: center;
 
-        justify-content: space-between;
+            justify-content: space-between;
 
-        border: 0.75pt solid var(--border);
+            border: 0.75pt solid var(--border);
 
-        border-bottom: none;
-      }
+            border-bottom: none;
+        }
 
-      .section-bar.small {
-        font-size: 10pt;
-      }
+        .section-bar.small {
+            font-size: 10pt;
+        }
 
-<<<<<<< Updated upstream
         /* DETAILED OF ACTION - match RESOLUTION section-bar borders */
         .action-details-bar {
             margin-top: 0 !important;
@@ -263,309 +238,214 @@
 
         .section-bar.centered {
             justify-content: center;
-=======
-      .section-bar.centered {
-        justify-content: center;
->>>>>>> Stashed changes
 
-        text-align: center;
-      }
+            text-align: center;
+        }
 
-      /* =========================================================
+        /* =========================================================
            TEXT BOXES
         ========================================================= */
 
-      .text-box {
-        display: flex;
+        .text-box {
+            display: flex;
 
-        border: 0.75pt solid var(--border);
+            border: 0.75pt solid var(--border);
 
-        border-top: none;
-      }
+            border-top: none;
+        }
 
-      .text-box .text-area {
-        flex: 1;
+        .text-box .text-area {
+            flex: 1;
 
-<<<<<<< Updated upstream
             padding: 3px 7px;
-=======
-        padding: 5pt 10px;
->>>>>>> Stashed changes
 
-        font-family: Calibri, Arial, sans-serif;
+            font-family: Calibri, Arial, sans-serif;
 
-        font-size: 10pt;
+            font-size: 10pt;
 
-        line-height: 1.2;
+            line-height: 1.2;
 
-        outline: none;
+            outline: none;
 
-        white-space: pre-wrap;
+            white-space: pre-wrap;
 
-        overflow: auto;
-      }
+            overflow: auto;
+        }
 
-      .text-box .text-area[contenteditable='true']:focus {
-        background: #fffbdd;
-      }
+        .text-box .text-area[contenteditable="true"]:focus {
+            background: #fffbdd;
+        }
 
-      .desc-box {
-        height: 46pt;
-      }
+        .desc-box {
+            height: 46pt;
+        }
 
-      .remarks-box {
-        height: 34pt;
-      }
+        .remarks-box {
+            height: 34pt;
+        }
 
-      .final-box {
-        height: 34pt;
-      }
+        .final-box {
+            height: 34pt;
+        }
 
-      /* =========================================================
+        /* =========================================================
            HEADER
         ========================================================= */
 
-      .header-table {
-        width: 100%;
+        .header-table {
+            width: 100%;
 
-        border-collapse: collapse;
+            border-collapse: collapse;
 
-        border: 1px solid #000;
+            border: 1px solid #000;
 
-        table-layout: fixed;
+            table-layout: fixed;
 
-        font-family: Calibri, Arial, sans-serif;
+            font-family: Calibri, Arial, sans-serif;
 
-        font-size: 10pt;
-      }
+            font-size: 10pt;
+        }
 
-      .header-table td {
-        border: 1px solid var(--border);
+        .header-table td {
+            border: 1px solid var(--border);
 
-        padding: 0;
+            padding: 0;
 
-        vertical-align: middle;
+            vertical-align: middle;
 
-        overflow: hidden;
+            overflow: hidden;
 
-        white-space: nowrap;
-      }
+            white-space: nowrap;
+        }
 
-      .header-table .title-agency,
-      .header-table .title-form {
-        background: var(--blue-soft);
-      }
+        .header-table .title-agency,
+        .header-table .title-form {
+            background: var(--blue-soft);
+        }
 
-      .header-table .ref-label {
-        background: var(--blue-light);
-        color: var(--navy-dark);
-      }
+        .header-table .ref-label {
+            background: var(--blue-light);
+            color: var(--navy-dark);
+        }
 
-      .header-table .ref-value {
-        background: var(--white);
-      }
+        .header-table .ref-value {
+            background: var(--white);
+        }
 
-      /* =========================================================
+        /* =========================================================
            HEADER COLUMNS
         ========================================================= */
 
-      .header-logo-col {
-        width: 15%;
-      }
+        .header-logo-col {
+            width: 15%;
+        }
 
-      .header-title-col {
-        width: 45%;
-      }
+        .header-title-col {
+            width: 45%;
+        }
 
-      .header-ref-label-1 {
-        width: 10%;
-      }
+        .header-ref-label-1 {
+            width: 10%;
+        }
 
-      .header-ref-label-2 {
-        width: 7%;
-      }
+        .header-ref-label-2 {
+            width: 7%;
+        }
 
-      .header-ref-value-1 {
-        width: 10%;
-      }
+        .header-ref-value-1 {
+            width: 10%;
+        }
 
-      .header-ref-value-2 {
-        width: 13%;
-      }
+        .header-ref-value-2 {
+            width: 13%;
+        }
 
-      /* =========================================================
+        /* =========================================================
            HEADER LOGO
         ========================================================= */
 
-      .logo-cell {
-        text-align: center;
+        .logo-cell {
+            text-align: center;
 
-        padding: 2px !important;
+            padding: 2pt !important;
+        }
 
-        vertical-align: middle !important;
-      }
+        .logo-cell img {
+            max-width: 58pt;
 
-      .logo-slot {
-        width: 100%;
+            max-height: 58pt;
 
-        height: 76pt;
+            display: block;
 
-        display: flex;
+            margin: 0 auto;
+        }
 
-        align-items: center;
-
-        justify-content: center;
-      }
-
-      .logo-circle {
-        width: 100%;
-
-        height: 76pt;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        overflow: hidden;
-      }
-
-      .logo-circle img {
-        width: 100%;
-
-        height: 100%;
-
-        max-width: 100%;
-
-        max-height: 100%;
-
-        object-fit: contain;
-
-        display: block;
-      }
-
-      /* =========================================================
-           HEADER AGENCY
+        /* =========================================================
+           HEADER TITLE
         ========================================================= */
 
-      .title-agency {
-        height: 32pt;
+        .title-cell {
+            text-align: center;
 
-        text-align: center;
+            padding: 2pt 4pt !important;
+        }
 
-        padding: 0 5px !important;
-      }
+        .title-agency {
+            font-size: 9.5pt;
 
-      .agency-name {
-        font-family: Calibri, Arial, sans-serif;
+            font-weight: bold;
 
-        font-size: 10pt;
+            color: var(--navy);
+        }
 
-        font-weight: bold;
+        .title-form {
+            font-size: 11pt;
 
-        line-height: 1;
+            font-weight: bold;
 
-        white-space: nowrap;
-      }
+            color: var(--navy);
 
-      .agency-division {
-        font-family: Calibri, Arial, sans-serif;
+            margin-top: 2pt;
+        }
 
-        font-size: 10pt;
-
-        font-weight: bold;
-
-        line-height: 1;
-
-        margin-top: 3px;
-
-        white-space: nowrap;
-      }
-
-      /* =========================================================
-           FORM TITLE
+        /* =========================================================
+           HEADER REF / META
         ========================================================= */
 
-      .title-form {
-        height: 32pt;
+        .ref-label {
+            font-size: 8.5pt;
 
-        text-align: center;
+            font-weight: bold;
 
-        font-family: Calibri, Arial, sans-serif;
+            padding: 2pt 4pt !important;
+        }
 
-        font-size: 10pt;
+        .ref-value {
+            font-size: 8.5pt;
 
-        font-weight: bold;
+            padding: 2pt 4pt !important;
 
-        padding: 0 5px !important;
+            outline: none;
+        }
 
-        white-space: nowrap;
-      }
+        .ref-value.center {
+            text-align: center;
 
-      /* =========================================================
-           HEADER REFERENCE LABEL
-        ========================================================= */
+            padding: 0 !important;
+        }
 
-      .ref-label {
-        font-family: Calibri, Arial, sans-serif;
+        .ref-value[contenteditable="true"]:focus {
+            background: #fffbdd;
+        }
 
-        font-size: 10pt;
-
-        font-weight: normal;
-
-        padding: 0 6px !important;
-
-        text-align: left;
-
-        white-space: nowrap;
-      }
-
-      /* =========================================================
-           HEADER REFERENCE VALUE
-        ========================================================= */
-
-      .ref-value {
-        font-family: Calibri, Arial, sans-serif;
-
-        font-size: 10pt;
-
-        font-weight: normal;
-
-        padding: 0 5px !important;
-
-        text-align: center;
-
-        white-space: nowrap;
-
-        outline: none;
-      }
-
-      .ref-value.large {
-        font-size: 10pt;
-
-        font-weight: bold;
-      }
-
-      .ref-value.center {
-        text-align: center;
-
-        padding: 0 !important;
-      }
-
-      .ref-value[contenteditable='true']:focus {
-        background: #fffbdd;
-      }
-
-      /* =========================================================
+        /* =========================================================
            META
         ========================================================= */
 
-      .meta-table {
-        margin-top: 8pt;
-      }
+        .meta-table {
+            margin-top: 8pt;
+        }
 
-<<<<<<< Updated upstream
         /* =========================================================
            TOP META INNER SPACING
         ========================================================= */
@@ -585,94 +465,56 @@
         .section-gap {
             margin-top: 10pt;
         }
-=======
-      .section-gap {
-        margin-top: 10pt;
-      }
->>>>>>> Stashed changes
 
-      /* =========================================================
+        /* =========================================================
            RESOLUTION
         ========================================================= */
 
-      .resolution-row1 {
-        height: 20pt;
-      }
+        .resolution-row1 {
+            height: 20pt;
+        }
 
-      .resolution-row2 {
-        height: 20pt;
-      }
+        .resolution-row2 {
+            height: 20pt;
+        }
 
-      /* =========================================================
+        /* =========================================================
            APPROVAL
         ========================================================= */
 
-<<<<<<< Updated upstream
         .approval-col {
             padding: 5pt 7pt;
-=======
-      .approval-outer {
-        border: 0.75pt solid var(--border);
 
-        border-top: none;
-      }
+            font-family: Calibri, Arial, sans-serif;
 
-      .approval-box {
-        display: flex;
+            font-size: 10pt;
 
-        border-bottom: 0.75pt solid var(--border);
-
-        min-height: 59pt;
-      }
-
-      .approval-col {
-        flex: 1;
-
-        padding: 6pt 10px;
->>>>>>> Stashed changes
-
-        font-family: Calibri, Arial, sans-serif;
-
-        font-size: 10pt;
-
-<<<<<<< Updated upstream
             background: var(--blue-soft);
 
             vertical-align: top;
         }
-=======
-        background: var(--blue-soft);
-      }
 
-      .approval-col.left {
-        border-right: 0.75pt solid var(--border);
-      }
->>>>>>> Stashed changes
+        .approval-label {
+            font-size: 10pt;
 
-      .approval-label {
-        font-size: 10pt;
+            font-weight: bold;
 
-        font-weight: bold;
+            margin-bottom: 20pt;
 
-        margin-bottom: 20pt;
+            color: var(--navy-dark);
+        }
 
-        color: var(--navy-dark);
-      }
+        .approval-name {
+            font-size: 10pt;
 
-<<<<<<< HEAD
             font-weight: bold;
 
             text-transform: uppercase;
 
             min-height: 14pt;
-=======
-      .approval-name {
-        font-size: 10pt;
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
 
-        min-height: 11pt;
+            outline: none;
 
-<<<<<<< HEAD
             padding-left: 4px;
 
             color: #111827;
@@ -690,81 +532,47 @@
             min-height: 12pt;
 
             margin-top: 2pt;
-=======
-        outline: none;
 
-        padding-left: 4px;
-      }
+            outline: none;
 
-      .approval-position {
-        font-size: 10pt;
+            padding-left: 4px;
+        }
 
-        min-height: 10pt;
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
+        .approval-name[contenteditable="true"]:focus,
+        .approval-position[contenteditable="true"]:focus {
+            background: #fffbdd;
+        }
 
-        margin-top: 1pt;
-
-        outline: none;
-
-        padding-left: 4px;
-      }
-
-      .approval-name[contenteditable='true']:focus,
-      .approval-position[contenteditable='true']:focus {
-        background: #fffbdd;
-      }
-
-<<<<<<< Updated upstream
         .footer-cell {
             padding: 3px 7px;
-=======
-      .approval-footer {
-        display: flex;
-      }
 
-      .footer-cell {
-        flex: 1;
+            font-family: Calibri, Arial, sans-serif;
 
-        padding: 4pt 10px;
->>>>>>> Stashed changes
+            font-size: 10pt;
 
-        font-family: Calibri, Arial, sans-serif;
+            font-weight: bold;
 
-        font-size: 10pt;
+            outline: none;
 
-        font-weight: bold;
+            background: var(--blue-light);
 
-        outline: none;
+            color: var(--navy-dark);
+        }
 
-        background: var(--blue-light);
-
-        color: var(--navy-dark);
-      }
-
-<<<<<<< Updated upstream
         .footer-cell span[contenteditable="true"] {
             font-weight: normal;
-=======
-      .footer-cell.left {
-        border-right: 0.75pt solid var(--border);
-      }
 
-      .footer-cell span[contenteditable='true'] {
-        font-weight: normal;
->>>>>>> Stashed changes
+            padding-left: 4px;
+        }
 
-        padding-left: 4px;
-      }
+        .footer-cell span[contenteditable="true"]:focus {
+            background: #fffbdd;
+        }
 
-      .footer-cell span[contenteditable='true']:focus {
-        background: #fffbdd;
-      }
-
-      /* =========================================================
+        /* =========================================================
            PRINT
         ========================================================= */
 
-<<<<<<< Updated upstream
         @media print {
 
             * {
@@ -798,550 +606,284 @@
 
             /* =====================================================
                PRINT DIALOG - BORDER ALIGNMENT FIX
-               Keep section bars and tables exactly the same width
             ===================================================== */
-
-            .form-page,
-            .form-page * {
-                box-sizing: border-box !important;
-            }
-
             .form-table,
-            .header-table,
-            .section-bar,
-            .text-box {
-                width: 100% !important;
-                max-width: 100% !important;
-                box-sizing: border-box !important;
-            }
-
-            table.form-table {
-                border-collapse: collapse !important;
-                table-layout: fixed !important;
-            }
-
-            table.form-table td {
-                box-sizing: border-box !important;
-            }
-
-            /* =====================================================
-               FORCE EVERY FORM SECTION TO USE THE SAME CONTENT WIDTH
-               This prevents 1px/fractional right-border drift in
-               Chrome/Edge Print Preview.
-            ===================================================== */
-
-            .form-page>.section-gap {
-                width: 100% !important;
-                max-width: 100% !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-
-            .form-page>.section-gap>.section-bar,
-            .form-page>.section-gap>.form-table,
-            .form-page>.section-gap>.text-box,
-            .form-page>.section-gap>div.text-box {
-                width: 100% !important;
-                max-width: 100% !important;
-                min-width: 0 !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-
-            /* END USER DETAILS
-               The section header is a DIV while the content is a
-               collapsed-border TABLE. Give both the same outer
-               print box so the right edge is visually straight. */
-            .end-user-details-bar,
-            .end-user-details-table {
-                width: 100% !important;
-                max-width: 100% !important;
-                min-width: 0 !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-
-            .end-user-details-bar {
-                width: 100% !important;
-                padding-left: 7px !important;
-                padding-right: 7px !important;
-                border-left: 0.75pt solid var(--border) !important;
-                border-right: 0.75pt solid var(--border) !important;
-                border-bottom: none !important;
-            }
-
-            .end-user-details-table {
-                border-left: 0.75pt solid var(--border) !important;
-                border-right: 0.75pt solid var(--border) !important;
-                border-top: none !important;
-            }
-
-            .section-gap .section-bar+.form-table {
-                width: 100% !important;
-                max-width: 100% !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-
-            /* DESCRIPTION / DETAILED ACTION / FINAL REMARKS */
-            .section-gap>.text-box,
-            .action-details-box {
-                width: 100% !important;
-                max-width: 100% !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-
-            /* SERVICE REQUEST TICKET CLOSING APPROVAL */
-            .approval-col {
-                box-sizing: border-box !important;
-            }
-
-            .footer-cell {
-                box-sizing: border-box !important;
-            }
-
-            /* Prevent fractional-width overflow from creating
-               a detached / uneven right border in Print Preview. */
-            .section-bar,
-            .form-table,
-            .text-box {
-                overflow: hidden !important;
-            }
-
-            /* Final table geometry for Print Preview */
-            table.form-table {
-                display: table !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                table-layout: fixed !important;
-                border-collapse: collapse !important;
-            }
-
-            table.form-table td {
-                box-sizing: border-box !important;
-            }
-
-            /* Use the exact same outer border box for every section. */
-            .section-bar,
-            table.form-table,
-            .text-box {
-                border-left-width: 0.75pt !important;
-                border-right-width: 0.75pt !important;
-            }
-
-            .section-bar {
-                display: flex !important;
-            }
-
-            .text-box {
-                display: flex !important;
-            }
-<<<<<<< HEAD
-
-            /* =====================================================
-               ALL SECTION HEADER / TABLE OUTER EDGES
-               Use one exact border box for every section.
-               This removes the 1px/fractional right-edge drift
-               visible in Chrome/Edge Print Preview.
-            ===================================================== */
-
-            .form-page>.section-gap {
-                display: block !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                padding: 0 !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-
-            .form-page>.section-gap>.section-bar,
-            .form-page>.section-gap>table.form-table,
-            .form-page>.section-gap>.text-box {
-                width: 100% !important;
-                max-width: 100% !important;
-                min-width: 0 !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-                box-sizing: border-box !important;
-            }
-
-            /* Keep TABLE elements as real tables in Print Preview.
-               display:block causes Chrome/Edge to calculate the
-               collapsed right border differently. */
-            .form-page>.section-gap>table.form-table,
-            .form-page table.form-table {
-                display: table !important;
-                border-collapse: collapse !important;
-                table-layout: fixed !important;
-            }
-
-            .form-page>.section-gap>.section-bar {
-                display: flex !important;
-            }
-
-            .form-page>.section-gap>.text-box {
-                display: flex !important;
-            }
-
-            /* Header bars: their border box must end at the
-               exact same x-position as the table below. */
-            .resolution-header,
-            .end-user-details-bar,
-            .final-remarks-header,
-            .closing-approval-header,
-            .action-details-bar {
-                width: 100% !important;
-                max-width: 100% !important;
-                box-sizing: border-box !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-
-            /* Every section table uses the same outer border box. */
-            .resolution-responsible-table,
             .end-user-details-table,
-            .form-page table.form-table {
+            .resolution-responsible-table {
                 width: 100% !important;
-                max-width: 100% !important;
                 box-sizing: border-box !important;
-                table-layout: fixed !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
             }
 
-            /* Text boxes directly below section headers. */
-            .action-details-box,
-            .form-page>.section-gap>.text-box {
-                width: 100% !important;
-                max-width: 100% !important;
-                box-sizing: border-box !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-
-            /* Keep the outermost left/right borders identical. */
-            .resolution-header,
+            .section-bar,
             .end-user-details-bar,
-            .final-remarks-header,
-            .closing-approval-header,
+            .resolution-header,
             .action-details-bar,
-            .resolution-responsible-table,
-            .end-user-details-table,
-            .form-page table.form-table,
-            .action-details-box,
-            .form-page>.section-gap>.text-box {
-                border-left-width: 0.75pt !important;
-                border-right-width: 0.75pt !important;
-            }
-
-            /* Prevent the centered headings from changing the
-               width because of their flex layout. */
             .final-remarks-header,
             .closing-approval-header {
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
             }
-=======
-=======
-      @media print {
-        .toolbar {
-          display: none;
->>>>>>> Stashed changes
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
         }
-
-        body {
-          background: #fff;
-        }
-
-        .form-page {
-          margin: 0;
-
-          box-shadow: none;
-        }
-
-        .form-page + .form-page {
-          page-break-before: always;
-        }
-
-        @page {
-          size: letter;
-
-          margin: 0;
-        }
-      }
     </style>
-  </head>
+</head>
 
-  <body>
-    <!-- =========================================================
-         TOOLBAR
-    ========================================================= -->
+<body>
 
-    <div class="toolbar no-print">
-      <label class="btn" for="logo-upload-1"> Upload Logo </label>
+    <div class="toolbar">
 
-      <input id="logo-upload-1" type="file" accept="image/*" />
+        <button id="fill-sample-btn">Fill Sample Data</button>
 
-      <button id="fill-sample-btn">Fill Sample Data</button>
+        <button id="clear-btn">Clear</button>
 
-      <button id="clear-btn">Clear Fields</button>
+        <label class="btn" for="logo-upload-1">Upload Logo</label>
+        <input type="file" id="logo-upload-1" accept="image/*">
 
-      <div class="spacer"></div>
+        <div class="spacer"></div>
 
-      <button id="print-btn">Print / Save as PDF</button>
+        <button id="print-btn">Print / Save as PDF</button>
+
     </div>
 
-    <!-- =========================================================
-         FORM TEMPLATE
-    ========================================================= -->
 
     <template id="lims-ticket-template">
-      <div class="form-page">
-        <!-- =====================================================
+
+        <div class="form-page">
+
+            <!-- =====================================================
                  HEADER
             ===================================================== -->
 
-        <table class="header-table">
-          <colgroup>
-            <col class="header-logo-col" />
+            <table class="header-table">
 
-            <col class="header-title-col" />
+                <colgroup>
 
-            <col class="header-ref-label-1" />
+                    <col class="header-logo-col">
 
-            <col class="header-ref-label-2" />
+                    <col class="header-title-col">
 
-            <col class="header-ref-value-1" />
+                    <col class="header-ref-label-1">
 
-            <col class="header-ref-value-2" />
-          </colgroup>
+                    <col class="header-ref-value-1">
 
-          <!-- =================================================
-                     ROW 1
-                ================================================= -->
+                    <col class="header-ref-label-2">
 
-          <tr>
-            <!-- LOGO -->
+                    <col class="header-ref-value-2">
 
-            <td class="logo-cell" rowspan="3">
-              <div class="logo-slot">
-                <div class="logo-circle" data-role="logo-circle-1">
-                  <img
-                    data-role="logo-img-1"
-                    src="./BSWM_LOGO.png"
-                    alt="Department of Agriculture / BSWM logo"
-                  />
-                </div>
-              </div>
-            </td>
+                </colgroup>
 
-            <!-- AGENCY -->
 
-            <td class="title-agency">
-              <div class="agency-name">BUREAU OF SOILS AND WATER MANAGEMENT</div>
+                <tr>
 
-              <div class="agency-division">Laboratory Services Division</div>
-            </td>
+                    <!-- LOGO -->
 
-            <!-- REFERENCE CODE -->
+                    <td rowspan="4" class="logo-cell">
 
-            <td class="ref-label" colspan="2">Reference Code:</td>
+                        <img data-role="logo-img-1" src="./BSWM_LOGO.png" alt="BSWM Logo">
 
-            <td class="ref-value large" colspan="2" data-field="REF_CODE" contenteditable="true">
-              BSWM_LS_FR_0140
-            </td>
-          </tr>
+                    </td>
 
-          <!-- =================================================
-                     ROW 2
-                ================================================= -->
 
-          <tr>
-            <!-- FORM TITLE -->
+                    <!-- AGENCY TITLE -->
 
-            <td class="title-form" rowspan="2">LIMS HELPDESK REQUEST FORM</td>
+                    <td class="title-cell title-agency">
 
-            <!-- EFFECTIVE DATE -->
+                        BUREAU OF SOILS AND WATER MANAGEMENT
 
-            <td class="ref-label" colspan="2">Effective date:</td>
+                    </td>
 
-            <td
-              class="ref-value large"
-              colspan="2"
-              data-field="EFFECTIVE_DATE"
-              contenteditable="true"
-            >
-              September 12, 2025
-            </td>
-          </tr>
 
-          <!-- =================================================
-                     ROW 3
-                ================================================= -->
+                    <!-- REF CODE -->
 
-          <tr>
-            <!-- REVISION -->
+                    <td class="ref-label">
+                        Reference Code:
+                    </td>
 
-            <td class="ref-label">Rev. No.</td>
+                    <td colspan="3" class="ref-value" data-field="REF_CODE" contenteditable="true">
+                        BSWM_LS_FR_0140
+                    </td>
 
-            <td class="ref-value center" data-field="REV_NO" contenteditable="true">1</td>
+                </tr>
 
-            <!-- PAGE -->
 
-            <td class="ref-label">Page No.:</td>
+                <tr>
 
-            <td class="ref-value center" data-field="PAGE_NO" contenteditable="true">1 of 1</td>
-          </tr>
-        </table>
+                    <!-- FORM TITLE -->
 
-        <!-- =====================================================
+                    <td rowspan="3" class="title-cell title-form">
+
+                        SERVICE REQUEST TICKET
+
+                    </td>
+
+
+                    <!-- EFFECTIVE DATE -->
+
+                    <td class="ref-label">
+                        Effective Date:
+                    </td>
+
+                    <td colspan="3" class="ref-value" data-field="EFFECTIVE_DATE" contenteditable="true">
+                        September 12, 2025
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <!-- REVISION NO -->
+
+                    <td class="ref-label">
+                        Revision No.:
+                    </td>
+
+                    <td class="ref-value center" data-field="REV_NO" contenteditable="true">
+                        1
+                    </td>
+
+
+                    <!-- PAGE NO -->
+
+                    <td class="ref-label">
+                        Page No.:
+                    </td>
+
+                    <td class="ref-value center" data-field="PAGE_NO" contenteditable="true">
+                        1 of 1
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <!-- EMPTY FILLER ROW FOR HEADER BORDER -->
+
+                    <td class="ref-label" style="height:12pt;"></td>
+
+                    <td class="ref-value"></td>
+
+                    <td class="ref-label"></td>
+
+                    <td class="ref-value"></td>
+
+                </tr>
+
+            </table>
+
+
+            <!-- =====================================================
                  TOP META
             ===================================================== -->
 
-        <div>
-          <table class="form-table meta-table">
-            <colgroup>
-              <col style="width: 108pt" />
+            <table class="form-table meta-table">
 
-              <col style="width: 158pt" />
+                <colgroup>
 
-              <col style="width: 118pt" />
+                    <col style="width:130pt;">
 
-              <col style="width: 148pt" />
-            </colgroup>
+                    <col style="width:136pt;">
 
-            <!-- ISSUE -->
+                    <col style="width:130pt;">
 
-            <tr style="height: 20pt">
-              <td class="label-cell">ISSUE:</td>
+                    <col style="width:136pt;">
 
-              <td class="value-cell" colspan="3" data-field="ISSUE" contenteditable="true"></td>
-            </tr>
+                </colgroup>
 
-            <!-- TICKET NUMBER -->
 
-            <tr style="height: 20pt">
-              <td class="label-cell">TICKET NO:</td>
+                <!-- ISSUE & TICKET NO -->
 
-              <td class="value-cell" data-field="TICKET_ID" contenteditable="true"></td>
+                <tr style="height:20pt;">
 
-              <td class="label-cell">DATA SUBMITTED:</td>
+                    <td class="label-cell">
+                        ISSUE:
+                    </td>
 
-              <td
-                class="value-cell"
-                rowspan="2"
-                data-field="DATE_CREATED"
-                contenteditable="true"
-              ></td>
-            </tr>
+                    <td class="value-cell" data-field="ISSUE" contenteditable="true"></td>
 
-            <!-- STATUS -->
+                    <td class="label-cell">
+                        TICKET NO.:
+                    </td>
 
-            <tr style="height: 20pt">
-              <td class="label-cell">TICKET STATUS:</td>
+                    <td class="value-cell" data-field="TICKET_ID" contenteditable="true"></td>
 
-              <td
-                class="value-cell"
-                colspan="2"
-                data-field="NEW_STATUS"
-                contenteditable="true"
-              ></td>
-            </tr>
+                </tr>
 
-            <!-- URGENCY -->
 
-            <tr style="height: 20pt">
-              <td class="label-cell">URGENCY LEVEL:</td>
+                <!-- STATUS & DATE SUBMITTED -->
 
-              <td class="value-cell" data-field="URGENCY_LEVEL" contenteditable="true"></td>
+                <tr style="height:20pt;">
 
-              <td class="label-cell">RESOLUTION TARGET:</td>
+                    <td class="label-cell">
+                        TICKET STATUS:
+                    </td>
 
-<<<<<<< HEAD
-                        <td class="label-cell">
-                            DATE SUBMITTED:
-                        </td>
-=======
-              <td class="value-cell" data-field="TARGET_RESOLUTION" contenteditable="true"></td>
-            </tr>
-          </table>
-        </div>
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
+                    <td class="value-cell" data-field="NEW_STATUS" contenteditable="true"></td>
 
-        <!-- =====================================================
+                    <td class="label-cell">
+                        DATE SUBMITTED:
+                    </td>
+
+                    <td class="value-cell" data-field="DATE_CREATED" contenteditable="true"></td>
+
+                </tr>
+
+
+                <!-- URGENCY & TARGET RESOLUTION -->
+
+                <tr style="height:20pt;">
+
+                    <td class="label-cell">
+                        URGENCY LEVEL:
+                    </td>
+
+                    <td class="value-cell" data-field="URGENCY_LEVEL" contenteditable="true"></td>
+
+                    <td class="label-cell">
+                        RESOLUTION TARGET:
+                    </td>
+
+                    <td class="value-cell" data-field="TARGET_RESOLUTION" contenteditable="true"></td>
+
+                </tr>
+
+            </table>
+
+
+            <!-- =====================================================
                  END USER DETAILS
             ===================================================== -->
 
-        <div class="section-gap">
-          <div class="section-bar">END USER DETAILS</div>
+            <div class="section-gap">
 
-<<<<<<< HEAD
                 <div class="section-bar end-user-details-bar">
                     END USER DETAILS
                 </div>
-=======
-          <table class="form-table" style="border-top: none">
-            <colgroup>
-              <col style="width: 150pt" />
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
 
-              <col />
-            </colgroup>
 
-<<<<<<< HEAD
                 <table class="form-table end-user-details-table" style="border-top:none;">
-=======
-            <!-- REQUESTED BY -->
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
 
-            <tr style="height: 20pt">
-              <td class="label-cell" style="background: none; color: var(--black)">
-                REQUESTED BY:
-              </td>
+                    <colgroup>
 
-              <td class="value-cell" data-field="REQUESTED_BY" contenteditable="true"></td>
-            </tr>
+                        <col style="width:130pt;">
 
-            <!-- EMAIL -->
+                        <col style="width:402pt;">
 
-            <tr style="height: 20pt">
-              <td class="label-cell" style="background: none; color: var(--black)">
-                EMAIL ADDRESS:
-              </td>
+                    </colgroup>
 
-              <td class="value-cell" data-field="EMAIL" contenteditable="true"></td>
-            </tr>
 
-            <!-- FULL NAME -->
+                    <!-- REQUESTED BY -->
 
-            <tr style="height: 20pt">
-              <td class="label-cell" style="background: none; color: var(--black)">FULL NAME:</td>
+                    <tr style="height:20pt;">
 
-<<<<<<< Updated upstream
                         <td class="label-cell light">
                             REQUESTED BY:
                         </td>
-=======
-              <td class="value-cell" data-field="FULL_NAME" contenteditable="true"></td>
-            </tr>
-          </table>
->>>>>>> Stashed changes
 
-          <!-- DESCRIPTION -->
+                        <td class="value-cell" data-field="REQUESTED_BY" contenteditable="true"></td>
 
-          <div class="section-bar small" style="margin-top: 0; border-top: none">
-            <span> DESCRIPTION/DETAILS OF THE REQUIREMENT </span>
-          </div>
+                    </tr>
 
-          <div class="text-box desc-box">
-            <div class="text-area" data-field="PLEASE_SPECIFY" contenteditable="true"></div>
-          </div>
-        </div>
-
-<<<<<<< Updated upstream
 
                     <!-- EMAIL -->
 
@@ -1390,90 +932,48 @@
 
 
             <!-- =====================================================
-=======
-        <!-- =====================================================
->>>>>>> Stashed changes
                  RESOLUTION
             ===================================================== -->
 
-        <div class="section-gap">
-          <div class="section-bar">RESOLUTION</div>
+            <div class="section-gap">
 
-<<<<<<< HEAD
                 <div class="section-bar resolution-header">
                     RESOLUTION
                 </div>
-=======
-          <!-- RESPONSIBLE PERSON -->
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
 
-          <table class="form-table" style="border-top: none">
-            <colgroup>
-              <col style="width: 130pt" />
 
-              <col />
-            </colgroup>
+                <!-- RESPONSIBLE PERSON -->
 
-<<<<<<< HEAD
                 <table class="form-table resolution-responsible-table" style="border-top:none;">
-=======
-            <tr class="resolution-row1">
-              <td class="label-cell" style="background: none; color: var(--black)">
-                RESPONSIBLE PERSON:
-              </td>
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
 
-              <td class="value-cell" data-field="ASSIGNED_TO" contenteditable="true"></td>
-            </tr>
-          </table>
+                    <colgroup>
 
-          <!-- DATES -->
+                        <col style="width:130pt;">
 
-          <table class="form-table" style="border-top: none">
-            <colgroup>
-              <col style="width: 100pt" />
+                        <col style="width:402pt;">
 
-              <col style="width: 166pt" />
+                    </colgroup>
 
-              <col style="width: 80pt" />
 
-              <col style="width: 186pt" />
-            </colgroup>
+                    <tr class="resolution-row1">
 
-<<<<<<< Updated upstream
                         <td class="label-cell light">
                             RESPONSIBLE PERSON:
                         </td>
-=======
-            <tr class="resolution-row2">
-              <td class="label-cell" style="background: none; color: var(--black)">
-                DATE OF ACTION:
-              </td>
->>>>>>> Stashed changes
 
-              <td class="value-cell" data-field="DATE_ACTION" contenteditable="true"></td>
+                        <td class="value-cell" data-field="ASSIGNED_TO" contenteditable="true"></td>
 
-              <td class="label-cell" style="background: none; color: var(--black)">DATE CLOSE:</td>
+                    </tr>
 
-              <td class="value-cell" data-field="DATE_CLOSE" contenteditable="true"></td>
-            </tr>
-          </table>
+                </table>
 
-          <!-- ACTION DETAILS -->
 
-          <div class="section-bar small" style="margin-top: 0; border-top: none">
-            DETAILED OF ACTION
-          </div>
+                <!-- DATES -->
 
-          <div class="text-box remarks-box">
-            <div class="text-area" data-field="RESOLUTION_REMARKS" contenteditable="true"></div>
-          </div>
-        </div>
+                <table class="form-table" style="border-top:none;">
 
-<<<<<<< Updated upstream
                     <colgroup>
 
-                        <!-- Match RESPONSIBLE PERSON label width -->
                         <col style="width:130pt;">
 
                         <col style="width:136pt;">
@@ -1521,46 +1021,36 @@
 
 
             <!-- =====================================================
-=======
-        <!-- =====================================================
->>>>>>> Stashed changes
                  FINAL REMARKS
             ===================================================== -->
 
-        <div class="section-gap">
-          <div class="section-bar centered">FINAL REMARKS</div>
+            <div class="section-gap">
 
-<<<<<<< HEAD
                 <div class="section-bar centered final-remarks-header">
                     FINAL REMARKS
                 </div>
-=======
-          <div class="text-box final-box">
-            <div class="text-area" data-field="FINAL_REMARKS" contenteditable="true"></div>
-          </div>
-        </div>
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
 
-        <!-- =====================================================
+
+                <div class="text-box final-box">
+
+                    <div class="text-area" data-field="FINAL_REMARKS" contenteditable="true"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================================
                  CLOSING APPROVAL
             ===================================================== -->
 
-        <div class="section-gap">
-          <div class="section-bar centered">SERVICE REQUEST TICKET CLOSING APPROVAL</div>
+            <div class="section-gap">
 
-<<<<<<< HEAD
                 <div class="section-bar centered closing-approval-header">
                     SERVICE REQUEST TICKET CLOSING APPROVAL
                 </div>
-=======
-          <div class="approval-outer">
-            <!-- APPROVAL PEOPLE -->
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
 
-            <div class="approval-box">
-              <!-- TROUBLESHOOT BY -->
 
-<<<<<<< Updated upstream
                 <table class="form-table" style="border-top:none;">
 
                     <colgroup>
@@ -1570,14 +1060,8 @@
                         <col style="width:50%;">
 
                     </colgroup>
-=======
-              <div class="approval-col left">
-                <div class="approval-label">TROUBLESHOOT BY:</div>
->>>>>>> Stashed changes
 
-                <div class="approval-name" data-field="ASSIGNED_TO" contenteditable="true"></div>
 
-<<<<<<< Updated upstream
                     <tr>
 
                         <!-- TROUBLESHOOT BY -->
@@ -1615,48 +1099,14 @@
 
                     </tr>
 
-
-
                 </table>
-=======
-                <div class="approval-position" data-field="POSITION" contenteditable="true"></div>
-              </div>
 
-              <!-- APPROVED BY -->
-
-              <div class="approval-col right">
-                <div class="approval-label">APPROVED BY:</div>
-
-                <div class="approval-name" data-field="APPROVED_BY" contenteditable="true"></div>
->>>>>>> Stashed changes
-
-                <div
-                  class="approval-position"
-                  data-field="APPROVED_POSITION"
-                  contenteditable="true"
-                ></div>
-              </div>
             </div>
 
-            <!-- APPROVAL FOOTER -->
-
-            <div class="approval-footer">
-              <div class="footer-cell left">
-                APPROVAL DATE:
-
-                <span data-field="DATE_CLOSED" contenteditable="true"></span>
-              </div>
-
-              <div class="footer-cell">
-                CLOSED DATE:
-
-                <span data-field="CLOSED_DATE" contenteditable="true"></span>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+
     </template>
+
 
     <!-- =========================================================
          FORM CONTAINER
@@ -1664,232 +1114,130 @@
 
     <div id="form-container"></div>
 
+
     <!-- =========================================================
          JAVASCRIPT
     ========================================================= -->
 
     <script>
-      ;(function () {
-        const FIELD_KEYS = [
-          'ISSUE',
+        (function () {
+            const FIELD_KEYS = [
+                'ISSUE',
+                'TICKET_ID',
+                'DATE_CREATED',
+                'NEW_STATUS',
+                'URGENCY_LEVEL',
+                'TARGET_RESOLUTION',
 
-          'TICKET_ID',
+                'REQUESTED_BY',
+                'OFFICE',
+                'EMAIL',
+                'FULL_NAME',
 
-          'DATE_CREATED',
+                'PLEASE_SPECIFY',
 
-          'NEW_STATUS',
+                'ASSIGNED_TO',
+                'DATE_ACTION',
+                'DATE_CLOSE',
 
-          'URGENCY_LEVEL',
+                'RESOLUTION_REMARKS',
+                'FINAL_REMARKS',
 
-          'TARGET_RESOLUTION',
+                'POSITION',
 
-          'REQUESTED_BY',
+                'APPROVED_BY',
+                'APPROVED_POSITION',
 
-          'OFFICE',
+                'DATE_CLOSED',
+                'CLOSED_DATE',
 
-          'EMAIL',
+                'REF_CODE',
+                'EFFECTIVE_DATE',
+                'REV_NO',
+                'PAGE_NO',
+            ];
 
-          'FULL_NAME',
-
-          'PLEASE_SPECIFY',
-
-          'ASSIGNED_TO',
-
-          'DATE_ACTION',
-
-          'DATE_CLOSE',
-
-          'RESOLUTION_REMARKS',
-
-          'FINAL_REMARKS',
-
-          'POSITION',
-
-          'APPROVED_BY',
-
-          'APPROVED_POSITION',
-
-          'DATE_CLOSED',
-
-          'CLOSED_DATE',
-
-          'REF_CODE',
-
-          'EFFECTIVE_DATE',
-
-          'REV_NO',
-
-          'PAGE_NO',
-        ]
-
-        /* =====================================================
-               FILL FIELDS
-            ===================================================== */
-
-        function fillFields(root, data) {
-          FIELD_KEYS.forEach((key) => {
-            if (!(key in data)) {
-              return
+            function fillFields(root, data) {
+                FIELD_KEYS.forEach(key => {
+                    if (!(key in data)) return;
+                    root.querySelectorAll(`[data-field="${key}"]`).forEach(el => {
+                        el.textContent = data[key] == null ? '' : String(data[key]);
+                    });
+                });
             }
 
-            root.querySelectorAll(`[data-field="${key}"]`).forEach((el) => {
-              el.textContent = data[key] == null ? '' : String(data[key])
-            })
-          })
-        }
+            function setLogo(root, src) {
+                const img = root.querySelector('[data-role="logo-img-1"]');
+                if (!img) return;
+                img.src = src || './BSWM_LOGO.png';
+            }
 
-        /* =====================================================
-               SET LOGO
-            ===================================================== */
+            function cloneForm() {
+                const tpl = document.getElementById('lims-ticket-template');
+                return tpl.content.firstElementChild.cloneNode(true);
+            }
 
-        function setLogo(root, src) {
-          const img = root.querySelector('[data-role="logo-img-1"]')
+            window.LimsTicketForm = {
+                FIELD_KEYS,
+                fillFields,
+                setLogo,
+                cloneForm,
+            };
 
-          if (!img) {
-            return
-          }
+            const container = document.getElementById('form-container');
+            const formNode = cloneForm();
+            container.appendChild(formNode);
 
-          img.src = src || './LOGO.png'
-        }
+            document.getElementById('logo-upload-1').addEventListener('change', e => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => setLogo(formNode, reader.result);
+                reader.readAsDataURL(file);
+            });
 
-        /* =====================================================
-               CLONE FORM
-            ===================================================== */
+            document.getElementById('fill-sample-btn').addEventListener('click', () => {
+                fillFields(formNode, {
+                    ISSUE: 'Unable to print sample results',
+                    TICKET_ID: 'TCK-2026-0142',
+                    DATE_CREATED: 'August 10, 2026',
+                    NEW_STATUS: 'In Progress',
+                    URGENCY_LEVEL: 'High',
+                    TARGET_RESOLUTION: 'August 13, 2026',
+                    REQUESTED_BY: 'Juan Dela Cruz',
+                    OFFICE: 'Soil Chemistry Section',
+                    EMAIL: 'jdelacruz@bswm.da.gov.ph',
+                    FULL_NAME: 'Juan P. Dela Cruz',
+                    PLEASE_SPECIFY: 'LIMS print job for batch #2026-118 fails at the print-preview step; error dialog references the reporting module.',
+                    ASSIGNED_TO: 'Maria Santos',
+                    DATE_ACTION: 'August 11, 2026',
+                    DATE_CLOSE: '',
+                    RESOLUTION_REMARKS: 'Reinstalled the reporting module driver and cleared the print spooler cache; issue no longer reproduces.',
+                    FINAL_REMARKS: 'Monitored for 24 hours, no recurrence reported.',
+                    POSITION: 'IT Support Officer',
+                    APPROVED_BY: 'Engr. Ana Reyes',
+                    APPROVED_POSITION: 'Laboratory Chief',
+                    DATE_CLOSED: '',
+                    CLOSED_DATE: '',
+                    REF_CODE: 'BSWM_LS_FR_0140',
+                    EFFECTIVE_DATE: 'September 12, 2025',
+                    REV_NO: '1',
+                    PAGE_NO: '1 of 1',
+                });
+            });
 
-        function cloneForm() {
-          const tpl = document.getElementById('lims-ticket-template')
+            document.getElementById('clear-btn').addEventListener('click', () => {
+                const cleared = {};
+                FIELD_KEYS.forEach(key => { cleared[key] = ''; });
+                fillFields(formNode, cleared);
+                setLogo(formNode, './BSWM_LOGO.png');
+            });
 
-          return tpl.content.firstElementChild.cloneNode(true)
-        }
-
-        /* =====================================================
-               PUBLIC API
-            ===================================================== */
-
-        window.LimsTicketForm = {
-          FIELD_KEYS,
-
-          fillFields,
-
-          setLogo,
-
-          cloneForm,
-        }
-
-        /* =====================================================
-               CREATE FORM
-            ===================================================== */
-
-        const container = document.getElementById('form-container')
-
-        const formNode = cloneForm()
-
-        container.appendChild(formNode)
-
-        /* =====================================================
-               LOGO UPLOAD
-            ===================================================== */
-
-        document.getElementById('logo-upload-1').addEventListener('change', (e) => {
-          const file = e.target.files && e.target.files[0]
-
-          if (!file) {
-            return
-          }
-
-          const reader = new FileReader()
-
-          reader.onload = () => {
-            setLogo(formNode, reader.result)
-          }
-
-          reader.readAsDataURL(file)
-        })
-
-        /* =====================================================
-               SAMPLE DATA
-            ===================================================== */
-
-        document.getElementById('fill-sample-btn').addEventListener('click', () => {
-          fillFields(formNode, {
-            ISSUE: 'Unable to print sample results',
-
-            TICKET_ID: 'TCK-2026-0142',
-
-            DATE_CREATED: 'August 10, 2026',
-
-            NEW_STATUS: 'In Progress',
-
-            URGENCY_LEVEL: 'High',
-
-            TARGET_RESOLUTION: 'August 13, 2026',
-
-            REQUESTED_BY: 'Juan Dela Cruz',
-
-            OFFICE: 'Soil Chemistry Section',
-
-            EMAIL: 'jdelacruz@bswm.da.gov.ph',
-
-            FULL_NAME: 'Juan P. Dela Cruz',
-
-            PLEASE_SPECIFY:
-              'LIMS print job for batch #2026-118 fails at the print-preview step; error dialog references the reporting module.',
-
-            ASSIGNED_TO: 'Maria Santos',
-
-            DATE_ACTION: 'August 11, 2026',
-
-            DATE_CLOSE: '',
-
-            RESOLUTION_REMARKS:
-              'Reinstalled the reporting module driver and cleared the print spooler cache; issue no longer reproduces.',
-
-            FINAL_REMARKS: 'Monitored for 24 hours, no recurrence reported.',
-
-            POSITION: 'IT Support Officer',
-
-            APPROVED_BY: 'Engr. Ana Reyes',
-
-            APPROVED_POSITION: '',
-
-            DATE_CLOSED: '',
-
-            CLOSED_DATE: '',
-
-            REF_CODE: 'BSWM_LS_FR_0140',
-
-            EFFECTIVE_DATE: 'September 12, 2025',
-
-            REV_NO: '1',
-
-            PAGE_NO: '1 of 1',
-          })
-        })
-
-        /* =====================================================
-               CLEAR FIELDS
-            ===================================================== */
-
-        document.getElementById('clear-btn').addEventListener('click', () => {
-          const cleared = {}
-
-          FIELD_KEYS.forEach((key) => {
-            cleared[key] = ''
-          })
-
-          fillFields(formNode, cleared)
-
-          setLogo(formNode, './LOGO.png')
-        })
-
-        /* =====================================================
-               PRINT
-            ===================================================== */
-
-        document.getElementById('print-btn').addEventListener('click', () => {
-          window.print()
-        })
-      })()
+            document.getElementById('print-btn').addEventListener('click', () => {
+                window.print();
+            });
+        })();
     </script>
-  </body>
+</body>
+
 </html>

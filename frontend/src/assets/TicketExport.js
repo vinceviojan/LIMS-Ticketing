@@ -60,17 +60,10 @@ const FIELD_KEYS = [
 // ================================================================
 
 export function mapTicketToFields(ticket = {}) {
-<<<<<<< HEAD
-    const fields = {
-        // ----------------------------------------------------------
-        // TICKET INFORMATION
-        // ----------------------------------------------------------
-=======
-  return {
+  const fields = {
     // ----------------------------------------------------------
     // TICKET INFORMATION
     // ----------------------------------------------------------
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
 
     ISSUE: ticket.category ?? ticket.issue ?? '',
 
@@ -103,35 +96,27 @@ export function mapTicketToFields(ticket = {}) {
 
     PLEASE_SPECIFY: ticket.description ?? ticket.details ?? ticket.pleaseSpecify ?? '',
 
-<<<<<<< HEAD
-        // ----------------------------------------------------------
-        // RESOLUTION & TROUBLESHOOTER
-        // ----------------------------------------------------------
-
-        ASSIGNED_TO:
-            (typeof ticket.assignedStaff === 'string' && ticket.assignedStaff.trim() ? ticket.assignedStaff : null) ||
-            ticket.assigned_staff?.name ||
-            (ticket.assigned_staff && typeof ticket.assigned_staff === 'object' ? `${ticket.assigned_staff.first_name || ''} ${ticket.assigned_staff.last_name || ''}`.trim() : null) ||
-            (typeof ticket.assigned_staff === 'string' ? ticket.assigned_staff : null) ||
-            ticket.assigned_to ||
-            ticket.assignedTo ||
-            '',
-
-        POSITION:
-            ticket.assignedPosition ||
-            ticket.assigned_position ||
-            (ticket.assigned_staff && typeof ticket.assigned_staff === 'object' ? ticket.assigned_staff.position : '') ||
-            (ticket.assignedStaff && typeof ticket.assignedStaff === 'object' ? ticket.assignedStaff.position : '') ||
-            (ticket.raw_assigned_staff && typeof ticket.raw_assigned_staff === 'object' ? ticket.raw_assigned_staff.position : '') ||
-            ticket.position ||
-            'IT Staff',
-=======
     // ----------------------------------------------------------
-    // RESOLUTION
+    // RESOLUTION & TROUBLESHOOTER
     // ----------------------------------------------------------
 
-    ASSIGNED_TO: ticket.assignedStaff ?? ticket.assigned_to ?? ticket.assignedTo ?? 'Unassigned',
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
+    ASSIGNED_TO:
+      (typeof ticket.assignedStaff === 'string' && ticket.assignedStaff.trim() ? ticket.assignedStaff : null) ||
+      ticket.assigned_staff?.name ||
+      (ticket.assigned_staff && typeof ticket.assigned_staff === 'object' ? `${ticket.assigned_staff.first_name || ''} ${ticket.assigned_staff.last_name || ''}`.trim() : null) ||
+      (typeof ticket.assigned_staff === 'string' ? ticket.assigned_staff : null) ||
+      ticket.assigned_to ||
+      ticket.assignedTo ||
+      '',
+
+    POSITION:
+      ticket.assignedPosition ||
+      ticket.assigned_position ||
+      (ticket.assigned_staff && typeof ticket.assigned_staff === 'object' ? ticket.assigned_staff.position : '') ||
+      (ticket.assignedStaff && typeof ticket.assignedStaff === 'object' ? ticket.assignedStaff.position : '') ||
+      (ticket.raw_assigned_staff && typeof ticket.raw_assigned_staff === 'object' ? ticket.raw_assigned_staff.position : '') ||
+      ticket.position ||
+      'IT Staff',
 
     DATE_ACTION: ticket.dateAction ?? ticket.date_action ?? '',
 
@@ -143,43 +128,24 @@ export function mapTicketToFields(ticket = {}) {
 
     FINAL_REMARKS: ticket.finalRemarks ?? ticket.final_remarks ?? '',
 
-<<<<<<< HEAD
-        // ----------------------------------------------------------
-        // APPROVAL
-        // ----------------------------------------------------------
-
-        APPROVED_BY:
-            (typeof ticket.approvedBy === 'string' && ticket.approvedBy.trim() ? ticket.approvedBy : null) ||
-            ticket.approved_by?.name ||
-            (ticket.approved_by && typeof ticket.approved_by === 'object' ? `${ticket.approved_by.first_name || ''} ${ticket.approved_by.last_name || ''}`.trim() : null) ||
-            (typeof ticket.approved_by === 'string' ? ticket.approved_by : null) ||
-            'Authorized Approver',
-
-        APPROVED_POSITION:
-            ticket.approvedPosition ||
-            ticket.approved_position ||
-            (ticket.approved_by && typeof ticket.approved_by === 'object' ? ticket.approved_by.position : '') ||
-            (ticket.approvedBy && typeof ticket.approvedBy === 'object' ? ticket.approvedBy.position : '') ||
-            (ticket.raw_approved_by && typeof ticket.raw_approved_by === 'object' ? ticket.raw_approved_by.position : '') ||
-            'Laboratory Chief',
-=======
-    // ----------------------------------------------------------
-    // TROUBLESHOOTER
-    // ----------------------------------------------------------
-
-    POSITION: ticket.assignedPosition ?? ticket.position ?? '',
-
     // ----------------------------------------------------------
     // APPROVAL
-    //
-    // No predefined position is used.
-    // The approval position comes directly from the ticket.
     // ----------------------------------------------------------
 
-    APPROVED_BY: ticket.approvedBy ?? ticket.approved_by ?? '',
+    APPROVED_BY:
+      (typeof ticket.approvedBy === 'string' && ticket.approvedBy.trim() ? ticket.approvedBy : null) ||
+      ticket.approved_by?.name ||
+      (ticket.approved_by && typeof ticket.approved_by === 'object' ? `${ticket.approved_by.first_name || ''} ${ticket.approved_by.last_name || ''}`.trim() : null) ||
+      (typeof ticket.approved_by === 'string' ? ticket.approved_by : null) ||
+      'Authorized Approver',
 
-    APPROVED_POSITION: ticket.approvedPosition ?? ticket.approved_position ?? '',
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
+    APPROVED_POSITION:
+      ticket.approvedPosition ||
+      ticket.approved_position ||
+      (ticket.approved_by && typeof ticket.approved_by === 'object' ? ticket.approved_by.position : '') ||
+      (ticket.approvedBy && typeof ticket.approvedBy === 'object' ? ticket.approvedBy.position : '') ||
+      (ticket.raw_approved_by && typeof ticket.raw_approved_by === 'object' ? ticket.raw_approved_by.position : '') ||
+      'Laboratory Chief',
 
     // ----------------------------------------------------------
     // CLOSING
@@ -199,26 +165,19 @@ export function mapTicketToFields(ticket = {}) {
 
     REV_NO: ticket.revNo != null ? String(ticket.revNo) : '1',
 
-<<<<<<< HEAD
-        PAGE_NO:
-            ticket.pageNo ??
-            '1 of 1',
-    }
-
-    console.log('📌 [TicketExport API Data Mapped]:', {
-        rawInput: ticket,
-        mappedFields: fields,
-        assignedStaffName: fields.ASSIGNED_TO,
-        assignedStaffPosition: fields.POSITION,
-        approvedByName: fields.APPROVED_BY,
-        approvedByPosition: fields.APPROVED_POSITION,
-    })
-
-    return fields
-=======
     PAGE_NO: ticket.pageNo ?? '1 of 1',
   }
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
+
+  console.log('📌 [TicketExport API Data Mapped]:', {
+    rawInput: ticket,
+    mappedFields: fields,
+    assignedStaffName: fields.ASSIGNED_TO,
+    assignedStaffPosition: fields.POSITION,
+    approvedByName: fields.APPROVED_BY,
+    approvedByPosition: fields.APPROVED_POSITION,
+  })
+
+  return fields
 }
 
 // ================================================================
@@ -248,20 +207,6 @@ async function loadTemplateDoc() {
 // ================================================================
 // EXTRACT CSS
 // ================================================================
-//
-// Extracts ALL CSS from TicketForm.html.
-//
-// This means the exported ticket automatically receives:
-// - Navy section colors
-// - Light-blue label colors
-// - Value-cell colors
-// - Approval colors
-// - Borders
-// - Typography
-// - Print styles
-// - Any future design changes made in TicketForm.html
-//
-// ================================================================
 
 function extractStyles(templateDoc) {
   return Array.from(templateDoc.querySelectorAll('style'))
@@ -270,7 +215,7 @@ function extractStyles(templateDoc) {
 }
 
 // ================================================================
-// CLONE FORM
+// CLONE FORM NODE
 // ================================================================
 
 function cloneFormNode(templateDoc) {
@@ -288,7 +233,7 @@ function cloneFormNode(templateDoc) {
 }
 
 // ================================================================
-// FILL FORM FIELDS
+// FILL FIELDS
 // ================================================================
 
 function fillFields(root, fields) {
@@ -304,10 +249,7 @@ function fillFields(root, fields) {
 }
 
 // ================================================================
-// SET LOGO
-// ================================================================
-//
-// The current TicketForm.html contains ONE logo.
+// SET LOGO SRC
 // ================================================================
 
 function setLogoSrc(root, src) {
@@ -326,7 +268,7 @@ function setLogoSrc(root, src) {
 }
 
 // ================================================================
-// BUILD FILLED FORM
+// BUILD FILLED FORM NODE
 // ================================================================
 
 async function buildFilledFormNode(ticket, logos = {}) {
@@ -372,17 +314,9 @@ async function buildPrintDocument(formNodes) {
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        LIMS Helpdesk Ticket Export
-    </title>
+    <title>LIMS Service Request Ticket</title>
 
     ${styles}
-
 </head>
 
 <body>
@@ -404,17 +338,11 @@ function printHtmlDocument(html) {
     const iframe = document.createElement('iframe')
 
     iframe.style.position = 'fixed'
-
     iframe.style.right = '0'
-
     iframe.style.bottom = '0'
-
     iframe.style.width = '0'
-
     iframe.style.height = '0'
-
     iframe.style.border = '0'
-
     iframe.style.visibility = 'hidden'
 
     document.body.appendChild(iframe)
@@ -428,7 +356,6 @@ function printHtmlDocument(html) {
     iframe.onload = () => {
       try {
         const win = iframe.contentWindow
-
         const documentInsideIframe = iframe.contentDocument
 
         if (!win || !documentInsideIframe) {
@@ -444,36 +371,26 @@ function printHtmlDocument(html) {
             }
 
             return new Promise((resolveImage) => {
-              image.addEventListener('load', resolveImage, {
-                once: true,
-              })
-
-              image.addEventListener('error', resolveImage, {
-                once: true,
-              })
+              image.addEventListener('load', resolveImage, { once: true })
+              image.addEventListener('error', resolveImage, { once: true })
             })
           }),
         )
 
         waitForImages.then(() => {
           win.focus()
-
           win.print()
-
           cleanup()
-
           resolve()
         })
       } catch (error) {
         cleanup()
-
         reject(error)
       }
     }
 
     iframe.onerror = () => {
       cleanup()
-
       reject(new Error('TicketExport: Failed to load print document.'))
     }
 
@@ -487,17 +404,12 @@ function printHtmlDocument(html) {
 
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob)
-
   const anchor = document.createElement('a')
 
   anchor.href = url
-
   anchor.download = filename
-
   document.body.appendChild(anchor)
-
   anchor.click()
-
   anchor.remove()
 
   setTimeout(() => {
@@ -509,78 +421,34 @@ function downloadBlob(blob, filename) {
 // EXPORT SINGLE TICKET TO PDF
 // ================================================================
 
-<<<<<<< HEAD
-export async function exportTicketToPdf(
-    ticket,
-    logos
-) {
-    console.log('🚀 [Export Single Ticket PDF Initiated]:', ticket)
-    if (!ticket) {
-        throw new Error(
-            'No ticket provided for export.'
-        )
-    }
-=======
 export async function exportTicketToPdf(ticket, logos) {
+  console.log('🚀 [Export Single Ticket PDF Initiated]:', ticket)
   if (!ticket) {
     throw new Error('No ticket provided for export.')
   }
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
 
   const node = await buildFilledFormNode(ticket, logos)
-
   const html = await buildPrintDocument([node])
-
   await printHtmlDocument(html)
 }
 
 // ================================================================
 // EXPORT MULTIPLE TICKETS TO PDF
 // ================================================================
-//
-// One ticket = one page.
-//
-// Example:
-// 1 of 5
-// 2 of 5
-// 3 of 5
-// 4 of 5
-// 5 of 5
-//
-// ================================================================
 
-<<<<<<< HEAD
-export async function exportTicketsToPdf(
-    tickets = [],
-    getLogos
-) {
-    console.log('🚀 [Export Multiple Tickets PDF Initiated]:', tickets)
-    if (!tickets.length) {
-        throw new Error(
-            'No tickets selected for export.'
-        )
-    }
-=======
 export async function exportTicketsToPdf(tickets = [], getLogos) {
+  console.log('🚀 [Export Multiple Tickets PDF Initiated]:', tickets)
   if (!tickets.length) {
     throw new Error('No tickets selected for export.')
   }
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
 
   const total = tickets.length
-
   const nodes = []
 
   for (let index = 0; index < total; index++) {
     const ticket = tickets[index]
-
     const logos = typeof getLogos === 'function' ? getLogos(ticket) : undefined
-
     const node = await buildFilledFormNode(ticket, logos)
-
-    // --------------------------------------------------------
-    // Automatically update page number.
-    // --------------------------------------------------------
 
     node.querySelectorAll('[data-field="PAGE_NO"]').forEach((element) => {
       element.textContent = `${index + 1} of ${total}`
@@ -590,7 +458,6 @@ export async function exportTicketsToPdf(tickets = [], getLogos) {
   }
 
   const html = await buildPrintDocument(nodes)
-
   await printHtmlDocument(html)
 }
 
@@ -604,9 +471,7 @@ export async function exportTicketToHtml(ticket, filename, logos) {
   }
 
   const node = await buildFilledFormNode(ticket, logos)
-
   const html = await buildPrintDocument([node])
-
   const name = filename || `${ticket.ticket_no || ticket.id || 'ticket'}.html`
 
   downloadBlob(
@@ -621,27 +486,19 @@ export async function exportTicketToHtml(ticket, filename, logos) {
 // EXPORT MULTIPLE TICKETS TO HTML
 // ================================================================
 
-export async function exportTicketsToHtml(
-  tickets = [],
-  filename = 'tickets-export.html',
-  getLogos,
-) {
+export async function exportTicketsToHtml(tickets = [], filename = 'tickets-export.html', getLogos) {
   if (!tickets.length) {
     throw new Error('No tickets selected for export.')
   }
 
   const nodes = []
-
   for (const ticket of tickets) {
     const logos = typeof getLogos === 'function' ? getLogos(ticket) : undefined
-
     const node = await buildFilledFormNode(ticket, logos)
-
     nodes.push(node)
   }
 
   const html = await buildPrintDocument(nodes)
-
   downloadBlob(
     new Blob([html], {
       type: 'text/html;charset=utf-8;',
@@ -656,11 +513,9 @@ export async function exportTicketsToHtml(
 
 function csvCell(value) {
   const text = String(value ?? '')
-
   if (/[",\n\r]/.test(text)) {
     return `"${text.replace(/"/g, '""')}"`
   }
-
   return text
 }
 
@@ -705,15 +560,12 @@ export function exportTicketsToCSV(tickets = [], filename = 'tickets-export.csv'
   ]
 
   const header = keys.join(',')
-
   const rows = tickets.map((ticket) => {
     const fields = mapTicketToFields(ticket)
-
     return keys.map((key) => csvCell(fields[key])).join(',')
   })
 
   const csv = [header, ...rows].join('\n')
-
   downloadBlob(
     new Blob([csv], {
       type: 'text/csv;charset=utf-8;',
@@ -732,7 +584,6 @@ export function exportTicketsToJSON(tickets = [], filename = 'tickets-export.jso
   }
 
   const data = tickets.map(mapTicketToFields)
-
   downloadBlob(
     new Blob([JSON.stringify(data, null, 2)], {
       type: 'application/json',
@@ -747,13 +598,10 @@ export function exportTicketsToJSON(tickets = [], filename = 'tickets-export.jso
 
 export default {
   mapTicketToFields,
-
   exportTicketToPdf,
   exportTicketsToPdf,
-
   exportTicketToHtml,
   exportTicketsToHtml,
-
   exportTicketsToCSV,
   exportTicketsToJSON,
 }

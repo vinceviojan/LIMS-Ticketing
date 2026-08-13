@@ -302,7 +302,6 @@ async function fetchTickets() {
       title: t.issue || 'No Title',
       requester: t.user ? t.user.first_name + ' ' + t.user.last_name : 'Unknown',
       email: t.user ? t.user.email : '',
-<<<<<<< HEAD
       assignedStaff: t.assigned_staff ? (t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`) : '',
       assignedPosition: t.assigned_staff?.position || t.assigned_position || '',
       assigned_staff: t.assigned_staff,
@@ -310,15 +309,6 @@ async function fetchTickets() {
       approved_by: t.approved_by ? (t.approved_by.name || `${t.approved_by.first_name} ${t.approved_by.last_name}`) : '',
       approvedPosition: t.approved_by?.position || t.approved_position || '',
       approved_by_obj: t.approved_by,
-=======
-      assignedStaff: t.assigned_staff
-        ? t.assigned_staff.name || `${t.assigned_staff.first_name} ${t.assigned_staff.last_name}`
-        : '',
-      assigned_staff_id: t.assigned_staff_id,
-      approved_by: t.approved_by
-        ? t.approved_by.name || `${t.approved_by.first_name} ${t.approved_by.last_name}`
-        : '',
->>>>>>> 23d9c0f2c25f7401e28bcad18e49dda124b5533e
       category: t.problem_category ? t.problem_category.categories : 'Uncategorized',
       problem_category_id: t.problem_category_id,
       priority: t.urgency || 'NORMAL',
